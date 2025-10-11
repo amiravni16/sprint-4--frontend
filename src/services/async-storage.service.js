@@ -7,8 +7,24 @@ export const storageService = {
 }
 
 function query(entityType, delay = 500) {
-    var entities = JSON.parse(localStorage.getItem(entityType)) || []
-    return new Promise(resolve => setTimeout(() => resolve(entities), delay))
+    try {
+        const data = localStorage.getItem(entityType)
+        let entities = data ? JSON.parse(data) : []
+        
+        // Ensure entities is always an array
+        if (!Array.isArray(entities)) {
+            console.warn(`Invalid data structure for ${entityType}, resetting to empty array`)
+            entities = []
+            localStorage.setItem(entityType, JSON.stringify(entities))
+        }
+        
+        return new Promise(resolve => setTimeout(() => resolve(entities), delay))
+    } catch (err) {
+        console.error(`Error querying ${entityType}:`, err)
+        // Reset corrupted storage
+        localStorage.setItem(entityType, JSON.stringify([]))
+        return new Promise(resolve => setTimeout(() => resolve([]), delay))
+    }
 }
 
 function get(entityType, entityId) {
