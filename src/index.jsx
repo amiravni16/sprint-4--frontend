@@ -8,8 +8,12 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
 import { store } from './store/store'
 import { RootCmp } from './RootCmp'
+import { storageInitService } from './services/storage-init.service'
 
 import './assets/styles/main.css'
+
+// Initialize storage before rendering app
+storageInitService.init()
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(

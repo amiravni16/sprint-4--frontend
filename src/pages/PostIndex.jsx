@@ -54,6 +54,25 @@ export function PostIndex() {
         }        
     }
 
+    async function onLike(postId) {
+        try {
+            // For now, just add a like to the post
+            // In a real app, this would call a like/unlike API
+            showSuccessMsg('Post liked! ❤️')
+        } catch (err) {
+            showErrorMsg('Cannot like post')
+        }
+    }
+
+    async function onComment(postId, commentText) {
+        try {
+            await addPostMsg(postId, commentText)
+            showSuccessMsg('Comment added! 💬')
+        } catch (err) {
+            showErrorMsg('Cannot add comment')
+        }
+    }
+
     return (
         <section className="post-index">
             <header>
@@ -64,7 +83,9 @@ export function PostIndex() {
             <PostList 
                 posts={posts}
                 onRemovePost={onRemovePost} 
-                onUpdatePost={onUpdatePost}/>
+                onUpdatePost={onUpdatePost}
+                onLike={onLike}
+                onComment={onComment}/>
         </section>
     )
 }
