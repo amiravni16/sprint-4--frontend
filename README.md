@@ -54,6 +54,36 @@ const post = {
 }
 ```
 
+## 🐛 Troubleshooting
+
+### localStorage Corruption Error
+
+If you see errors like `users.map is not a function` or `entities.push is not a function`:
+
+**Solution 1: Use the Clear Storage Button**
+- Click the red "🗑️ Clear Storage" button in the top-right of the homepage
+- Page will reload automatically with fresh storage
+
+**Solution 2: Use Browser Console**
+```javascript
+// Open browser console (F12) and run:
+clearInstagramStorage()
+// Then reload the page
+```
+
+**Solution 3: Manual Clear**
+```javascript
+// In browser console:
+localStorage.clear()
+sessionStorage.clear()
+location.reload()
+```
+
+After clearing, the app will automatically:
+1. Initialize empty storage arrays
+2. Create a default admin user (username: `admin`, password: `admin`)
+3. Auto-login with the test user
+
 ## 🚀 Quick Start
 
 1. Install dependencies:
@@ -67,6 +97,8 @@ npm run dev:local
 ```
 
 3. Open browser to `http://localhost:5173/`
+
+4. **Auto-Login**: The app will automatically log you in with a test user!
 
 ## 🏗️ Project Structure
 
