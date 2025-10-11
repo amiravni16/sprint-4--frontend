@@ -19,11 +19,6 @@
 @import "cmps/AppFooter";
 @import "cmps/UserMsg";
 
-@import "cmps/car/CarIndex";
-@import "cmps/car/CarList";
-@import "cmps/car/CarPreview";
-@import "cmps/car/CarFilter";
-
 @import "cmps/review/ReviewEdit";
 @import "cmps/review/ReviewList";
 @import "cmps/review/ReviewPreview";

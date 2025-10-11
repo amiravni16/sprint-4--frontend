@@ -25,7 +25,6 @@ export function AppHeader() {
 					Instagram
 				</NavLink>
 				<NavLink to="about">About</NavLink>
-				<NavLink to="car">Cars</NavLink>
 				<NavLink to="post">Posts</NavLink>
 				<NavLink to="chat">Chat</NavLink>
 				<NavLink to="review">Review</NavLink>
