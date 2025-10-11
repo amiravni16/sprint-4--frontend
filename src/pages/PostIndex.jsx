@@ -30,7 +30,9 @@ export function PostIndex() {
 
     async function onAddPost() {
         const post = postService.getEmptyPost()
-        post.title = prompt('Post title?', 'Some Post Title')
+        post.txt = prompt('Post text?', 'Best trip ever!')
+        post.imgUrl = prompt('Image URL?', 'https://picsum.photos/400/400')
+        post.tags = prompt('Tags (comma separated)?', 'fun, travel').split(',').map(tag => tag.trim())
         try {
             const savedPost = await addPost(post)
             showSuccessMsg(`Post added (id: ${savedPost._id})`)
@@ -40,13 +42,13 @@ export function PostIndex() {
     }
 
     async function onUpdatePost(post) {
-        const title = prompt('New title?', post.title) || ''
-        if(title === '' || title === post.title) return
+        const txt = prompt('New text?', post.txt) || ''
+        if(txt === '' || txt === post.txt) return
 
-        const postToSave = { ...post, title }
+        const postToSave = { ...post, txt }
         try {
             const savedPost = await updatePost(postToSave)
-            showSuccessMsg(`Post updated, new title: ${savedPost.title}`)
+            showSuccessMsg(`Post updated, new text: ${savedPost.txt}`)
         } catch (err) {
             showErrorMsg('Cannot update post')
         }        

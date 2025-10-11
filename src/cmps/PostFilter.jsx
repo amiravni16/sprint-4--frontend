@@ -49,12 +49,12 @@ export function PostFilter({ filterBy, setFilterBy }) {
             <h3>Sort:</h3>
             <div className="sort-field">
                 <label>
-                    <span>Title</span>
+                    <span>Text</span>
                     <input
                         type="radio"
                         name="sortField"
-                        value="title"
-                        checked={filterToEdit.sortField === 'title'}
+                        value="txt"
+                        checked={filterToEdit.sortField === 'txt'}
                         onChange={handleChange}
                     />
                 </label>

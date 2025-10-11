@@ -29,7 +29,18 @@ export function PostDetails() {
       <Link to="/post">Back to list</Link>
       <h1>Post Details</h1>
       {post && <div>
-        <h3>{post.title}</h3>
+        <h3>{post.txt}</h3>
+        {post.imgUrl && <img src={post.imgUrl} alt="Post image" style={{width: '200px', height: '200px', objectFit: 'cover'}} />}
+        {post.tags && post.tags.length > 0 && (
+          <div>
+            <strong>Tags:</strong> {post.tags.join(', ')}
+          </div>
+        )}
+        {post.loc && post.loc.name && (
+          <div>
+            <strong>Location:</strong> {post.loc.name}
+          </div>
+        )}
         <pre> {JSON.stringify(post, null, 2)} </pre>
       </div>
       }

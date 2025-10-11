@@ -8,7 +8,7 @@ export function PostList({ posts, onRemovePost, onUpdatePost }) {
         
         if (!user) return false
         if (user.isAdmin) return true
-        return post.owner?._id === user._id
+        return post.by?._id === user._id
     }
 
     return <section>
