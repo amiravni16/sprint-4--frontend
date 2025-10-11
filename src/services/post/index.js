@@ -12,7 +12,7 @@ function getEmptyPost() {
 		imgUrl: '',
 		by: {
 			_id: '',
-			username: '',
+			fullname: '',
 			imgUrl: ''
 		},
 		loc: {
@@ -22,7 +22,8 @@ function getEmptyPost() {
 		},
 		comments: [],
 		likedBy: [],
-		tags: []
+		tags: [],
+		createdAt: Date.now()
 	}
 }
 

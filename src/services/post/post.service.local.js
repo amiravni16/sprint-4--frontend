@@ -60,7 +60,7 @@ async function save(post) {
             imgUrl: post.imgUrl,
             by: {
                 _id: loggedinUser._id,
-                username: loggedinUser.fullname,
+                fullname: loggedinUser.fullname,
                 imgUrl: loggedinUser.imgUrl
             },
             loc: post.loc || { name: '', lat: 0, lng: 0 },
@@ -79,8 +79,13 @@ async function addPostMsg(postId, txt) {
 
     const msg = {
         id: makeId(),
-        by: userService.getLoggedinUser(),
+        by: {
+            _id: userService.getLoggedinUser()._id,
+            fullname: userService.getLoggedinUser().fullname,
+            imgUrl: userService.getLoggedinUser().imgUrl
+        },
         txt,
+        likedBy: [],
         createdAt: Date.now()
     }
     post.comments.push(msg)
