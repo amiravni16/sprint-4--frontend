@@ -19,10 +19,10 @@ async function query(filterBy = { txt: '' }) {
 
     if (txt) {
         const regex = new RegExp(filterBy.txt, 'i')
-        posts = posts.filter(post => regex.test(post.title) || regex.test(post.description))
+        posts = posts.filter(post => regex.test(post.txt) || post.tags.some(tag => regex.test(tag)))
     }
     
-    if(sortField === 'title'){
+    if(sortField === 'txt'){
         posts.sort((post1, post2) => 
             post1[sortField].localeCompare(post2[sortField]) * +sortDir)
     }
@@ -31,7 +31,7 @@ async function query(filterBy = { txt: '' }) {
             (new Date(post1[sortField]) - new Date(post2[sortField])) * +sortDir)
     }
     
-    posts = posts.map(({ _id, title, owner, createdAt }) => ({ _id, title, owner, createdAt }))
+    posts = posts.map(({ _id, txt, by, createdAt, imgUrl, likedBy, comments }) => ({ _id, txt, by, createdAt, imgUrl, likedBy, comments }))
     return posts
 }
 
@@ -48,14 +48,25 @@ async function save(post) {
     if (post._id) {
         const postToSave = {
             _id: post._id,
-            title: post.title
+            txt: post.txt,
+            imgUrl: post.imgUrl,
+            tags: post.tags
         }
         savedPost = await storageService.put(STORAGE_KEY, postToSave)
     } else {
+        const loggedinUser = userService.getLoggedinUser()
         const postToSave = {
-            title: post.title,
-            owner: userService.getLoggedinUser(),
-            msgs: [],
+            txt: post.txt,
+            imgUrl: post.imgUrl,
+            by: {
+                _id: loggedinUser._id,
+                username: loggedinUser.fullname,
+                imgUrl: loggedinUser.imgUrl
+            },
+            loc: post.loc || { name: '', lat: 0, lng: 0 },
+            comments: [],
+            likedBy: [],
+            tags: post.tags || [],
             createdAt: Date.now()
         }
         savedPost = await storageService.post(STORAGE_KEY, postToSave)
@@ -69,9 +80,10 @@ async function addPostMsg(postId, txt) {
     const msg = {
         id: makeId(),
         by: userService.getLoggedinUser(),
-        txt
+        txt,
+        createdAt: Date.now()
     }
-    post.msgs.push(msg)
+    post.comments.push(msg)
     await storageService.put(STORAGE_KEY, post)
 
     return msg

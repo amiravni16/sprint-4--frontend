@@ -114,7 +114,7 @@ async function unitTestActions() {
     await addPost(postService.getEmptyPost())
     await updatePost({
         _id: 'm1oC7',
-        title: 'Updated Post Title',
+        txt: 'Updated Post Title',
     })
     await removePost('m1oC7')
     // TODO unit test addPostMsg

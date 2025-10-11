@@ -8,8 +8,21 @@ import { postService as remote } from './post.service.remote'
 function getEmptyPost() {
 	return {
         _id: '',
-		title: '',
-		msgs: [],
+		txt: '',
+		imgUrl: '',
+		by: {
+			_id: '',
+			username: '',
+			imgUrl: ''
+		},
+		loc: {
+			name: '',
+			lat: 0,
+			lng: 0
+		},
+		comments: [],
+		likedBy: [],
+		tags: []
 	}
 }
 

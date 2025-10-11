@@ -34,7 +34,7 @@ export function postReducer(state = initialState, action) {
             break
         case ADD_POST_MSG:
             if (action.msg && state.post) {
-                newState = { ...state, post: { ...state.post, msgs: [...state.post.msgs || [], action.msg] } }
+                newState = { ...state, post: { ...state.post, comments: [...state.post.comments || [], action.msg] } }
                 break
             }
         default:
@@ -46,8 +46,8 @@ export function postReducer(state = initialState, action) {
 
 function unitTestReducer() {
     var state = initialState
-    const post1 = { _id: 'p101', title: 'Post ' + parseInt('' + Math.random() * 10), owner: null, msgs: [] }
-    const post2 = { _id: 'p102', title: 'Post ' + parseInt('' + Math.random() * 10), owner: null, msgs: [] }
+    const post1 = { _id: 'p101', txt: 'Post ' + parseInt('' + Math.random() * 10), by: null, comments: [] }
+    const post2 = { _id: 'p102', txt: 'Post ' + parseInt('' + Math.random() * 10), by: null, comments: [] }
 
     state = postReducer(state, { type: SET_POSTS, posts: [post1] })
     console.log('After SET_POSTS:', state)
@@ -55,7 +55,7 @@ function unitTestReducer() {
     state = postReducer(state, { type: ADD_POST, post: post2 })
     console.log('After ADD_POST:', state)
 
-    state = postReducer(state, { type: UPDATE_POST, post: { ...post2, title: 'Updated Post' } })
+    state = postReducer(state, { type: UPDATE_POST, post: { ...post2, txt: 'Updated Post' } })
     console.log('After UPDATE_POST:', state)
 
     state = postReducer(state, { type: REMOVE_POST, postId: post2._id })
