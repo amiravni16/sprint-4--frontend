@@ -1,24 +1,29 @@
 
-@import "setup/var";
-@import "setup/typography";
+@import "setup/var.css";
+@import "setup/typography.css";
 
-@import "basics/helpers";
-@import "basics/layout";
-@import "basics/base";
-@import "basics/forms";
+@import "basics/helpers.css";
+@import "basics/layout.css";
+@import "basics/base.css";
+@import "basics/forms.css";
 
-@import "RootCmp";
+@import "RootCmp.css";
 
-@import "cmps/AboutUs";
-@import "cmps/HomePage";
-@import "cmps/UserDetails";
-@import "cmps/LoginSignup";
-@import "cmps/Chat";
+@import "cmps/AboutUs.css";
+@import "cmps/HomePage.css";
+@import "cmps/UserDetails.css";
+@import "cmps/LoginSignup.css";
+@import "cmps/Chat.css";
+@import "cmps/PostIndex.css";
 
-@import "cmps/AppHeader";
-@import "cmps/AppFooter";
-@import "cmps/UserMsg";
+@import "cmps/AppHeader.css";
+@import "cmps/AppFooter.css";
+@import "cmps/UserMsg.css";
 
-@import "cmps/review/ReviewEdit";
-@import "cmps/review/ReviewList";
-@import "cmps/review/ReviewPreview";
+@import "cmps/PostPreview.css";
+@import "cmps/PostList.css";
+@import "cmps/PostFilter.css";
+
+@import "cmps/review/ReviewEdit.css";
+@import "cmps/review/ReviewList.css";
+@import "cmps/review/ReviewPreview.css";

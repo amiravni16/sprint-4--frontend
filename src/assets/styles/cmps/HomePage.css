@@ -1,3 +1,43 @@
-.home {
+.home-page {
+    background: #fafafa;
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.home-feed {
+    max-width: 614px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.home-feed h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #262626;
+    text-align: center;
+    margin-bottom: 24px;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #dbdbdb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .home-page {
+        padding: 0;
+        background: white;
+    }
     
+    .home-feed {
+        padding: 0;
+    }
+    
+    .home-feed h1 {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
 }
