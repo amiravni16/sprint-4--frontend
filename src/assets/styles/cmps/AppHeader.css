@@ -35,18 +35,10 @@
     .user-info {
         display: flex;
         align-items: center;
+        gap: 1rem;
         margin-inline-start: auto;
 
         color: var(--clr1);
-
-        .score {
-            padding: 8px;
-            background-color: var(--clr2);
-            border-radius: 50%;
-            margin: 10px;
-
-            color: var(--gray1);
-        }
 
         & img {
             width: 2em;

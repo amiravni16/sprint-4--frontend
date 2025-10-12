@@ -15,6 +15,7 @@
 @import "cmps/LoginSignup.css";
 @import "cmps/Chat.css";
 @import "cmps/PostIndex.css";
+@import "cmps/AdminIndex.css";
 
 @import "cmps/AppHeader.css";
 @import "cmps/AppFooter.css";
