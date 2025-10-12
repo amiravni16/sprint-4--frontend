@@ -7,7 +7,6 @@ export const SET_USER = 'SET_USER'
 export const SET_WATCHED_USER = 'SET_WATCHED_USER'
 export const REMOVE_USER = 'REMOVE_USER'
 export const SET_USERS = 'SET_USERS'
-export const SET_SCORE = 'SET_SCORE'
 
 const initialState = {
     count: 10,
@@ -42,11 +41,6 @@ export function userReducer(state = initialState, action) {
             break
         case SET_USERS:
             newState = { ...state, users: action.users }
-            break
-        case SET_SCORE:
-            const user = { ...state.user, score: action.score }
-            newState = { ...state, user }
-            userService.saveLoggedinUser(user)
             break
         default:
     }
