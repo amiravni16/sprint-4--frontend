@@ -31,7 +31,9 @@ This project recreates Instagram's core features including posts, user profiles,
 - **Responsive Design**: Mobile-first approach
 - **Modern UI**: Clean, Instagram-inspired interface
 
-### Data Structure:
+### Data Structures:
+
+#### Post:
 ```javascript
 const post = {
   _id: "post_id",
@@ -51,6 +53,21 @@ const post = {
   likedBy: [],
   tags: ["hashtag1", "hashtag2"],
   createdAt: timestamp
+}
+```
+
+#### User:
+```javascript
+const user = {
+  _id: "user_id",
+  username: "username",
+  password: "password", // not in session storage
+  fullname: "Full Name",
+  imgUrl: "profile_pic_url",
+  isAdmin: false,
+  followers: ["user_id1", "user_id2"], // Array of user IDs
+  following: ["user_id3", "user_id4"], // Array of user IDs
+  savedPosts: ["post_id1", "post_id2"] // Array of post IDs
 }
 ```
 
@@ -141,17 +158,20 @@ src/
 - **Post Sorting**: By text, date, etc.
 - **Comments System**: Add comments to posts
 - **User Authentication**: Login/signup functionality
+- **User Profiles**: View post count, followers, and following counts
+- **Follow System**: Follow/unfollow other users
+- **Save Posts**: Save posts for later viewing
 - **Responsive Design**: Mobile-first approach
 - **Clean Navigation**: Instagram-style header
 
 ### 🚧 Planned Features:
 - **Like/Unlike System**: Heart button interactions
-- **User Profiles**: Enhanced profile pages
-- **Follow System**: Follow/unfollow users
+- **Feed Filtering**: Show only posts from followed users
 - **Real-time Updates**: Live comments and likes
 - **Image Upload**: File upload functionality
 - **Stories**: 24-hour ephemeral content
 - **Direct Messages**: Chat system
+- **Followers/Following Lists**: View and navigate to follower profiles
 
 ## 🔄 State Management
 
