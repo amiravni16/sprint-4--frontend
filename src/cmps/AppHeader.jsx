@@ -32,16 +32,15 @@ export function AppHeader() {
                 {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
 				{!user && <NavLink to="auth/login" className="login-link">Login</NavLink>}
-				{user && (
-					<div className="user-info">
-						<Link to={`user/${user._id}`}>
-							{user.imgUrl && <img src={user.imgUrl} />}
-							{user.fullname}
-						</Link>
-						<span className="score">{user.score?.toLocaleString()}</span>
-						<button onClick={onLogout}>logout</button>
-					</div>
-				)}
+			{user && (
+				<div className="user-info">
+					<Link to={`user/${user._id}`}>
+						{user.imgUrl && <img src={user.imgUrl} />}
+						{user.fullname}
+					</Link>
+					<button onClick={onLogout}>logout</button>
+				</div>
+			)}
 			</nav>
 		</header>
 	)
