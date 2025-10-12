@@ -8,8 +8,11 @@ function getEmptyUser() {
         username: '', 
         password: '', 
         fullname: '',
+        imgUrl: '',
         isAdmin: false,
-        score: 100,
+        followers: [], // Array of user IDs who follow this user
+        following: [], // Array of user IDs this user follows
+        savedPosts: [], // Array of post IDs this user saved
     }
 }
 
