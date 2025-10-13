@@ -102,7 +102,42 @@ export function UserDetails() {
       <h1>User Profile</h1>
       {user && <div className="profile-container">
         <div className="profile-header">
-          <img src={user.imgUrl} alt={user.fullname} className="profile-pic" />
+          <img 
+            src="https://randomuser.me/api/portraits/men/1.jpg" 
+            alt={user.fullname}
+            className="profile-pic"
+            style={{
+              width: '150px',
+              height: '150px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '2px solid #dbdbdb',
+              display: 'block'
+            }}
+            onError={(e) => {
+              console.log('❌ Image failed to load, showing initials')
+              e.target.style.display = 'none'
+              e.target.nextSibling.style.display = 'flex'
+            }}
+          />
+          <div 
+            className="profile-pic"
+            style={{
+              width: '150px',
+              height: '150px',
+              borderRadius: '50%',
+              backgroundColor: '#4A90E2',
+              display: user.imgUrl ? 'none' : 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '48px',
+              fontWeight: 'bold',
+              border: '2px solid #dbdbdb'
+            }}
+          >
+            {user.fullname ? user.fullname.charAt(0) : 'A'}
+          </div>
           <div className="profile-info">
             <h2>{user.fullname}</h2>
             <p className="username">@{user.username}</p>

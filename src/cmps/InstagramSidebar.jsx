@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router'
 export function InstagramSidebar() {
     const user = useSelector(storeState => storeState.userModule.user)
     const navigate = useNavigate()
+    
+    // Debug user data
+    console.log('Sidebar user:', user)
+    console.log('Profile picture URL:', user?.imgUrl)
 
     return (
         <aside className="instagram-sidebar">
@@ -44,16 +48,42 @@ export function InstagramSidebar() {
 
                     <NavLink to={`/user/${user?._id || 'profile'}`} className="nav-item">
                         <div className="profile-avatar">
-                            {user?.imgUrl ? (
-                                <img src={user.imgUrl} alt={user.fullname} />
-                            ) : (
-                                <div className="default-avatar">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                                    </svg>
-                                </div>
-                            )}
+                            <img 
+                                src="https://randomuser.me/api/portraits/men/1.jpg" 
+                                alt={user?.fullname || 'User'}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: '50%',
+                                    display: 'block',
+                                    backgroundColor: '#f0f0f0'
+                                }}
+                                onError={(e) => {
+                                    console.log('❌ Image failed to load:', e.target.src)
+                                    e.target.style.display = 'none'
+                                    e.target.nextSibling.style.display = 'flex'
+                                }}
+                                onLoad={(e) => {
+                                    console.log('✅ Image loaded successfully:', e.target.src)
+                                }}
+                            />
+                            <div 
+                                style={{ 
+                                    width: '100%', 
+                                    height: '100%', 
+                                    borderRadius: '50%', 
+                                    backgroundColor: '#4A90E2',
+                                    display: 'none',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                {user?.fullname ? user.fullname.charAt(0) : 'A'}
+                            </div>
                         </div>
                         <span>Profile</span>
                     </NavLink>

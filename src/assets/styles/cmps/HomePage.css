@@ -93,6 +93,22 @@
     background: #f0f8ff;
 }
 
+.clear-storage-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-storage-btn:hover {
+    background: #c82333;
+}
+
 
 /* Mobile responsive */
 @media (max-width: 768px) {

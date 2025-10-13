@@ -174,10 +174,10 @@ async function unsavePost(postId) {
 // _createAdmin()
 async function _createAdmin() {
     const user = {
-        username: 'admin',
+        username: 'amir.avni',
         password: 'admin',
-        fullname: 'Mustafa Adminsky',
-        imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+        fullname: 'Amir Avni',
+        imgUrl: 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=AA',
         isAdmin: true
     }
 

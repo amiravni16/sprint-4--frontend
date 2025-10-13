@@ -20,6 +20,14 @@ export function HomePage() {
             sessionStorage.clear()
             console.log('✅ Instagram storage cleared! Reload the page.')
         }
+        
+        // Force clear and recreate user
+        window.forceRecreateUser = () => {
+            localStorage.clear()
+            sessionStorage.clear()
+            console.log('🔄 Storage cleared, reloading...')
+            setTimeout(() => window.location.reload(), 500)
+        }
     }
 
     useEffect(() => {
@@ -36,7 +44,8 @@ export function HomePage() {
         if (!user) {
             autoLoginForTesting()
         }
-    }, [])
+        // Profile picture now uses initials instead of images
+    }, [user])
 
     async function autoLoginForTesting() {
         try {
@@ -56,6 +65,7 @@ export function HomePage() {
 
             // Try different test users in order
             const testUsers = [
+                { username: 'amir.avni', password: 'admin' },
                 { username: 'admin', password: 'admin' },
                 { username: 'testuser', password: '123' },
                 { username: 'user1', password: 'user1' },
@@ -80,14 +90,16 @@ export function HomePage() {
                 // Create a default test user
                 try {
                     const defaultUser = {
-                        username: 'admin',
+                        username: 'amir.avni',
                         password: 'admin',
-                        fullname: 'Test Admin',
-                        imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+                        fullname: 'Amir Avni',
+                        imgUrl: 'https://i.pravatar.cc/150?img=1',
                         isAdmin: true
                     }
-                    await signup(defaultUser)
-                    showSuccessMsg('Created and logged in as admin user! 🧪')
+                    const savedUser = await signup(defaultUser)
+                    console.log('✅ Created user:', savedUser)
+                    console.log('Profile picture URL:', savedUser.imgUrl)
+                    showSuccessMsg('Created and logged in as amir.avni! 🧪')
                 } catch (signupErr) {
                     console.log('Failed to create test user:', signupErr)
                     showErrorMsg('Failed to auto-login. Please use the signup page to create an account.')
@@ -170,29 +182,39 @@ export function HomePage() {
                                     </button>
                                 </div>
                             ) : (
-                                <div>
-                                    <p>Sign up to see photos and videos from your friends.</p>
-                                    <div className="auth-buttons">
-                                        <button 
-                                            onClick={autoLoginForTesting}
-                                            className="test-login-btn"
-                                        >
-                                            Test Login
-                                        </button>
-                                        <button 
-                                            onClick={() => window.location.href = '/auth/login'}
-                                            className="login-btn"
-                                        >
-                                            Log In
-                                        </button>
-                                        <button 
-                                            onClick={() => window.location.href = '/auth/signup'}
-                                            className="signup-btn"
-                                        >
-                                            Sign Up
-                                        </button>
-                                    </div>
+                            <div>
+                                <p>Sign up to see photos and videos from your friends.</p>
+                                <div className="auth-buttons">
+                                    <button 
+                                        onClick={autoLoginForTesting}
+                                        className="test-login-btn"
+                                    >
+                                        Test Login
+                                    </button>
+                                    <button 
+                                        onClick={() => window.location.href = '/auth/login'}
+                                        className="login-btn"
+                                    >
+                                        Log In
+                                    </button>
+                                    <button 
+                                        onClick={() => window.location.href = '/auth/signup'}
+                                        className="signup-btn"
+                                    >
+                                        Sign Up
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            localStorage.clear()
+                                            sessionStorage.clear()
+                                            window.location.reload()
+                                        }}
+                                        className="clear-storage-btn"
+                                    >
+                                        Clear Storage & Reload
+                                    </button>
                                 </div>
+                            </div>
                             )}
                         </div>
                     </div>
