@@ -7,8 +7,6 @@ export function InstagramSidebar() {
     const navigate = useNavigate()
     
     // Debug user data
-    console.log('Sidebar user:', user)
-    console.log('Profile picture URL:', user?.imgUrl)
 
     return (
         <aside className="instagram-sidebar">
@@ -49,41 +47,16 @@ export function InstagramSidebar() {
                     <NavLink to={`/user/${user?._id || 'profile'}`} className="nav-item">
                         <div className="profile-avatar">
                             <img 
-                                src="https://randomuser.me/api/portraits/men/1.jpg" 
-                                alt={user?.fullname || 'User'}
+                                src="https://i.pravatar.cc/24?img=1" 
+                                alt="Profile"
                                 style={{
                                     width: '100%',
                                     height: '100%',
                                     objectFit: 'cover',
                                     borderRadius: '50%',
-                                    display: 'block',
-                                    backgroundColor: '#f0f0f0'
-                                }}
-                                onError={(e) => {
-                                    console.log('❌ Image failed to load:', e.target.src)
-                                    e.target.style.display = 'none'
-                                    e.target.nextSibling.style.display = 'flex'
-                                }}
-                                onLoad={(e) => {
-                                    console.log('✅ Image loaded successfully:', e.target.src)
+                                    display: 'block'
                                 }}
                             />
-                            <div 
-                                style={{ 
-                                    width: '100%', 
-                                    height: '100%', 
-                                    borderRadius: '50%', 
-                                    backgroundColor: '#4A90E2',
-                                    display: 'none',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontSize: '12px',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {user?.fullname ? user.fullname.charAt(0) : 'A'}
-                            </div>
                         </div>
                         <span>Profile</span>
                     </NavLink>

@@ -30,7 +30,17 @@ export function AppHeader() {
 			{user && (
 				<div className="user-info">
 					<Link to={`user/${user._id}`}>
-						{user.imgUrl && <img src={user.imgUrl} />}
+						<img 
+							src="https://i.pravatar.cc/32?img=1" 
+							alt={user.fullname}
+							style={{
+								width: '32px',
+								height: '32px',
+								borderRadius: '50%',
+								objectFit: 'cover',
+								marginRight: '8px'
+							}}
+						/>
 						{user.fullname}
 					</Link>
 					<button onClick={onLogout}>logout</button>

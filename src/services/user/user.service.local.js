@@ -171,16 +171,31 @@ async function unsavePost(postId) {
 }
 
 // To quickly create an admin user, uncomment the next line
-// _createAdmin()
+_createAdmin()
 async function _createAdmin() {
+    // First, remove any existing admin user
+    try {
+        const existingUsers = await storageService.query('user')
+        const adminUser = existingUsers.find(u => u.username === 'amir.avni')
+        if (adminUser) {
+            await storageService.remove('user', adminUser._id)
+            console.log('🗑️ Removed existing admin user')
+        }
+    } catch (err) {
+        console.log('No existing admin user to remove')
+    }
+    
     const user = {
         username: 'amir.avni',
         password: 'admin',
         fullname: 'Amir Avni',
-        imgUrl: 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=AA',
-        isAdmin: true
+        imgUrl: 'https://i.pravatar.cc/150?img=1',
+        isAdmin: true,
+        followers: [],
+        following: [],
+        savedPosts: []
     }
 
     const newUser = await storageService.post('user', user)
-    console.log('newUser: ', newUser)
+    console.log('✅ New admin user created:', newUser)
 }

@@ -1,13 +1,6 @@
 /* Instagram Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
-
-@font-face {
-    font-family: 'Billabong';
-    src: url('https://fonts.gstatic.com/s/billabong/v1/7Y2F3F5VhOQvQw4zU7cF2A.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Billabong&display=swap');
 
 /* Base typography */
 body {

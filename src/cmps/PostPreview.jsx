@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 
 export function PostPreview({ post, onLike, onComment }) {
+    
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
         const postTime = new Date(timestamp)
@@ -19,13 +20,22 @@ export function PostPreview({ post, onLike, onComment }) {
             {/* Post Header */}
             <div className="post-header">
                 <div className="user-info">
-                    <img 
-                        src={post.by?.imgUrl || 'https://via.placeholder.com/32x32'} 
-                        alt={post.by?.fullname} 
-                        className="profile-pic"
-                    />
+                    <div className="profile-pic-container" style={{ position: 'relative', width: '32px', height: '32px' }}>
+                        <img 
+                            src="https://i.pravatar.cc/32?img=1" 
+                            alt="Profile" 
+                            className="profile-pic"
+                            style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                display: 'block'
+                            }}
+                        />
+                    </div>
                     <Link to={`/user/${post.by?._id}`} className="username">
-                        {post.by?.fullname}
+                        {post.by?.username || 'amir.avni'}
                     </Link>
                 </div>
                 <button className="more-btn">
@@ -89,7 +99,7 @@ export function PostPreview({ post, onLike, onComment }) {
             {/* Post Caption */}
             <div className="post-caption">
                 <Link to={`/user/${post.by?._id}`} className="username">
-                    {post.by?.fullname}
+                    {post.by?.username || 'amir.avni'}
                 </Link>
                 {post.txt}
             </div>

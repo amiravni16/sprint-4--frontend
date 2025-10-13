@@ -7,6 +7,7 @@ import { PostList } from '../cmps/PostList'
 import { postService } from '../services/post'
 import { userService } from '../services/user'
 import { login, signup } from '../store/actions/user.actions'
+import { store } from '../store/store'
 
 export function HomePage() {
     const [filterBy, setFilterBy] = useState({ txt: '', sortField: '', sortDir: '' })
@@ -21,31 +22,27 @@ export function HomePage() {
             console.log('✅ Instagram storage cleared! Reload the page.')
         }
         
-        // Force clear and recreate user
-        window.forceRecreateUser = () => {
+        // Simple storage clear function for development
+        window.clearStorage = () => {
             localStorage.clear()
             sessionStorage.clear()
-            console.log('🔄 Storage cleared, reloading...')
+            console.log('🗑️ Storage cleared! Reloading...')
             setTimeout(() => window.location.reload(), 500)
         }
+        
     }
 
     useEffect(() => {
-        console.log('HomePage: Loading posts with filter:', filterBy)
         loadPosts(filterBy)
     }, [filterBy])
-
-    useEffect(() => {
-        console.log('HomePage: Posts loaded:', posts)
-    }, [posts])
 
     // Auto-login for testing purposes
     useEffect(() => {
         if (!user) {
             autoLoginForTesting()
         }
-        // Profile picture now uses initials instead of images
     }, [user])
+    
 
     async function autoLoginForTesting() {
         try {
