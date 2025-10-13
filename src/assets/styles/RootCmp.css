@@ -1,3 +1,30 @@
-.main-container > main {
-    min-height: calc(100vh - 9rem);
+.instagram-app {
+    display: flex;
+    min-height: 100vh;
+    background-color: #fafafa;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 244px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content > * {
+    flex: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 1264px) {
+    .main-content {
+        margin-left: 72px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
 }

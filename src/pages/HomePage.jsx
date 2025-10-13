@@ -145,68 +145,10 @@ export function HomePage() {
         }
     }
 
-    function clearStorageForDev() {
-        if (confirm('Clear all localStorage data? This will delete all users and posts.')) {
-            localStorage.clear()
-            sessionStorage.clear()
-            showSuccessMsg('Storage cleared! Refreshing page...')
-            setTimeout(() => window.location.reload(), 1000)
-        }
-    }
 
     return (
-        <section className="home-page">
-            <div className="home-feed">
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    background: 'white',
-                    padding: '16px',
-                    borderRadius: '8px',
-                    border: '1px solid #dbdbdb',
-                    marginBottom: '24px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                }}>
-                    <h1 style={{ margin: 0, color: '#262626' }}>
-                        Instagram Feed
-                    </h1>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        {user && (
-                            <button 
-                                onClick={onCreatePost}
-                                style={{
-                                    background: '#0095f6',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    padding: '8px 16px',
-                                    fontSize: '14px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                ➕ Create Post
-                            </button>
-                        )}
-                        <button 
-                            onClick={clearStorageForDev}
-                            style={{
-                                background: '#dc3545',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                padding: '8px 16px',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                cursor: 'pointer'
-                            }}
-                            title="Clear localStorage and sessionStorage (Dev only)"
-                        >
-                            🗑️ Clear Storage
-                        </button>
-                    </div>
-                </div>
+        <div className="instagram-home">
+            <div className="feed-container">
                 {posts && posts.length > 0 ? (
                     <PostList 
                         posts={posts}
@@ -214,100 +156,50 @@ export function HomePage() {
                         onComment={onComment}
                     />
                 ) : (
-                    <div style={{ 
-                        textAlign: 'center', 
-                        padding: '40px', 
-                        background: 'white', 
-                        borderRadius: '8px', 
-                        border: '1px solid #dbdbdb',
-                        marginBottom: '24px'
-                    }}>
-                        <h3>No posts yet!</h3>
-                        {user ? (
-                            <p>Create your first post to get started.</p>
-                        ) : (
-                            <div>
-                                <p>Login to create posts and join the community!</p>
-                                <p style={{ fontSize: '12px', color: '#8e8e8e', marginTop: '8px' }}>
-                                    Development mode: Click "Test Login" for quick testing
-                                </p>
-                            </div>
-                        )}
-                        {user ? (
-                            <button 
-                                onClick={onCreatePost}
-                                style={{
-                                    background: '#0095f6',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    padding: '12px 24px',
-                                    fontSize: '14px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    marginTop: '16px'
-                                }}
-                            >
-                                Create Post
-                            </button>
-                        ) : (
-                            <div style={{ marginTop: '16px' }}>
-                                <button 
-                                    onClick={autoLoginForTesting}
-                                    style={{
-                                        background: '#28a745',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        padding: '12px 24px',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        marginRight: '8px',
-                                        marginBottom: '8px'
-                                    }}
-                                >
-                                    🧪 Test Login
-                                </button>
-                                <button 
-                                    onClick={() => window.location.href = '/auth/login'}
-                                    style={{
-                                        background: '#0095f6',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        padding: '12px 24px',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        marginRight: '8px',
-                                        marginBottom: '8px'
-                                    }}
-                                >
-                                    Login
-                                </button>
-                                <button 
-                                    onClick={() => window.location.href = '/auth/signup'}
-                                    style={{
-                                        background: 'transparent',
-                                        color: '#0095f6',
-                                        border: '1px solid #0095f6',
-                                        borderRadius: '8px',
-                                        padding: '12px 24px',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        marginBottom: '8px'
-                                    }}
-                                >
-                                    Sign Up
-                                </button>
-                            </div>
-                        )}
+                    <div className="empty-feed">
+                        <div className="empty-feed-content">
+                            <h2>Welcome to Instagram</h2>
+                            {user ? (
+                                <div>
+                                    <p>Share photos and videos with friends and family.</p>
+                                    <button 
+                                        onClick={onCreatePost}
+                                        className="create-post-btn"
+                                    >
+                                        Create your first post
+                                    </button>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p>Sign up to see photos and videos from your friends.</p>
+                                    <div className="auth-buttons">
+                                        <button 
+                                            onClick={autoLoginForTesting}
+                                            className="test-login-btn"
+                                        >
+                                            Test Login
+                                        </button>
+                                        <button 
+                                            onClick={() => window.location.href = '/auth/login'}
+                                            className="login-btn"
+                                        >
+                                            Log In
+                                        </button>
+                                        <button 
+                                            onClick={() => window.location.href = '/auth/signup'}
+                                            className="signup-btn"
+                                        >
+                                            Sign Up
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
-        </section>
+            
+        </div>
     )
 }
 

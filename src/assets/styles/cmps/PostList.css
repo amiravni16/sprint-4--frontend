@@ -1,57 +1,23 @@
+.post-feed {
+    width: 100%;
+    max-width: 614px;
+    margin: 0 auto;
+}
+
 .post-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-width: 614px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .post-list li {
     margin-bottom: 0;
 }
 
-.post-list .actions {
-    display: flex;
-    gap: 8px;
-    padding: 8px 16px;
-    background: #fafafa;
-    border-top: 1px solid #efefef;
-}
-
-.post-list .actions button {
-    padding: 8px 16px;
-    border: 1px solid #dbdbdb;
-    border-radius: 4px;
-    background: white;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.post-list .actions button:hover {
-    background: #f5f5f5;
-    border-color: #8e8e8e;
-}
-
-.post-list .actions button.edit-btn {
-    color: #0095f6;
-    border-color: #0095f6;
-}
-
-.post-list .actions button.delete-btn {
-    color: #ed4956;
-    border-color: #ed4956;
-}
-
-.post-list .actions button.delete-btn:hover {
-    background: #ed4956;
-    color: white;
-}
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-    .post-list {
+    .post-feed {
         max-width: 100%;
     }
 }

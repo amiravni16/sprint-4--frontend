@@ -1,0 +1,188 @@
+.instagram-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 244px;
+    height: 100vh;
+    background: white;
+    border-right: 1px solid #dbdbdb;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-content {
+    padding: 24px 12px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-section {
+    margin-bottom: 40px;
+    padding-left: 12px;
+}
+
+.instagram-logo {
+    font-family: 'Billabong', cursive;
+    font-size: 32px;
+    font-weight: 400;
+    color: #262626;
+    text-decoration: none;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-item,
+button.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #262626;
+    font-size: 16px;
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+    font-family: inherit;
+    line-height: 1.4;
+    vertical-align: baseline;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.nav-item:hover {
+    background-color: #fafafa;
+}
+
+.nav-item.active {
+    font-weight: 600;
+}
+
+.nav-item.active .nav-icon {
+    transform: scale(1.05);
+}
+
+.create-btn {
+    /* Reset button defaults */
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.create-btn:hover {
+    background-color: #fafafa;
+}
+
+/* Ensure button behaves exactly like NavLink */
+button.nav-item.create-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #262626;
+    font-size: 16px;
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+    font-family: inherit;
+    line-height: 1.4;
+    vertical-align: baseline;
+    height: 48px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.create-btn:active {
+    background-color: #f0f0f0;
+    transform: scale(0.98);
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.nav-item span {
+    display: inline;
+    vertical-align: baseline;
+}
+
+.profile-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    width: 100%;
+    height: 100%;
+    background-color: #dbdbdb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8e8e8e;
+}
+
+/* Mobile responsive */
+@media (max-width: 1264px) {
+    .instagram-sidebar {
+        width: 72px;
+    }
+    
+    .sidebar-content {
+        padding: 24px 8px;
+    }
+    
+    .logo-section {
+        padding-left: 0;
+        text-align: center;
+    }
+    
+    .instagram-logo {
+        font-size: 24px;
+    }
+    
+    .nav-item span {
+        display: none;
+    }
+    
+    .nav-item {
+        justify-content: center;
+        padding: 12px 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .instagram-sidebar {
+        display: none;
+    }
+}

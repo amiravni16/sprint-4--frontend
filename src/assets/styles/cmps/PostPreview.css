@@ -1,9 +1,8 @@
 .post-preview {
     background: white;
     border: 1px solid #dbdbdb;
-    border-radius: 8px;
+    border-radius: 0;
     margin-bottom: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     max-width: 614px;
     margin-left: auto;
     margin-right: auto;
@@ -12,8 +11,29 @@
 .post-preview .post-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 14px 16px;
     border-bottom: 1px solid #efefef;
+    position: relative;
+}
+
+.post-preview .user-info {
+    display: flex;
+    align-items: center;
+}
+
+.post-preview .more-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: #262626;
+    transition: background-color 0.2s;
+}
+
+.post-preview .more-btn:hover {
+    background-color: #f5f5f5;
 }
 
 .post-preview .profile-pic {
@@ -42,6 +62,7 @@
     max-height: 614px;
     object-fit: cover;
     display: block;
+    background: #fafafa;
 }
 
 .post-preview .post-actions {
@@ -58,7 +79,10 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .post-preview .action-btn:hover {
@@ -66,7 +90,7 @@
 }
 
 .post-preview .action-btn.like-btn {
-    color: #8e8e8e;
+    color: #262626;
 }
 
 .post-preview .action-btn.like-btn.liked {
@@ -74,9 +98,13 @@
 }
 
 .post-preview .action-btn.comment-btn,
-.post-preview .action-btn.share-btn,
+.post-preview .action-btn.share-btn {
+    color: #262626;
+}
+
 .post-preview .action-btn.save-btn {
-    color: #8e8e8e;
+    color: #262626;
+    margin-left: auto;
 }
 
 .post-preview .post-stats {
