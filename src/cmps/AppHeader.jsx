@@ -24,12 +24,7 @@ export function AppHeader() {
 				<NavLink to="/" className="logo">
 					Instagram
 				</NavLink>
-				<NavLink to="about">About</NavLink>
 				<NavLink to="post">Posts</NavLink>
-				<NavLink to="chat">Chat</NavLink>
-				<NavLink to="review">Review</NavLink>
-
-                {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
 				{!user && <NavLink to="auth/login" className="login-link">Login</NavLink>}
 			{user && (

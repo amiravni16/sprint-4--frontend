@@ -9,13 +9,10 @@
 
 @import "RootCmp.css";
 
-@import "cmps/AboutUs.css";
 @import "cmps/HomePage.css";
 @import "cmps/UserDetails.css";
 @import "cmps/LoginSignup.css";
-@import "cmps/Chat.css";
 @import "cmps/PostIndex.css";
-@import "cmps/AdminIndex.css";
 
 @import "cmps/AppHeader.css";
 @import "cmps/AppFooter.css";
@@ -24,7 +21,3 @@
 @import "cmps/PostPreview.css";
 @import "cmps/PostList.css";
 @import "cmps/PostFilter.css";
-
-@import "cmps/review/ReviewEdit.css";
-@import "cmps/review/ReviewList.css";
-@import "cmps/review/ReviewPreview.css";
