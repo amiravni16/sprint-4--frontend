@@ -14,23 +14,50 @@ export function HomePage() {
     const posts = useSelector(storeState => storeState.postModule.posts)
     const user = useSelector(storeState => storeState.userModule.user)
 
-    // Expose storage clear function to window for console access
-    if (typeof window !== 'undefined') {
-        window.clearInstagramStorage = () => {
-            localStorage.clear()
-            sessionStorage.clear()
-            console.log('✅ Instagram storage cleared! Reload the page.')
+        // Expose storage clear function to window for console access
+        if (typeof window !== 'undefined') {
+            window.clearInstagramStorage = () => {
+                localStorage.clear()
+                sessionStorage.clear()
+                console.log('✅ Instagram storage cleared! Reload the page.')
+            }
+            
+            // Simple storage clear function for development
+            window.clearStorage = () => {
+                localStorage.clear()
+                sessionStorage.clear()
+                console.log('🗑️ Storage cleared! Reloading...')
+                setTimeout(() => window.location.reload(), 500)
+            }
+            
+            // Force clean admin user creation
+            window.forceCleanAdmin = async () => {
+                try {
+                    const { userService } = await import('../services/user')
+                    const all = await userService.getUsers()
+                    const duplicates = all.filter(u => u.username === 'amir.avni')
+                    console.log('🔍 Found duplicate admin users:', duplicates.length)
+                    
+                    // Remove all duplicates
+                    for (const user of duplicates) {
+                        try {
+                            await userService.remove(user._id)
+                            console.log('🗑️ Removed:', user._id)
+                        } catch (e) {
+                            console.log('⚠️ Could not remove:', user._id)
+                        }
+                    }
+                    
+                    // Force recreate admin
+                    localStorage.removeItem('user')
+                    console.log('🔄 Forcing admin recreation...')
+                    window.location.reload()
+                } catch (err) {
+                    console.error('Error cleaning admin:', err)
+                }
+            }
+            
         }
-        
-        // Simple storage clear function for development
-        window.clearStorage = () => {
-            localStorage.clear()
-            sessionStorage.clear()
-            console.log('🗑️ Storage cleared! Reloading...')
-            setTimeout(() => window.location.reload(), 500)
-        }
-        
-    }
 
     useEffect(() => {
         loadPosts(filterBy)

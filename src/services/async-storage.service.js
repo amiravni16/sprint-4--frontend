@@ -36,8 +36,16 @@ function get(entityType, entityId) {
 }
 
 function post(entityType, newEntity) {
-    newEntity._id = _makeId()
+    // Preserve provided _id for stable demo data; otherwise assign a new one
+    if (!newEntity._id) newEntity._id = _makeId()
     return query(entityType).then(entities => {
+        // If an entity with the same _id already exists, replace it (idempotent upsert)
+        const existingIdx = entities.findIndex(entity => entity._id === newEntity._id)
+        if (existingIdx !== -1) {
+            entities.splice(existingIdx, 1, newEntity)
+            _save(entityType, entities)
+            return newEntity
+        }
         entities.push(newEntity)
         _save(entityType, entities)
         return newEntity

@@ -16,9 +16,18 @@ export function UserDetails() {
   const loggedinUser = useSelector(storeState => storeState.userModule.user)
   const [isFollowing, setIsFollowing] = useState(false)
   const [userPostsCount, setUserPostsCount] = useState(0)
+  const [debugUser, setDebugUser] = useState(null)
 
   useEffect(() => {
-    loadUser(params.id)
+    async function ensureUser() {
+      const loaded = await loadUser(params.id)
+      if (!loaded) return
+      // If the loaded user id differs from the URL param, redirect to the correct stable id
+      if (loaded && loaded._id && loaded._id !== params.id) {
+        window.history.replaceState(null, '', `/user/${loaded._id}`)
+      }
+    }
+    ensureUser()
 
     socketService.emit(SOCKET_EMIT_USER_WATCH, params.id)
     socketService.on(SOCKET_EVENT_USER_UPDATED, onUserUpdate)
@@ -53,6 +62,45 @@ export function UserDetails() {
     }
     loadUserPostsCount()
   }, [user])
+
+  // Keep a canonical copy from storage for debugging to avoid stale values
+  useEffect(() => {
+    async function loadCanonical() {
+      if (!user?._id) return setDebugUser(null)
+      try {
+        const canonical = await userService.getById(user._id)
+        setDebugUser(canonical || user)
+      } catch (err) {
+        // As a final fallback, try to load by username and then by stable admin id
+        try {
+          const all = await userService.getUsers()
+          const byUsername = all.find(u => u.username === user.username)
+          const byStable = all.find(u => u._id === '64f0a1c2b3d4e5f678901234')
+          setDebugUser(byUsername || byStable || user)
+        } catch (e) {
+          setDebugUser(user)
+        }
+      }
+    }
+    loadCanonical()
+  }, [user?._id])
+
+  // Force refresh debug data on component mount
+  useEffect(() => {
+    async function refreshDebugData() {
+      try {
+        const all = await userService.getUsers()
+        const adminUser = all.find(u => u.username === 'amir.avni')
+        if (adminUser) {
+          setDebugUser(adminUser)
+          console.log('🔍 Debug data refreshed:', adminUser)
+        }
+      } catch (err) {
+        console.error('Error refreshing debug data:', err)
+      }
+    }
+    refreshDebugData()
+  }, [])
 
   function onUserUpdate(user) {
     showSuccessMsg(`User ${user.fullname} profile was updated`)
@@ -153,22 +201,70 @@ export function UserDetails() {
         {/* Debug info - can remove later */}
         <details style={{ marginTop: '2rem' }}>
           <summary>Debug: User Data (click to expand)</summary>
+          <div style={{ marginBottom: '1rem' }}>
+            <button 
+              onClick={async () => {
+                try {
+                  const all = await userService.getUsers()
+                  const adminUser = all.find(u => u.username === 'amir.avni')
+                  console.log('🔍 All users:', all)
+                  console.log('🔍 Admin user found:', adminUser)
+                  setDebugUser(adminUser)
+                } catch (err) {
+                  console.error('Error refreshing debug:', err)
+                }
+              }}
+              style={{ 
+                padding: '8px 16px', 
+                backgroundColor: '#0095f6', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginRight: '8px'
+              }}
+            >
+              Refresh Debug Data
+            </button>
+            <button 
+              onClick={() => {
+                const stored = localStorage.getItem('user')
+                console.log('🔍 Raw localStorage user data:', stored)
+                try {
+                  const parsed = JSON.parse(stored)
+                  console.log('🔍 Parsed localStorage user data:', parsed)
+                } catch (e) {
+                  console.log('🔍 Error parsing localStorage:', e)
+                }
+              }}
+              style={{ 
+                padding: '8px 16px', 
+                backgroundColor: '#8e8e8e', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Check localStorage
+            </button>
+          </div>
           <pre style={{ fontSize: '12px', background: '#f5f5f5', padding: '1rem', borderRadius: '8px', overflow: 'auto' }}>
             {JSON.stringify({
-              _id: user._id,
-              username: user.username,
-              fullname: user.fullname,
-              imgUrl: user.imgUrl,
-              isAdmin: user.isAdmin,
+              _id: debugUser?._id,
+              username: debugUser?.username,
+              fullname: debugUser?.fullname,
+              imgUrl: debugUser?.imgUrl,
+              isAdmin: debugUser?.isAdmin,
               stats: {
                 postsCount: userPostsCount,
-                followersCount: user.followers?.length || 0,
-                followingCount: user.following?.length || 0,
-                savedPostsCount: user.savedPosts?.length || 0
+                followersCount: debugUser?.followers?.length || 0,
+                followingCount: debugUser?.following?.length || 0,
+                savedPostsCount: debugUser?.savedPosts?.length || 0
               },
-              followers: user.followers || [],
-              following: user.following || [],
-              savedPosts: user.savedPosts || []
+              followers: debugUser?.followers || [],
+              following: debugUser?.following || [],
+              savedPosts: debugUser?.savedPosts || []
             }, null, 2)}
           </pre>
         </details>

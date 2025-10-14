@@ -173,20 +173,28 @@ async function unsavePost(postId) {
 // To quickly create an admin user, uncomment the next line
 _createAdmin()
 async function _createAdmin() {
-    // First, remove any existing admin user
-    try {
-        const existingUsers = await storageService.query('user')
-        const adminUser = existingUsers.find(u => u.username === 'amir.avni')
-        if (adminUser) {
-            await storageService.remove('user', adminUser._id)
-            console.log('🗑️ Removed existing admin user')
+    // Use stable ID for demo data
+    const stableId = '64f0a1c2b3d4e5f678901234'
+    const username = 'amir.avni'
+
+    // Get all users and find any with the same username
+    const all = await storageService.query('user')
+    const sameUsername = all.filter(u => u.username === username)
+    
+    // Remove ALL existing users with this username (clean slate)
+    for (const u of sameUsername) {
+        try { 
+            await storageService.remove('user', u._id) 
+            console.log('🗑️ Removed duplicate admin user:', u._id)
+        } catch (e) {
+            console.log('⚠️ Could not remove user:', u._id, e)
         }
-    } catch (err) {
-        console.log('No existing admin user to remove')
     }
     
+    // Create the single canonical admin user
     const user = {
-        username: 'amir.avni',
+        _id: stableId,
+        username,
         password: 'admin',
         fullname: 'Amir Avni',
         imgUrl: 'https://i.pravatar.cc/150?img=1',
@@ -195,7 +203,8 @@ async function _createAdmin() {
         following: [],
         savedPosts: []
     }
-
-    const newUser = await storageService.post('user', user)
-    console.log('✅ New admin user created:', newUser)
+    
+    const ensured = await storageService.post('user', user)
+    console.log('✅ Admin user ensured (idempotent):', ensured)
+    return ensured
 }
