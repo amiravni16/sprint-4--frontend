@@ -18,6 +18,8 @@
 @import "cmps/AppFooter.css";
 @import "cmps/UserMsg.css";
 @import "cmps/InstagramSidebar.css";
+@import "cmps/MobileHeader.css";
+@import "cmps/MobileFooter.css";
 
 @import "cmps/PostPreview.css";
 @import "cmps/PostList.css";

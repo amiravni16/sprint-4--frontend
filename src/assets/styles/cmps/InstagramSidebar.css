@@ -8,6 +8,19 @@
     border-right: 1px solid #dbdbdb;
     z-index: 1000;
     overflow-y: auto;
+    transition: width 0.3s ease;
+}
+
+@media (max-width: 1263px) {
+    .instagram-sidebar {
+        width: 72px;
+    }
+}
+
+@media (max-width: 767px) {
+    .instagram-sidebar {
+        display: none;
+    }
 }
 
 .sidebar-content {
@@ -17,9 +30,26 @@
     flex-direction: column;
 }
 
+@media (max-width: 1263px) {
+    .sidebar-content {
+        padding: 24px 8px;
+    }
+}
+
 .logo-section {
     margin-bottom: 40px;
     padding-left: 12px;
+}
+
+@media (max-width: 1263px) {
+    .logo-section {
+        padding-left: 0;
+        text-align: center;
+    }
+    
+    .instagram-logo {
+        display: none;
+    }
 }
 
 .instagram-logo {
@@ -29,6 +59,7 @@
     color: #000; /* Solid black like the official wordmark */
     text-decoration: none;
 }
+
 
 .sidebar-nav {
     display: flex;
@@ -53,6 +84,20 @@ button.nav-item {
     vertical-align: baseline;
     height: 48px;
     box-sizing: border-box;
+}
+
+@media (max-width: 1263px) {
+    .nav-item,
+    button.nav-item {
+        justify-content: center;
+        padding: 12px 8px;
+        gap: 0;
+    }
+    
+    .nav-item span,
+    button.nav-item span {
+        display: none;
+    }
 }
 
 .nav-item:hover {
@@ -130,6 +175,13 @@ button.nav-item.create-btn {
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
+}
+
+@media (max-width: 1263px) {
+    .profile-avatar {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 .profile-avatar img {

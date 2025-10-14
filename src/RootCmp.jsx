@@ -10,6 +10,8 @@ import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
 import { UserMsg } from './cmps/UserMsg.jsx'
 import { InstagramSidebar } from './cmps/InstagramSidebar.jsx'
+import { MobileHeader } from './cmps/MobileHeader.jsx'
+import { MobileFooter } from './cmps/MobileFooter.jsx'
 import { LoginSignup, Login, Signup } from './pages/LoginSignup.jsx'
 
 
@@ -17,6 +19,7 @@ export function RootCmp() {
     return (
         <div className="instagram-app">
             <InstagramSidebar />
+            <MobileHeader />
             <UserMsg />
             
             <div className="main-content">
@@ -26,12 +29,17 @@ export function RootCmp() {
                     <Route path="post/:postId" element={<PostDetails />} />
                     <Route path="user/:id" element={<UserDetails />} />
                     <Route path="search" element={<div>Search Page (Coming Soon)</div>} />
+                    <Route path="explore" element={<div>Explore Page (Coming Soon)</div>} />
+                    <Route path="reels" element={<div>Reels Page (Coming Soon)</div>} />
+                    <Route path="create" element={<div>Create Page (Coming Soon)</div>} />
                     <Route path="auth" element={<LoginSignup />}>
                         <Route path="login" element={<Login />} />
                         <Route path="signup" element={<Signup />} />
                     </Route>
                 </Routes>
             </div>
+            
+            <MobileFooter />
         </div>
     )
 }

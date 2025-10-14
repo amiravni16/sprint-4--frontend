@@ -17,7 +17,7 @@
 }
 
 /* Mobile responsive */
-@media (max-width: 1264px) {
+@media (max-width: 1263px) {
     .main-content {
         margin-left: 72px;
     }
@@ -26,5 +26,7 @@
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
+        margin-top: 60px;
+        margin-bottom: 60px;
     }
 }
