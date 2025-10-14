@@ -12,8 +12,8 @@ export function InstagramSidebar() {
         <aside className="instagram-sidebar">
             <div className="sidebar-content">
                 <div className="logo-section">
-                    <Link to="/" className="instagram-logo">
-                        Instagram
+                    <Link to="/" className="instagram-logo" aria-label="Instagram home">
+                        <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram" style={{height: '32px', display: 'block'}} />
                     </Link>
                 </div>
                 
@@ -27,8 +27,7 @@ export function InstagramSidebar() {
 
                     <NavLink to="/search" className="nav-item">
                         <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 0 17ZM10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Z" fill="currentColor"/>
-                            <path d="M2.5 21.5l6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                         <span>Search</span>
                     </NavLink>
@@ -38,8 +37,8 @@ export function InstagramSidebar() {
                         onClick={handleCreatePost}
                     >
                         <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="3" width="18" height="18" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                            <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
                         <span>Create</span>
                     </button>
