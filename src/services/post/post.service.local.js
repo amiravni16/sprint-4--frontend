@@ -31,7 +31,7 @@ async function query(filterBy = { txt: '' }) {
             (new Date(post1[sortField]) - new Date(post2[sortField])) * +sortDir)
     }
     
-    posts = posts.map(({ _id, txt, by, createdAt, imgUrl, likedBy, comments }) => ({ _id, txt, by, createdAt, imgUrl, likedBy, comments }))
+    posts = posts.map(({ _id, txt, by, createdAt, imgUrl, likedBy, comments, tags, loc }) => ({ _id, txt, by, createdAt, imgUrl, likedBy, comments, tags, loc }))
     return posts
 }
 
@@ -50,7 +50,12 @@ async function save(post) {
             _id: post._id,
             txt: post.txt,
             imgUrl: post.imgUrl,
-            tags: post.tags
+            tags: post.tags || [],
+            likedBy: post.likedBy || [],
+            comments: post.comments || [],
+            by: post.by,
+            loc: post.loc || { name: '', lat: 0, lng: 0 },
+            createdAt: post.createdAt || Date.now()
         }
         savedPost = await storageService.put(STORAGE_KEY, postToSave)
     } else {
@@ -61,6 +66,7 @@ async function save(post) {
             by: {
                 _id: loggedinUser._id,
                 fullname: loggedinUser.fullname,
+                username: loggedinUser.username,
                 imgUrl: loggedinUser.imgUrl
             },
             loc: post.loc || { name: '', lat: 0, lng: 0 },

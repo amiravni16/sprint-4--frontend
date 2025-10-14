@@ -69,11 +69,27 @@
 }
 
 .post-preview .post-actions {
-    padding: 8px 16px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
     gap: 16px;
 }
+
+.post-preview .post-actions.no-likes {
+    gap: 8px; /* Closer spacing when no likes */
+    padding: 8px 8px 8px 12px; /* Less right padding, keep left close to edge */
+}
+
+.post-preview .post-actions.no-comments {
+    gap: 8px; /* Closer spacing when no comments */
+    padding: 8px 8px 8px 12px; /* Less right padding, keep left close to edge */
+}
+
+.post-preview .post-actions.no-likes.no-comments {
+    gap: 4px; /* Very close when neither likes nor comments */
+    padding: 8px 8px 8px 12px; /* Minimal padding, like icon very close to left edge */
+}
+
 
 .post-preview .action-btn {
     background: none;
@@ -82,41 +98,101 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 4px;
-    transition: all 0.2s;
+    transition: color 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.post-preview .action-btn:hover {
-    background-color: #f5f5f5;
-}
+.post-preview .action-btn:hover { }
 
 .post-preview .action-btn.like-btn {
-    color: #262626;
+    color: #262626; /* default black */
+    position: relative;
 }
 
 .post-preview .action-btn.like-btn.liked {
     color: #ed4956;
 }
 
+/* Heartbeat animation for like button */
+.post-preview .action-btn.like-btn.animating {
+    animation: heartbeat 0.4s ease-in-out;
+}
+
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1.3);
+    }
+    40% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Hover effect: turn grey when hovered (unliked state) */
+.post-preview .action-btn.like-btn:hover:not(.liked) {
+    color: #8e8e8e; /* grey on hover */
+}
+
+.post-preview .action-btn.like-btn.liked:hover {
+    color: #ed4956; /* keep red when liked */
+}
+
 .post-preview .action-btn.comment-btn,
-.post-preview .action-btn.share-btn {
-    color: #262626;
+.post-preview .action-btn.share-btn,
+.post-preview .action-btn.save-btn {
+    color: #262626; /* default black */
+}
+
+.post-preview .action-btn.comment-btn img,
+.post-preview .action-btn.share-btn img,
+.post-preview .action-btn.save-btn img {
+    transition: opacity 0.15s ease;
+}
+
+.post-preview .action-btn.comment-btn:hover img {
+    opacity: 0.5; /* grey on hover for image */
+}
+
+.post-preview .action-btn.share-btn:hover img {
+    opacity: 0.5; /* grey on hover for image */
+}
+
+.post-preview .action-btn.save-btn:hover img {
+    opacity: 0.5; /* grey on hover for image */
 }
 
 .post-preview .action-btn.save-btn {
-    color: #262626;
     margin-left: auto;
+    margin-right: 0; /* Ensure it's flush with right edge */
 }
 
-.post-preview .post-stats {
-    padding: 0 16px;
+.post-preview .action-btn.save-btn.saved {
+    color: #262626; /* Black when saved */
+}
+
+.post-preview .action-btn.save-btn.saved:hover {
+    color: #8e8e8e; /* Grey on hover when saved */
+}
+
+.post-preview .like-section {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Very small gap between heart and number */
+}
+
+.post-preview .like-count {
     font-size: 14px;
     font-weight: 600;
     color: #262626;
-    margin-bottom: 8px;
 }
+
 
 .post-preview .post-caption {
     padding: 0 16px 8px;

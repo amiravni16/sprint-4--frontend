@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { loadPosts, addPost } from '../store/actions/post.actions'
+import { loadPosts, addPost, updatePost } from '../store/actions/post.actions'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { addPostMsg } from '../store/actions/post.actions'
 import { PostList } from '../cmps/PostList'
@@ -54,6 +54,61 @@ export function HomePage() {
                     window.location.reload()
                 } catch (err) {
                     console.error('Error cleaning admin:', err)
+                }
+            }
+            
+            // Create sample posts with like data for testing
+            window.createSamplePosts = async () => {
+                try {
+                    const { postService } = await import('../services/post')
+                    const { userService } = await import('../services/user')
+                    
+                    // Get the admin user
+                    const adminUser = await userService.getById('64f0a1c2b3d4e5f678901234')
+                    if (!adminUser) {
+                        console.log('❌ Admin user not found')
+                        return
+                    }
+                    
+                    const samplePosts = [
+                        {
+                            txt: 'Beautiful sunset at the beach! 🌅',
+                            imgUrl: 'https://picsum.photos/400/400?random=1',
+                            tags: ['sunset', 'beach', 'nature'],
+                            by: {
+                                _id: adminUser._id,
+                                fullname: adminUser.fullname,
+                                username: adminUser.username,
+                                imgUrl: adminUser.imgUrl
+                            },
+                            likedBy: [adminUser._id], // Pre-liked by admin
+                            comments: [],
+                            createdAt: Date.now() - 3600000 // 1 hour ago
+                        },
+                        {
+                            txt: 'Coffee and coding ☕️💻',
+                            imgUrl: 'https://picsum.photos/400/400?random=2',
+                            tags: ['coffee', 'coding', 'work'],
+                            by: {
+                                _id: adminUser._id,
+                                fullname: adminUser.fullname,
+                                username: adminUser.username,
+                                imgUrl: adminUser.imgUrl
+                            },
+                            likedBy: [], // Not liked yet
+                            comments: [],
+                            createdAt: Date.now() - 7200000 // 2 hours ago
+                        }
+                    ]
+                    
+                    for (const post of samplePosts) {
+                        await postService.save(post)
+                    }
+                    
+                    console.log('✅ Sample posts created!')
+                    window.location.reload()
+                } catch (err) {
+                    console.error('Error creating sample posts:', err)
                 }
             }
             
@@ -136,9 +191,47 @@ export function HomePage() {
     }
 
     async function onLike(postId) {
+        if (!user) {
+            showErrorMsg('Please login to like posts')
+            return
+        }
+
         try {
-            showSuccessMsg('Post liked! ❤️')
+            // Find the post in the current posts array
+            const post = posts.find(p => p._id === postId)
+            if (!post) {
+                showErrorMsg('Post not found')
+                return
+            }
+
+            // Initialize likedBy array if it doesn't exist
+            const likedBy = post.likedBy || []
+            const isCurrentlyLiked = likedBy.includes(user._id)
+
+            let updatedLikedBy
+            if (isCurrentlyLiked) {
+                // Unlike: remove user from likedBy array
+                updatedLikedBy = likedBy.filter(id => id !== user._id)
+            } else {
+                // Like: add user to likedBy array
+                updatedLikedBy = [...likedBy, user._id]
+            }
+
+            // Update the post with new like status
+            const updatedPost = {
+                ...post,
+                likedBy: updatedLikedBy
+            }
+
+            await updatePost(updatedPost)
+            
+            if (isCurrentlyLiked) {
+                showSuccessMsg('Post unliked! 💔')
+            } else {
+                showSuccessMsg('Post liked! ❤️')
+            }
         } catch (err) {
+            console.error('Error toggling like:', err)
             showErrorMsg('Cannot like post')
         }
     }
