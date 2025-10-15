@@ -57,8 +57,8 @@ export function PostPreview({ post, onLike, onComment }) {
                 <div className="user-info">
                     <div className="profile-pic-container" style={{ position: 'relative', width: '32px', height: '32px' }}>
                         <img 
-                            src="https://i.pravatar.cc/32?img=1" 
-                            alt="Profile" 
+                            src={post.by?.imgUrl || 'https://i.pravatar.cc/32?img=1'} 
+                            alt={post.by?.username || 'Profile'} 
                             className="profile-pic"
                             style={{
                                 width: '32px',

@@ -43,7 +43,8 @@
     line-height: 1.4;
 }
 
-.auth-buttons {
+.auth-buttons,
+.action-buttons {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -53,7 +54,8 @@
 .create-post-btn,
 .test-login-btn,
 .login-btn,
-.signup-btn {
+.signup-btn,
+.load-demo-btn {
     padding: 8px 16px;
     border-radius: 4px;
     font-size: 14px;
@@ -74,12 +76,14 @@
     background: #1877f2;
 }
 
-.test-login-btn {
+.test-login-btn,
+.load-demo-btn {
     background: #28a745;
     color: white;
 }
 
-.test-login-btn:hover {
+.test-login-btn:hover,
+.load-demo-btn:hover {
     background: #218838;
 }
 

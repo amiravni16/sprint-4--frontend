@@ -57,58 +57,41 @@ export function HomePage() {
                 }
             }
             
-            // Create sample posts with like data for testing
-            window.createSamplePosts = async () => {
+            // Demo data management
+            window.resetToDemo = () => {
+                console.log('🔄 Resetting to demo data...')
+                localStorage.clear()
+                sessionStorage.clear()
+                window.location.reload()
+            }
+            
+            window.refreshPosts = async () => {
                 try {
-                    const { postService } = await import('../services/post')
-                    const { userService } = await import('../services/user')
-                    
-                    // Get the admin user
-                    const adminUser = await userService.getById('64f0a1c2b3d4e5f678901234')
-                    if (!adminUser) {
-                        console.log('❌ Admin user not found')
-                        return
-                    }
-                    
-                    const samplePosts = [
-                        {
-                            txt: 'Beautiful sunset at the beach! 🌅',
-                            imgUrl: 'https://picsum.photos/400/400?random=1',
-                            tags: ['sunset', 'beach', 'nature'],
-                            by: {
-                                _id: adminUser._id,
-                                fullname: adminUser.fullname,
-                                username: adminUser.username,
-                                imgUrl: adminUser.imgUrl
-                            },
-                            likedBy: [adminUser._id], // Pre-liked by admin
-                            comments: [],
-                            createdAt: Date.now() - 3600000 // 1 hour ago
-                        },
-                        {
-                            txt: 'Coffee and coding ☕️💻',
-                            imgUrl: 'https://picsum.photos/400/400?random=2',
-                            tags: ['coffee', 'coding', 'work'],
-                            by: {
-                                _id: adminUser._id,
-                                fullname: adminUser.fullname,
-                                username: adminUser.username,
-                                imgUrl: adminUser.imgUrl
-                            },
-                            likedBy: [], // Not liked yet
-                            comments: [],
-                            createdAt: Date.now() - 7200000 // 2 hours ago
-                        }
-                    ]
-                    
-                    for (const post of samplePosts) {
-                        await postService.save(post)
-                    }
-                    
-                    console.log('✅ Sample posts created!')
-                    window.location.reload()
+                    await loadPosts(filterBy)
+                    console.log('🔄 Posts refreshed!')
                 } catch (err) {
-                    console.error('Error creating sample posts:', err)
+                    console.error('Error refreshing posts:', err)
+                }
+            }
+            
+            window.checkData = async () => {
+                try {
+                    // Check raw localStorage
+                    const rawUsers = localStorage.getItem('user')
+                    const rawPosts = localStorage.getItem('post')
+                    console.log('📦 Raw localStorage user:', rawUsers ? JSON.parse(rawUsers).length : 0)
+                    console.log('📦 Raw localStorage post:', rawPosts ? JSON.parse(rawPosts).length : 0)
+                    
+                    // Check via services
+                    const users = await userService.getUsers()
+                    const posts = await postService.query()
+                    console.log('👥 Users from service:', users.length, users)
+                    console.log('📝 Posts from service:', posts.length, posts)
+                    console.log('🔍 Current filter:', filterBy)
+                    console.log('👤 Current user:', user)
+                    console.log('📊 Redux posts state:', posts)
+                } catch (err) {
+                    console.error('Error checking data:', err)
                 }
             }
             
@@ -118,29 +101,18 @@ export function HomePage() {
         loadPosts(filterBy)
     }, [filterBy])
 
-    // Auto-login for testing purposes
+    // Auto-login on mount
     useEffect(() => {
         if (!user) {
             autoLoginForTesting()
         }
-    }, [user])
+    }, [])
     
 
     async function autoLoginForTesting() {
         try {
-            // First, check if localStorage has valid data structure
-            const usersData = localStorage.getItem('user')
-            if (!usersData || usersData === 'null' || usersData === 'undefined') {
-                console.log('Initializing localStorage with empty user array')
-                localStorage.setItem('user', JSON.stringify([]))
-            }
-
-            // Also initialize post storage
-            const postsData = localStorage.getItem('post')
-            if (!postsData || postsData === 'null' || postsData === 'undefined') {
-                console.log('Initializing localStorage with empty post array')
-                localStorage.setItem('post', JSON.stringify([]))
-            }
+            // Demo data is initialized by async-storage.service.js
+            // No need to check or reset storage here
 
             // Try different test users in order
             const testUsers = [

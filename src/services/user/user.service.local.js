@@ -170,41 +170,5 @@ async function unsavePost(postId) {
     return user
 }
 
-// To quickly create an admin user, uncomment the next line
-_createAdmin()
-async function _createAdmin() {
-    // Use stable ID for demo data
-    const stableId = '64f0a1c2b3d4e5f678901234'
-    const username = 'amir.avni'
-
-    // Get all users and find any with the same username
-    const all = await storageService.query('user')
-    const sameUsername = all.filter(u => u.username === username)
-    
-    // Remove ALL existing users with this username (clean slate)
-    for (const u of sameUsername) {
-        try { 
-            await storageService.remove('user', u._id) 
-            console.log('🗑️ Removed duplicate admin user:', u._id)
-        } catch (e) {
-            console.log('⚠️ Could not remove user:', u._id, e)
-        }
-    }
-    
-    // Create the single canonical admin user
-    const user = {
-        _id: stableId,
-        username,
-        password: 'admin',
-        fullname: 'Amir Avni',
-        imgUrl: 'https://i.pravatar.cc/150?img=1',
-        isAdmin: true,
-        followers: [],
-        following: [],
-        savedPosts: []
-    }
-    
-    const ensured = await storageService.post('user', user)
-    console.log('✅ Admin user ensured (idempotent):', ensured)
-    return ensured
-}
+// Admin user is now created via demo data
+// No need to manually create it here

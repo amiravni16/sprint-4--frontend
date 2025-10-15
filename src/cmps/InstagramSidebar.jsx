@@ -56,7 +56,7 @@ export function InstagramSidebar() {
                     <NavLink to={`/user/${user?._id || 'profile'}`} className="nav-item">
                         <div className="profile-avatar">
                             <img 
-                                src="https://i.pravatar.cc/24?img=1" 
+                                src={user?.imgUrl || 'https://i.pravatar.cc/24?img=1'} 
                                 alt="Profile"
                                 style={{
                                     width: '100%',

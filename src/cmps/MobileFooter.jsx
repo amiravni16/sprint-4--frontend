@@ -37,7 +37,7 @@ export function MobileFooter() {
                 <NavLink to={`/user/${user?._id || 'profile'}`} className="mobile-nav-item">
                     <div className="mobile-profile-avatar">
                         <img 
-                            src="https://i.pravatar.cc/24?img=1" 
+                            src={user?.imgUrl || 'https://i.pravatar.cc/24?img=1'} 
                             alt="Profile"
                             style={{
                                 width: '100%',

@@ -19,7 +19,7 @@ async function query(filterBy = { txt: '' }) {
 
     if (txt) {
         const regex = new RegExp(filterBy.txt, 'i')
-        posts = posts.filter(post => regex.test(post.txt) || post.tags.some(tag => regex.test(tag)))
+        posts = posts.filter(post => regex.test(post.txt) || (post.tags && post.tags.some(tag => regex.test(tag))))
     }
     
     if(sortField === 'txt'){

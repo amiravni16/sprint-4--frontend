@@ -8,9 +8,11 @@ export const storageInitService = {
 function init() {
     console.log('🔧 Initializing storage...')
     
-    const entities = ['user', 'post', 'review', 'car']
+    // Only check for legacy entities (review, car)
+    // user and post are handled by demo data initialization in async-storage.service.js
+    const legacyEntities = ['review', 'car']
     
-    entities.forEach(entityType => {
+    legacyEntities.forEach(entityType => {
         try {
             const data = localStorage.getItem(entityType)
             
@@ -33,6 +35,26 @@ function init() {
         } catch (err) {
             console.error(`❌ Error initializing ${entityType} storage:`, err)
             localStorage.setItem(entityType, JSON.stringify([]))
+        }
+    })
+    
+    // Check user and post storage but don't initialize - let demo data handle it
+    const coreEntities = ['user', 'post']
+    coreEntities.forEach(entityType => {
+        try {
+            const data = localStorage.getItem(entityType)
+            if (data) {
+                const parsed = JSON.parse(data)
+                if (Array.isArray(parsed)) {
+                    console.log(`✅ ${entityType} storage OK (${parsed.length} items)`)
+                } else {
+                    console.warn(`⚠️ ${entityType} storage corrupted (not an array)`)
+                }
+            } else {
+                console.log(`📝 ${entityType} will be initialized by demo data`)
+            }
+        } catch (err) {
+            console.warn(`⚠️ Error checking ${entityType} storage:`, err)
         }
     })
     

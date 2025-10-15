@@ -151,7 +151,7 @@ export function UserDetails() {
       {user && <div className="profile-container">
         <div className="profile-header">
           <img 
-            src="https://i.pravatar.cc/150?img=1" 
+            src={user.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
             alt={user.fullname}
             className="profile-pic"
             style={{

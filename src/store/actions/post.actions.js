@@ -6,6 +6,7 @@ export async function loadPosts(filterBy) {
     try {
         const posts = await postService.query(filterBy)
         store.dispatch(getCmdSetPosts(posts))
+        return posts
     } catch (err) {
         console.log('Cannot load posts', err)
         throw err

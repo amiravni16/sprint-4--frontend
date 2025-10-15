@@ -110,40 +110,107 @@ npm install
 
 2. Start development server:
 ```bash
-npm run dev:local
+npm run dev
 ```
 
 3. Open browser to `http://localhost:5173/`
 
-4. **Auto-Login**: The app will automatically log you in with a test user!
+4. **That's it!** The app will automatically:
+   - Load demo data (6 users and 6 posts)
+   - Log you in as `amir.avni`
+   - Display a fully populated feed
+
+## 📊 Demo Data
+
+The app comes with **built-in demo data** that automatically loads on first start. No setup required!
+
+### What's Included
+
+**6 Demo Users:**
+1. **amir.avni** (Admin) - Your main account
+2. **sarah_photography** - Photography enthusiast
+3. **mike_travels** - Travel blogger
+4. **emma_foodie** - Food lover
+5. **alex_fitness** - Fitness trainer
+6. **luna_art** - Artist
+
+**6 Demo Posts:**
+- Beach sunset by Sarah (with likes and comments)
+- Coffee & coding by Amir
+- Mountain hiking by Mike (with likes and comments)
+- Homemade pasta by Emma
+- Morning workout by Alex (with likes and comments)
+- Art painting by Luna
+
+### How It Works
+
+- **Automatic Loading**: Demo data initializes automatically when you first open the app
+- **Static Data**: All users and posts are predefined in `src/data/`
+- **Stable IDs**: User and post IDs are hardcoded for consistency
+- **Auto-Login**: Automatically logs you in as `amir.avni`
+
+### Development Commands
+
+Open browser console (F12) and run:
+
+```javascript
+// Check current data
+window.checkData()
+
+// Refresh posts display
+window.refreshPosts()
+
+// Reset to demo data (clears everything and reloads)
+localStorage.clear()
+sessionStorage.clear()
+window.location.reload()
+```
+
+### Modifying Demo Data
+
+1. Edit user data: `src/data/demo-users.js`
+2. Edit post data: `src/data/demo-posts.js`
+3. Clear localStorage in browser console
+4. Reload the page to see changes
+
+### Future Database Migration
+
+This demo data system is temporary. When ready to connect to a real backend:
+1. Remove demo data initialization from `src/services/async-storage.service.js`
+2. Replace storage service calls with API calls
+3. Data structure remains compatible for easy migration
 
 ## 🏗️ Project Structure
 
 ```
 src/
 ├── assets/
+│   ├── icons/         # SVG icons
 │   └── styles/        # SCSS modules
 │       ├── basics/    # Core styles (layout, forms, helpers)
 │       ├── cmps/      # Component styles
-│       ├── pages/     # Page styles  
 │       └── setup/     # SCSS variables & mixins
 ├── cmps/              # Reusable components
 │   ├── PostList.jsx   # Post grid display
 │   ├── PostPreview.jsx # Individual post preview
-│   ├── PostFilter.jsx # Search and filter posts
-│   ├── AppHeader.jsx  # Navigation header
-│   ├── AppFooter.jsx  # Footer
+│   ├── InstagramSidebar.jsx # Navigation sidebar
+│   ├── MobileHeader.jsx # Mobile header
+│   ├── MobileFooter.jsx # Mobile footer
 │   └── UserMsg.jsx    # Toast notifications
+├── data/              # Demo data (temporary)
+│   ├── demo-users.js  # Predefined users
+│   └── demo-posts.js  # Predefined posts
 ├── pages/             # Route components
-│   ├── PostIndex.jsx  # Main posts page
+│   ├── HomePage.jsx   # Main feed page
 │   ├── PostDetails.jsx # Individual post view
-│   ├── HomePage.jsx   # Landing page
 │   ├── UserDetails.jsx # User profiles
 │   └── LoginSignup.jsx # Authentication
 ├── services/          # API and utility services
 │   ├── post/          # Post CRUD operations
 │   ├── user/          # User management
-│   └── http.service.js # HTTP client
+│   ├── async-storage.service.js # LocalStorage wrapper
+│   ├── demo-data.service.js # Demo data management
+│   └── event-bus.service.js # Toast notifications
 └── store/            # Redux state management
     ├── actions/      # Action creators
     └── reducers/     # State reducers
@@ -152,26 +219,29 @@ src/
 ## 🎯 Current Features
 
 ### ✅ Implemented:
-- **Post CRUD System**: Create, read, update, delete posts
-- **Instagram-like Post Structure**: Images, captions, tags, author info
-- **Post Filtering**: Search by text and tags
-- **Post Sorting**: By text, date, etc.
-- **Comments System**: Add comments to posts
-- **User Authentication**: Login/signup functionality
-- **User Profiles**: View post count, followers, and following counts
-- **Follow System**: Follow/unfollow other users
-- **Save Posts**: Save posts for later viewing
-- **Responsive Design**: Mobile-first approach
-- **Clean Navigation**: Instagram-style header
+- **Instagram UI**: Pixel-perfect recreation of Instagram's interface
+- **Post Feed**: Display posts with images, captions, likes, and comments
+- **Like System**: Like/unlike posts with animated heart button
+- **Comments System**: View and add comments to posts
+- **Save Posts**: Bookmark posts for later viewing
+- **User Profiles**: View user information and stats
+- **Navigation Sidebar**: Home, Search, Create, Profile buttons
+- **Responsive Design**: Full mobile support with header/footer
+- **Demo Data**: 6 users and 6 posts pre-loaded
+- **Auto-Login**: Automatic login for development
+- **Redux State**: Centralized state management
+- **LocalStorage**: Client-side data persistence
 
 ### 🚧 Planned Features:
-- **Like/Unlike System**: Heart button interactions
+- **Search**: Find users and posts
+- **Create Post**: Upload images and create posts
+- **Follow System**: Follow/unfollow users
 - **Feed Filtering**: Show only posts from followed users
-- **Real-time Updates**: Live comments and likes
-- **Image Upload**: File upload functionality
+- **Real-time Updates**: Live notifications
 - **Stories**: 24-hour ephemeral content
 - **Direct Messages**: Chat system
-- **Followers/Following Lists**: View and navigate to follower profiles
+- **Image Upload**: Drag-and-drop file upload
+- **Explore Page**: Discover new content
 
 ## 🔄 State Management
 

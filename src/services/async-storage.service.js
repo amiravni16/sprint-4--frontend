@@ -1,3 +1,6 @@
+import { demoUsers } from '../data/demo-users.js'
+import { demoPosts } from '../data/demo-posts.js'
+
 export const storageService = {
     query,
     get,
@@ -5,6 +8,9 @@ export const storageService = {
     put,
     remove,
 }
+
+// Initialize demo data on first load
+_initializeDemoData()
 
 function query(entityType, delay = 500) {
     try {
@@ -85,4 +91,38 @@ function _makeId(length = 5) {
         text += possible.charAt(Math.floor(Math.random() * possible.length))
     }
     return text
+}
+
+function _initializeDemoData() {
+    try {
+        // Check if demo data already exists
+        const existingUsers = localStorage.getItem('user')
+        const existingPosts = localStorage.getItem('post')
+        
+        const users = existingUsers ? JSON.parse(existingUsers) : []
+        const posts = existingPosts ? JSON.parse(existingPosts) : []
+        
+        // Only initialize if storage is empty
+        if (users.length === 0 && posts.length === 0) {
+            console.log('🚀 Initializing demo data on first load...')
+            
+            // Save demo users
+            localStorage.setItem('user', JSON.stringify(demoUsers))
+            
+            // Save demo posts
+            localStorage.setItem('post', JSON.stringify(demoPosts))
+            
+            console.log('✅ Demo data initialized:', {
+                users: demoUsers.length,
+                posts: demoPosts.length
+            })
+        } else {
+            console.log('📊 Existing data found:', {
+                users: users.length,
+                posts: posts.length
+            })
+        }
+    } catch (err) {
+        console.error('❌ Error initializing demo data:', err)
+    }
 }
