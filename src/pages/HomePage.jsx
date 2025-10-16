@@ -255,6 +255,7 @@ export function HomePage() {
                         posts={posts}
                         onLike={onLike}
                         onComment={onComment}
+                        user={user}
                     />
                 ) : (
                     <div className="empty-feed">

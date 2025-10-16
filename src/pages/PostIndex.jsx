@@ -14,6 +14,7 @@ export function PostIndex() {
 
     const [ filterBy, setFilterBy ] = useState(postService.getDefaultFilter())
     const posts = useSelector(storeState => storeState.postModule.posts)
+    const user = useSelector(storeState => storeState.userModule.user)
 
     useEffect(() => {
         loadPosts(filterBy)
@@ -85,7 +86,8 @@ export function PostIndex() {
                 onRemovePost={onRemovePost} 
                 onUpdatePost={onUpdatePost}
                 onLike={onLike}
-                onComment={onComment}/>
+                onComment={onComment}
+                user={user}/>
         </section>
     )
 }

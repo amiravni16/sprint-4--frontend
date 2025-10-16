@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useRef, useState } from 'react'
 
-export function PostPreview({ post, onLike, onComment }) {
+export function PostPreview({ post, onLike, onComment, user }) {
     const [isAnimating, setIsAnimating] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const justUnlikedRef = useRef(false)
@@ -17,7 +17,7 @@ export function PostPreview({ post, onLike, onComment }) {
         return `${Math.floor(diffInSeconds / 86400)}D`
     }
 
-    const isLiked = post.likedBy && post.likedBy.length > 0
+    const isLiked = post.likedBy && user && post.likedBy.includes(user._id)
     const hasComments = post.comments && post.comments.length > 0
     const hasLikes = post.likedBy && post.likedBy.length > 0
 
