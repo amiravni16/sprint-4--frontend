@@ -15,6 +15,13 @@ export function InstagramSidebar() {
                     <Link to="/" className="instagram-logo" aria-label="Instagram home">
                         <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram" style={{height: '32px', display: 'block'}} />
                     </Link>
+                    <Link to="/" className="instagram-logo-icon" aria-label="Instagram home">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2"/>
+                            <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2"/>
+                            <circle cx="17" cy="7" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </Link>
                 </div>
                 
                 <nav className="sidebar-nav">

@@ -11,6 +11,13 @@
     transition: width 0.3s ease;
 }
 
+/* For screens wider than 1920px, use wider sidebar like Instagram */
+@media (min-width: 1920px) {
+    .instagram-sidebar {
+        width: 340px;
+    }
+}
+
 @media (max-width: 1263px) {
     .instagram-sidebar {
         width: 72px;
@@ -41,6 +48,10 @@
     padding-left: 12px;
 }
 
+.instagram-logo-icon {
+    display: none;
+}
+
 @media (max-width: 1263px) {
     .logo-section {
         padding-left: 0;
@@ -49,6 +60,11 @@
     
     .instagram-logo {
         display: none;
+    }
+    
+    .instagram-logo-icon {
+        display: block;
+        color: #000;
     }
 }
 
