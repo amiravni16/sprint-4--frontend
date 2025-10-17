@@ -88,6 +88,7 @@ async function addPostMsg(postId, txt) {
         by: {
             _id: userService.getLoggedinUser()._id,
             fullname: userService.getLoggedinUser().fullname,
+            username: userService.getLoggedinUser().username,
             imgUrl: userService.getLoggedinUser().imgUrl
         },
         txt,

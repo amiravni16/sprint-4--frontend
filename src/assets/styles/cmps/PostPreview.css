@@ -69,25 +69,16 @@
 }
 
 .post-preview .post-actions {
-    padding: 8px 12px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: space-between;
+    padding: 8px 12px;
 }
 
-.post-preview .post-actions.no-likes {
-    gap: 8px; /* Closer spacing when no likes */
-    padding: 8px 8px 8px 12px; /* Less right padding, keep left close to edge */
-}
-
-.post-preview .post-actions.no-comments {
-    gap: 8px; /* Closer spacing when no comments */
-    padding: 8px 8px 8px 12px; /* Less right padding, keep left close to edge */
-}
-
-.post-preview .post-actions.no-likes.no-comments {
-    gap: 4px; /* Very close when neither likes nor comments */
-    padding: 8px 8px 8px 12px; /* Minimal padding, like icon very close to left edge */
+.post-preview .action-group {
+    display: flex;
+    align-items: center;
+    
 }
 
 
@@ -97,14 +88,21 @@
     font-size: 24px;
     cursor: pointer;
     padding: 8px;
+    margin: 0;
     border-radius: 4px;
-    transition: color 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #262626;
+    transition: color 0.15s ease;
 }
 
-.post-preview .action-btn:hover { }
+.post-preview .action-btn img,
+.post-preview .action-btn svg {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
 
 .post-preview .action-btn.like-btn {
     color: #262626; /* default black */
@@ -170,7 +168,7 @@
 
 .post-preview .action-btn.save-btn {
     margin-left: auto;
-    margin-right: 0; /* Ensure it's flush with right edge */
+    padding: 8px;
 }
 
 .post-preview .action-btn.save-btn.saved {
@@ -181,16 +179,13 @@
     color: #8e8e8e; /* Grey on hover when saved */
 }
 
-.post-preview .like-section {
-    display: flex;
-    align-items: center;
-    gap: 4px; /* Very small gap between heart and number */
-}
-
-.post-preview .like-count {
+.post-preview .action-count {
     font-size: 14px;
     font-weight: 600;
     color: #262626;
+    cursor: pointer;
+    margin-left: -2px;
+    margin-right: 4px;
 }
 
 

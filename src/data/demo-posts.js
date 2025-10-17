@@ -17,7 +17,7 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment1',
-                by: { _id: '64f0a1c2b3d4e5f678901234', fullname: 'Amir Avni' },
+                by: { _id: '64f0a1c2b3d4e5f678901234', fullname: 'Amir Avni', username: 'amir.avni' },
                 txt: 'Amazing shot! 📸',
                 createdAt: now - 1800000
             }
@@ -54,7 +54,7 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment2',
-                by: { _id: 'user1', fullname: 'Sarah Johnson' },
+                by: { _id: 'user1', fullname: 'Sarah Johnson', username: 'sarah_photography' },
                 txt: 'Looks incredible!',
                 createdAt: now - 900000
             }
@@ -91,7 +91,7 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment3',
-                by: { _id: 'user5', fullname: 'Luna Martinez' },
+                by: { _id: 'user5', fullname: 'Luna Martinez', username: 'luna_art' },
                 txt: 'Great job! 🔥',
                 createdAt: now - 300000
             }

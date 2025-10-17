@@ -93,7 +93,7 @@ export function PostPreview({ post, onLike, onComment, user }) {
 
             {/* Post Actions */}
             <div className={`post-actions ${!hasLikes ? 'no-likes' : ''} ${!hasComments ? 'no-comments' : ''}`}>
-                <div className="like-section">
+                <div className="action-group">
                     <button 
                         className={`action-btn like-btn ${isLiked ? 'liked' : ''} ${isAnimating ? 'animating' : ''}`}
                         onClick={handleLike}
@@ -108,27 +108,32 @@ export function PostPreview({ post, onLike, onComment, user }) {
                         </svg>
                     </button>
                     {post.likedBy && post.likedBy.length > 0 && (
-                        <span className="like-count">
+                        <span className="action-count">
                             {post.likedBy.length}
                         </span>
                     )}
+                    <button className="action-btn comment-btn">
+                        <img 
+                            src="/src/assets/icons/comment.svg" 
+                            alt="Comment" 
+                            width="24" 
+                            height="24"
+                        />
+                    </button>
+                    {post.comments && post.comments.length > 0 && (
+                        <span className="action-count">
+                            {post.comments.length}
+                        </span>
+                    )}
+                    <button className="action-btn share-btn">
+                        <img 
+                            src="/src/assets/icons/share.svg" 
+                            alt="Share" 
+                            width="24" 
+                            height="24"
+                        />
+                    </button>
                 </div>
-                <button className="action-btn comment-btn">
-                    <img 
-                        src="/src/assets/icons/comment.svg" 
-                        alt="Comment" 
-                        width="24" 
-                        height="24"
-                    />
-                </button>
-                <button className="action-btn share-btn">
-                    <img 
-                        src="/src/assets/icons/share.svg" 
-                        alt="Share" 
-                        width="24" 
-                        height="24"
-                    />
-                </button>
                 <button 
                     className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
                     onClick={handleSave}
@@ -186,7 +191,7 @@ export function PostPreview({ post, onLike, onComment, user }) {
                     {post.comments.slice(-2).map(comment => (
                         <div key={comment.id} className="comment">
                             <Link to={`/user/${comment.by._id}`} className="username">
-                                {comment.by.fullname}
+                                {comment.by.username || comment.by.fullname}
                             </Link>
                             {comment.txt}
                         </div>
