@@ -1,6 +1,6 @@
 import { PostPreview } from './PostPreview'
 
-export function PostList({ posts, onLike, onComment, user }) {
+export function PostList({ posts, onLike, onComment, user, onDelete, onEdit }) {
     return (
         <section className="post-feed">
             <ul className="post-list">
@@ -10,6 +10,8 @@ export function PostList({ posts, onLike, onComment, user }) {
                             post={post}
                             onLike={onLike}
                             onComment={onComment}
+                            onDelete={onDelete}
+                            onEdit={onEdit}
                             user={user}
                         />
                     </li>

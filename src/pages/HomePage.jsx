@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { loadPosts, addPost, updatePost } from '../store/actions/post.actions'
+import { loadPosts, addPost, updatePost, removePost } from '../store/actions/post.actions'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { addPostMsg } from '../store/actions/post.actions'
 import { PostList } from '../cmps/PostList'
+import { PostDetailsModal } from '../cmps/PostDetailsModal'
 import { postService } from '../services/post'
 import { userService } from '../services/user'
 import { login, signup } from '../store/actions/user.actions'
@@ -13,6 +14,7 @@ export function HomePage() {
     const [filterBy, setFilterBy] = useState({ txt: '', sortField: '', sortDir: '' })
     const posts = useSelector(storeState => storeState.postModule.posts)
     const user = useSelector(storeState => storeState.userModule.user)
+    const [editingPost, setEditingPost] = useState(null)
 
         // Expose storage clear function to window for console access
         if (typeof window !== 'undefined') {
@@ -246,6 +248,44 @@ export function HomePage() {
         }
     }
 
+    async function onDeletePost(postId) {
+        try {
+            await removePost(postId)
+            showSuccessMsg('Post deleted successfully! 🗑️')
+            // Reload posts to reflect the deletion
+            loadPosts(filterBy)
+        } catch (err) {
+            showErrorMsg('Cannot delete post')
+        }
+    }
+
+    async function onEditPost(post) {
+        // Open edit modal with post data
+        setEditingPost(post)
+    }
+
+    async function onSaveEdit(postData) {
+        try {
+            // Update the post with new data
+            const updatedPost = {
+                ...editingPost,
+                txt: postData.caption || editingPost.txt,
+                imgUrl: postData.image || editingPost.imgUrl
+            }
+            await updatePost(updatedPost)
+            showSuccessMsg('Post updated successfully! ✏️')
+            setEditingPost(null)
+            // Reload posts to reflect the update
+            loadPosts(filterBy)
+        } catch (err) {
+            showErrorMsg('Cannot update post')
+        }
+    }
+
+    function onCancelEdit() {
+        setEditingPost(null)
+    }
+
 
     return (
         <div className="instagram-home">
@@ -255,6 +295,8 @@ export function HomePage() {
                         posts={posts}
                         onLike={onLike}
                         onComment={onComment}
+                        onDelete={onDeletePost}
+                        onEdit={onEditPost}
                         user={user}
                     />
                 ) : (
@@ -310,7 +352,16 @@ export function HomePage() {
                     </div>
                 )}
             </div>
-            
+
+            {/* Edit Post Modal */}
+            {editingPost && (
+                <PostDetailsModal
+                    croppedImage={editingPost.imgUrl}
+                    caption={editingPost.txt}
+                    onClose={onCancelEdit}
+                    onPost={onSaveEdit}
+                />
+            )}
         </div>
     )
 }

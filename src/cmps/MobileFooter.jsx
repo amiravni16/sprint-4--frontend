@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useState } from 'react'
-import { CreatePostModal } from './CreatePostModal'
+import { UploadModal } from './UploadModal'
 
 export function MobileFooter() {
     const user = useSelector(storeState => storeState.userModule.user)
@@ -63,7 +63,7 @@ export function MobileFooter() {
                     </div>
                 </NavLink>
             </nav>
-            <CreatePostModal 
+            <UploadModal 
                 isOpen={isCreateModalOpen} 
                 onClose={() => setIsCreateModalOpen(false)} 
             />

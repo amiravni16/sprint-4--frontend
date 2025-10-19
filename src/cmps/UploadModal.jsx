@@ -1,0 +1,195 @@
+import { useRef, useState } from 'react'
+import { CropModal } from './CropModal'
+import { PostDetailsModal } from './PostDetailsModal'
+
+export function UploadModal({ isOpen, onClose }) {
+    const fileInputRef = useRef(null)
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [croppedImage, setCroppedImage] = useState(null)
+    const [showCrop, setShowCrop] = useState(false)
+    const [showPostCreate, setShowPostCreate] = useState(false)
+    const [showDiscardModal, setShowDiscardModal] = useState(false)
+
+    const handleSelectClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileChange = (e) => {
+        const files = e.target.files
+        if (files && files.length > 0) {
+            setSelectedFile(files[0])
+            setShowCrop(true)
+        }
+    }
+
+    const handleBackFromCrop = () => {
+        setShowCrop(false)
+        setSelectedFile(null)
+    }
+
+    const handleCropComplete = (imageUrl) => {
+        setCroppedImage(imageUrl)
+    }
+
+    const handleNextFromCrop = () => {
+        setShowCrop(false)
+        setShowPostCreate(true)
+    }
+
+    const handleBackFromPostCreate = () => {
+        setShowPostCreate(false)
+        setShowCrop(true)
+    }
+
+    const handleCloseAttempt = () => {
+        // Show discard modal if there's progress
+        if (selectedFile || croppedImage) {
+            setShowDiscardModal(true)
+        } else {
+            onClose()
+        }
+    }
+
+    const handleDiscard = () => {
+        setShowDiscardModal(false)
+        setShowCrop(false)
+        setShowPostCreate(false)
+        setCroppedImage(null)
+        setSelectedFile(null)
+        onClose()
+    }
+
+    const handleCancelDiscard = () => {
+        setShowDiscardModal(false)
+    }
+
+    const handlePost = async (postData) => {
+        try {
+            // Import the addPost action
+            const { addPost } = await import('../store/actions/post.actions')
+            const { showSuccessMsg, showErrorMsg } = await import('../services/event-bus.service')
+            const { postService } = await import('../services/post')
+            
+            // Create a post object
+            const post = postService.getEmptyPost()
+            post.txt = postData.caption || ''
+            post.imgUrl = postData.image
+            
+            // Save the post
+            await addPost(post)
+            showSuccessMsg('Post created successfully! 🎉')
+            
+            // Close modals and reset state BEFORE calling onClose
+            setShowPostCreate(false)
+            setShowCrop(false)
+            setCroppedImage(null)
+            setSelectedFile(null)
+            
+            // Reload the page to show the new post
+            window.location.reload()
+        } catch (err) {
+            console.error('Error creating post:', err)
+            const { showErrorMsg } = await import('../services/event-bus.service')
+            showErrorMsg('Cannot create post')
+        }
+    }
+
+    if (!isOpen) return null
+
+    // Show PostDetails modal after crop
+    if (showPostCreate && croppedImage) {
+        return (
+            <>
+                <PostDetailsModal
+                    croppedImage={croppedImage}
+                    onBack={handleBackFromPostCreate}
+                    onClose={handleCloseAttempt}
+                    onPost={handlePost}
+                />
+                {/* Discard modal overlay */}
+                {showDiscardModal && (
+                    <div className="discard-modal-overlay">
+                        <div className="discard-modal">
+                            <h3>Discard post?</h3>
+                            <p>If you leave, your edits won't be saved.</p>
+                            <div className="discard-modal-divider"></div>
+                            <button className="discard-btn" onClick={handleDiscard}>
+                                Discard
+                            </button>
+                            <div className="discard-modal-divider"></div>
+                            <button className="cancel-discard-btn" onClick={handleCancelDiscard}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </>
+        )
+    }
+
+    // Show crop modal if file is selected
+    if (showCrop && selectedFile) {
+        return (
+            <>
+                <CropModal
+                    imageFile={selectedFile}
+                    onBack={handleBackFromCrop}
+                    onNext={handleNextFromCrop}
+                    onClose={handleCloseAttempt}
+                    onCropComplete={handleCropComplete}
+                />
+                {/* Discard modal overlay */}
+                {showDiscardModal && (
+                    <div className="discard-modal-overlay">
+                        <div className="discard-modal">
+                            <h3>Discard post?</h3>
+                            <p>If you leave, your edits won't be saved.</p>
+                            <div className="discard-modal-divider"></div>
+                            <button className="discard-btn" onClick={handleDiscard}>
+                                Discard
+                            </button>
+                            <div className="discard-modal-divider"></div>
+                            <button className="cancel-discard-btn" onClick={handleCancelDiscard}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </>
+        )
+    }
+
+    return (
+        <div className="create-post-overlay" onClick={onClose}>
+            <div className="create-post-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2>Create new post</h2>
+                    <button className="close-btn" onClick={onClose}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div className="modal-content">
+                    <div className="upload-icon">
+                        <img src="/img/create-modal.svg" alt="Upload" className="upload-svg" />
+                    </div>
+                    <p className="upload-text">Drag photos and videos here</p>
+                    <button className="select-btn" onClick={handleSelectClick}>
+                        Select from computer
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
+

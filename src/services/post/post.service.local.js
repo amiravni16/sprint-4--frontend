@@ -31,6 +31,12 @@ async function query(filterBy = { txt: '' }) {
             (new Date(post1[sortField]) - new Date(post2[sortField])) * +sortDir)
     }
     
+    // Default sort: newest posts first (if no sortField specified)
+    if (!sortField) {
+        posts.sort((post1, post2) => 
+            new Date(post2.createdAt) - new Date(post1.createdAt))
+    }
+    
     posts = posts.map(({ _id, txt, by, createdAt, imgUrl, likedBy, comments, tags, loc }) => ({ _id, txt, by, createdAt, imgUrl, likedBy, comments, tags, loc }))
     return posts
 }

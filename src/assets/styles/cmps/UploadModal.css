@@ -16,8 +16,8 @@
     background: white;
     border-radius: 12px;
     width: 100%;
-    max-width: 650px;
-    height: 550px;
+    max-width: 800px;
+    height: 700px;
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -64,7 +64,7 @@
 }
 
 .modal-content {
-    padding: 120px 40px 40px ;
+    padding: 200px 40px 40px ;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -109,6 +109,77 @@
 
 .select-btn:hover {
     background: #1877f2;
+}
+
+/* Discard Confirmation Modal */
+.discard-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+}
+
+.discard-modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.discard-modal h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #262626;
+    margin: 32px 32px 8px 32px;
+}
+
+.discard-modal p {
+    font-size: 14px;
+    color: #8e8e8e;
+    margin: 0 32px 32px 32px;
+}
+
+.discard-modal-divider {
+    height: 1px;
+    background: #dbdbdb;
+}
+
+.discard-btn {
+    width: 100%;
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ed4956;
+    cursor: pointer;
+}
+
+.discard-btn:hover {
+    background-color: #fafafa;
+}
+
+.cancel-discard-btn {
+    width: 100%;
+    padding: 16px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    color: #262626;
+    cursor: pointer;
+}
+
+.cancel-discard-btn:hover {
+    background-color: #fafafa;
 }
 
 /* Responsive modal sizing to match Instagram */

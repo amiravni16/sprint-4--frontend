@@ -2,7 +2,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
-import { CreatePostModal } from './CreatePostModal'
+import { UploadModal } from './UploadModal'
 
 export function InstagramSidebar() {
     const user = useSelector(storeState => storeState.userModule.user)
@@ -81,7 +81,7 @@ export function InstagramSidebar() {
                     </NavLink>
                 </nav>
             </div>
-            <CreatePostModal 
+            <UploadModal 
                 isOpen={isCreateModalOpen} 
                 onClose={() => setIsCreateModalOpen(false)} 
             />

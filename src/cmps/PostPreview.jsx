@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useRef, useState } from 'react'
 
-export function PostPreview({ post, onLike, onComment, user }) {
+export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit }) {
     const [isAnimating, setIsAnimating] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const justUnlikedRef = useRef(false)
+    const [imageError, setImageError] = useState(false)
+    const [showOptionsModal, setShowOptionsModal] = useState(false)
     
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -50,6 +52,20 @@ export function PostPreview({ post, onLike, onComment, user }) {
         setIsSaved(!isSaved)
     }
 
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(post._id)
+            setShowOptionsModal(false)
+        }
+    }
+
+    const handleEdit = () => {
+        if (onEdit) {
+            onEdit(post)
+            setShowOptionsModal(false)
+        }
+    }
+
     return (
         <article className="post-preview">
             {/* Post Header */}
@@ -73,7 +89,7 @@ export function PostPreview({ post, onLike, onComment, user }) {
                         {post.by?.username || 'amir.avni'}
                     </Link>
                 </div>
-                <button className="more-btn">
+                <button className="more-btn" onClick={() => setShowOptionsModal(true)}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="1" fill="currentColor"/>
                         <circle cx="19" cy="12" r="1" fill="currentColor"/>
@@ -83,12 +99,21 @@ export function PostPreview({ post, onLike, onComment, user }) {
             </div>
 
             {/* Post Image */}
-            {post.imgUrl && (
+            {post.imgUrl && !imageError && (
                 <img 
                     src={post.imgUrl} 
                     alt="Post" 
                     className="post-image"
+                    onError={() => setImageError(true)}
                 />
+            )}
+            {imageError && (
+                <div className="post-image-error">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    </svg>
+                    <p>Image not available</p>
+                </div>
             )}
 
             {/* Post Actions */}
@@ -220,6 +245,34 @@ export function PostPreview({ post, onLike, onComment, user }) {
                 />
                 <button>Post</button>
             </div>
+
+            {/* Post Options Modal */}
+            {showOptionsModal && (
+                <div className="post-options-overlay" onClick={() => setShowOptionsModal(false)}>
+                    <div className="post-options-modal" onClick={(e) => e.stopPropagation()}>
+                        {/* Only show options if user owns the post */}
+                        {user && post.by?._id === user._id ? (
+                            <>
+                                <button className="post-option-btn post-option-delete" onClick={handleDelete}>
+                                    Delete
+                                </button>
+                                <div className="post-option-divider"></div>
+                                <button className="post-option-btn" onClick={handleEdit}>
+                                    Edit
+                                </button>
+                                <div className="post-option-divider"></div>
+                                <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                    Cancel
+                                </button>
+                            </>
+                        ) : (
+                            <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                Cancel
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </article>
     )
 }

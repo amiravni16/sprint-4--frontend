@@ -1,0 +1,252 @@
+.post-create-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.post-create-close-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+}
+
+.post-create-close-btn:hover {
+    opacity: 0.7;
+}
+
+.post-create-close-btn svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.post-create-modal {
+    background: #fff;
+    width: 100%;
+    max-width: 900px;
+    height: 700px;
+    max-height: 90vh;
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Left side - Image */
+.post-create-image-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    min-width: 0;
+}
+
+.post-create-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Right side - Details */
+.post-create-details-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.post-create-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #dbdbdb;
+    position: relative;
+}
+
+.post-create-back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-create-back-btn:hover {
+    opacity: 0.7;
+}
+
+.post-create-back-btn-placeholder {
+    width: 40px;
+    height: 40px;
+}
+
+.post-create-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.post-create-share-header-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    color: #0095f6;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.post-create-share-header-btn:hover {
+    opacity: 0.7;
+}
+
+.post-create-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.post-create-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-create-username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #262626;
+}
+
+.post-create-caption-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.post-create-caption-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    font-family: inherit;
+    color: #262626;
+    flex: 1;
+    min-height: 200px;
+}
+
+.post-create-caption-input::placeholder {
+    color: #8e8e8e;
+}
+
+.post-create-caption-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid #dbdbdb;
+    margin-top: 12px;
+}
+
+.post-create-emoji-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #8e8e8e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-create-emoji-btn:hover {
+    opacity: 0.7;
+}
+
+.post-create-emoji-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.post-create-char-count {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.post-create-emoji-picker {
+    position: absolute;
+    bottom: 70px;
+    right: 16px;
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.post-create-emoji-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.post-create-emoji-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .post-create-modal {
+        flex-direction: column;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .post-create-image-section {
+        flex: 0 0 50%;
+    }
+
+    .post-create-details-section {
+        flex: 1;
+    }
+}
+
