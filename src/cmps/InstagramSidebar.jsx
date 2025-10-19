@@ -1,10 +1,13 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { useState } from 'react'
+import { CreatePostModal } from './CreatePostModal'
 
 export function InstagramSidebar() {
     const user = useSelector(storeState => storeState.userModule.user)
     const navigate = useNavigate()
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     
     // Debug user data
 
@@ -78,6 +81,10 @@ export function InstagramSidebar() {
                     </NavLink>
                 </nav>
             </div>
+            <CreatePostModal 
+                isOpen={isCreateModalOpen} 
+                onClose={() => setIsCreateModalOpen(false)} 
+            />
         </aside>
     )
 
@@ -86,7 +93,11 @@ export function InstagramSidebar() {
             navigate('/auth/login')
             return
         }
-        
+        setIsCreateModalOpen(true)
+    }
+    
+    // Old create post logic (kept for reference)
+    function handleCreatePostOld() {
         // Create a new post using the same logic as HomePage
         const post = {
             txt: prompt('What\'s on your mind?', 'Best trip ever!'),

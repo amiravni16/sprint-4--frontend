@@ -31,7 +31,6 @@ export function RootCmp() {
                     <Route path="search" element={<div>Search Page (Coming Soon)</div>} />
                     <Route path="explore" element={<div>Explore Page (Coming Soon)</div>} />
                     <Route path="reels" element={<div>Reels Page (Coming Soon)</div>} />
-                    <Route path="create" element={<div>Create Page (Coming Soon)</div>} />
                     <Route path="auth" element={<LoginSignup />}>
                         <Route path="login" element={<Login />} />
                         <Route path="signup" element={<Signup />} />

@@ -1,0 +1,121 @@
+.create-post-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+}
+
+.create-post-modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 650px;
+    height: 550px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-bottom: 1px solid #dbdbdb;
+    position: relative;
+}
+
+.modal-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
+    margin: 0;
+}
+
+.close-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.close-btn:hover {
+    opacity: 0.7;
+}
+
+.close-btn svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.modal-content {
+    padding: 120px 40px 40px ;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    min-height: auto;
+}
+
+.upload-icon {
+    color: #262626;
+    margin: 0;
+}
+
+.upload-icon .upload-svg {
+    width: 180px;
+    height: 135px;
+    display: block;
+    margin: 0 auto -20px auto;
+    /* Match Instagram's icon appearance */
+    opacity: 0.9;
+}
+
+.upload-text {
+    font-size: 20px;
+    font-weight: 300;
+    color: #262626;
+    margin: 0 0 20px 0;
+    margin-top: 0;
+}
+
+.select-btn {
+    background: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.select-btn:hover {
+    background: #1877f2;
+}
+
+/* Responsive modal sizing to match Instagram */
+@media (max-width: 768px) {
+    .create-post-modal {
+        max-width: 650px;
+        height: 550px;
+    }
+}
+

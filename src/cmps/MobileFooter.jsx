@@ -1,8 +1,21 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useState } from 'react'
+import { CreatePostModal } from './CreatePostModal'
 
 export function MobileFooter() {
     const user = useSelector(storeState => storeState.userModule.user)
+    const navigate = useNavigate()
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    
+    function handleCreateClick(e) {
+        e.preventDefault()
+        if (!user) {
+            navigate('/auth/login')
+            return
+        }
+        setIsCreateModalOpen(true)
+    }
 
     return (
         <footer className="mobile-footer">
@@ -27,12 +40,12 @@ export function MobileFooter() {
                     </svg>
                 </NavLink>
 
-                <NavLink to="/create" className="mobile-nav-item">
+                <button onClick={handleCreateClick} className="mobile-nav-item">
                     <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
                         <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
-                </NavLink>
+                </button>
 
                 <NavLink to={`/user/${user?._id || 'profile'}`} className="mobile-nav-item">
                     <div className="mobile-profile-avatar">
@@ -50,6 +63,10 @@ export function MobileFooter() {
                     </div>
                 </NavLink>
             </nav>
+            <CreatePostModal 
+                isOpen={isCreateModalOpen} 
+                onClose={() => setIsCreateModalOpen(false)} 
+            />
         </footer>
     )
 }
