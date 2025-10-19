@@ -195,7 +195,26 @@
 }
 
 /* Responsive */
+@media (max-width: 1263px) {
+    .crop-modal {
+        max-width: 700px;
+        height: 600px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .crop-modal {
+        max-width: 600px;
+        height: 550px;
+    }
+}
+
 @media (max-width: 768px) {
+    .crop-modal {
+        max-width: 450px;
+        height: 500px;
+    }
+    
     .crop-header {
         padding: 12px 16px;
     }

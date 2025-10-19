@@ -64,13 +64,26 @@
 }
 
 .modal-content {
-    padding: 200px 40px 40px ;
+    padding: 200px 40px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     text-align: center;
-    min-height: auto;
+    min-height: 100%;
+}
+
+/* Responsive padding for different screen sizes */
+@media (max-width: 1263px) {
+    .modal-content {
+        padding: 30px 40px 40px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 20px 40px 40px !important;
+    }
 }
 
 .upload-icon {
@@ -185,8 +198,8 @@
 /* Responsive modal sizing to match Instagram */
 @media (max-width: 768px) {
     .create-post-modal {
-        max-width: 650px;
-        height: 550px;
+        max-width: 450px;
+        height: 500px;
     }
 }
 

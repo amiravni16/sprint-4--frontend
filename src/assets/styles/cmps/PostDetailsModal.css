@@ -46,6 +46,28 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Responsive sizing to match UploadModal */
+@media (max-width: 1263px) {
+    .post-create-modal {
+        max-width: 700px;
+        height: 600px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .post-create-modal {
+        max-width: 600px;
+        height: 550px;
+    }
+}
+
+@media (max-width: 768px) {
+    .post-create-modal {
+        max-width: 450px;
+        height: 500px;
+    }
+}
+
 /* Left side - Image */
 .post-create-image-section {
     flex: 1;
