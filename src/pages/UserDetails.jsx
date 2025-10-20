@@ -15,7 +15,9 @@ export function UserDetails() {
   const user = useSelector(storeState => storeState.userModule.watchedUser)
   const loggedinUser = useSelector(storeState => storeState.userModule.user)
   const [isFollowing, setIsFollowing] = useState(false)
-  const [userPostsCount, setUserPostsCount] = useState(0)
+  const [userPosts, setUserPosts] = useState([])
+  const [savedPosts, setSavedPosts] = useState([])
+  const [activeTab, setActiveTab] = useState('posts') // 'posts' or 'saved'
   const [debugUser, setDebugUser] = useState(null)
 
   useEffect(() => {
@@ -47,21 +49,43 @@ export function UserDetails() {
   }, [loggedinUser, user])
 
   useEffect(() => {
-    // Load posts count for this user
-    async function loadUserPostsCount() {
+    // Load posts for this user
+    async function loadUserPosts() {
       if (user) {
         try {
           const posts = await postService.query()
-          const userPosts = posts.filter(post => post.by?._id === user._id)
-          setUserPostsCount(userPosts.length)
+          const postsByUser = posts.filter(post => post.by?._id === user._id)
+          // Sort by createdAt descending (newest first)
+          postsByUser.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          setUserPosts(postsByUser)
         } catch (err) {
           console.error('Error loading user posts:', err)
-          setUserPostsCount(0)
+          setUserPosts([])
         }
       }
     }
-    loadUserPostsCount()
+    loadUserPosts()
   }, [user])
+
+  useEffect(() => {
+    // Load saved posts
+    async function loadSavedPosts() {
+      if (user && loggedinUser && user._id === loggedinUser._id) {
+        try {
+          const posts = await postService.query()
+          const savedPostIds = loggedinUser.savedPosts || []
+          const savedPostsData = posts.filter(post => savedPostIds.includes(post._id))
+          // Sort by createdAt descending (newest first)
+          savedPostsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          setSavedPosts(savedPostsData)
+        } catch (err) {
+          console.error('Error loading saved posts:', err)
+          setSavedPosts([])
+        }
+      }
+    }
+    loadSavedPosts()
+  }, [user, loggedinUser])
 
   // Keep a canonical copy from storage for debugging to avoid stale values
   useEffect(() => {
@@ -145,58 +169,109 @@ export function UserDetails() {
     }
   }
 
+  const isOwnProfile = loggedinUser && user && loggedinUser._id === user._id
+
   return (
     <section className="user-details">
-      <h1>User Profile</h1>
       {user && <div className="profile-container">
         <div className="profile-header">
           <img 
             src={user.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
             alt={user.fullname}
             className="profile-pic"
-            style={{
-              width: '150px',
-              height: '150px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '2px solid #dbdbdb',
-              display: 'block'
-            }}
           />
           <div className="profile-info">
-            <h2>{user.fullname}</h2>
-            <p className="username">@{user.username}</p>
-            
+            <div className="profile-header-top">
+              <h2 className="profile-username">{user.username}</h2>
+              {isOwnProfile ? (
+                <div className="profile-actions">
+                  <button className="edit-profile-btn">Edit profile</button>
+                  <button className="view-archive-btn">View archive</button>
+                </div>
+              ) : (
+                <button 
+                  className={`follow-btn ${isFollowing ? 'following' : ''}`}
+                  onClick={onToggleFollow}
+                >
+                  {isFollowing ? 'Following' : 'Follow'}
+                </button>
+              )}
+            </div>
+
             <div className="profile-stats">
               <div className="stat">
-                <strong>{userPostsCount}</strong>
-                <span>Posts</span>
+                <strong>{userPosts.length}</strong>
+                <span>posts</span>
               </div>
               <div className="stat">
                 <strong>{user.followers?.length || 0}</strong>
-                <span>Followers</span>
+                <span>followers</span>
               </div>
               <div className="stat">
                 <strong>{user.following?.length || 0}</strong>
-                <span>Following</span>
+                <span>following</span>
               </div>
             </div>
 
-            {user.isAdmin && (
-              <span className="admin-badge">Admin</span>
-            )}
-
-            {/* Follow/Unfollow button - only show if not viewing own profile */}
-            {loggedinUser && loggedinUser._id !== user._id && (
-              <button 
-                className={`follow-btn ${isFollowing ? 'following' : ''}`}
-                onClick={onToggleFollow}
-              >
-                {isFollowing ? 'Unfollow' : 'Follow'}
-              </button>
-            )}
+            <div className="profile-bio">
+              <p className="profile-fullname">{user.fullname}</p>
+              {user.bio && <p className="profile-bio-text">{user.bio}</p>}
+            </div>
           </div>
         </div>
+
+        {/* Tabs */}
+        <div className="profile-tabs">
+          <button 
+            className={`profile-tab ${activeTab === 'posts' ? 'active' : ''}`}
+            onClick={() => setActiveTab('posts')}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
+              <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
+              <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
+              <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
+            </svg>
+          </button>
+          
+          {isOwnProfile && (
+            <button 
+              className={`profile-tab ${activeTab === 'saved' ? 'active' : ''}`}
+              onClick={() => setActiveTab('saved')}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" fill={activeTab === 'saved' ? 'currentColor' : 'none'}/>
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Posts Grid */}
+        <div className="profile-posts-grid">
+          {(activeTab === 'posts' ? userPosts : savedPosts).map(post => (
+            <div key={post._id} className="profile-post-thumbnail">
+              <img src={post.imgUrl} alt="Post" />
+              <div className="post-overlay">
+                <div className="post-stats">
+                  <span>❤️ {post.likedBy?.length || 0}</span>
+                  <span>💬 {post.comments?.length || 0}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {activeTab === 'posts' && userPosts.length === 0 && (
+          <div className="empty-state">
+            <p>No posts yet</p>
+          </div>
+        )}
+
+        {activeTab === 'saved' && savedPosts.length === 0 && (
+          <div className="empty-state">
+            <p>No saved posts yet</p>
+          </div>
+        )}
 
         {/* Debug info - can remove later */}
         <details style={{ marginTop: '2rem' }}>
@@ -257,7 +332,7 @@ export function UserDetails() {
               imgUrl: debugUser?.imgUrl,
               isAdmin: debugUser?.isAdmin,
               stats: {
-                postsCount: userPostsCount,
+                postsCount: userPosts.length,
                 followersCount: debugUser?.followers?.length || 0,
                 followingCount: debugUser?.following?.length || 0,
                 savedPostsCount: debugUser?.savedPosts?.length || 0

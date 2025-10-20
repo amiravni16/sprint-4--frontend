@@ -5,11 +5,21 @@ export function MobileHeader() {
         <header className="mobile-header">
             <div className="mobile-header-content">
                 <Link to="/" className="mobile-logo">
-                    <img 
-                        src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" 
-                        alt="Instagram" 
-                        style={{ height: '29px' }}
-                    />
+                    <svg width="140" height="32" viewBox="0 0 140 32" fill="none">
+                        {/* Camera Icon */}
+                        <g transform="translate(0, 10)">
+                            <path d="M8 4C6.89543 4 6 4.89543 6 6V14C6 15.1046 6.89543 16 8 16H24C25.1046 16 26 15.1046 26 14V6C26 4.89543 25.1046 4 24 4H22.5L22 2H10L9.5 4H8Z" stroke="#00CED1" strokeWidth="2" fill="none"/>
+                            <circle cx="16" cy="10" r="3" stroke="#00CED1" strokeWidth="2" fill="none"/>
+                            <circle cx="16" cy="10" r="1" fill="#00CED1"/>
+                            <circle cx="22" cy="6" r="0.5" fill="#00CED1"/>
+                            <circle cx="20" cy="6" r="0.5" fill="#00CED1"/>
+                            <circle cx="18" cy="6" r="0.5" fill="#00CED1"/>
+                        </g>
+                        {/* PHOTOGRAPH Text */}
+                        <text x="32" y="22" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="600" fill="#262626" letterSpacing="1px">
+                            PHOTOGRAPH
+                        </text>
+                    </svg>
                 </Link>
                 
                 <div className="mobile-search">
