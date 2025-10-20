@@ -16,8 +16,8 @@
     background: white;
     border-radius: 12px;
     width: 100%;
-    max-width: 800px;
-    height: 700px;
+    max-width: 700px;
+    height: 800px;
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -64,7 +64,7 @@
 }
 
 .modal-content {
-    padding: 200px 40px 40px;
+    padding: 35px 40px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,15 +76,23 @@
 /* Responsive padding for different screen sizes */
 @media (max-width: 1263px) {
     .modal-content {
-        padding: 30px 40px 40px !important;
+        padding: 5px 40px 40px !important;
+    }
+    .create-post-modal {
+        height: 650px;
     }
 }
 
 @media (max-width: 768px) {
     .modal-content {
-        padding: 20px 40px 40px !important;
+        padding: 10px 40px 60px !important;
+    }
+    .create-post-modal {
+        max-width: 350px;
+        height: 400px;
     }
 }
+
 
 .upload-icon {
     color: #262626;
@@ -194,12 +202,3 @@
 .cancel-discard-btn:hover {
     background-color: #fafafa;
 }
-
-/* Responsive modal sizing to match Instagram */
-@media (max-width: 768px) {
-    .create-post-modal {
-        max-width: 450px;
-        height: 500px;
-    }
-}
-
