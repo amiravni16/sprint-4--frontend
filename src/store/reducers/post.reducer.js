@@ -33,8 +33,20 @@ export function postReducer(state = initialState, action) {
             newState = { ...state, posts }
             break
         case ADD_POST_MSG:
-            if (action.msg && state.post) {
-                newState = { ...state, post: { ...state.post, comments: [...state.post.comments || [], action.msg] } }
+            if (action.msg && action.postId) {
+                // Update the posts array
+                posts = state.posts.map(post => {
+                    if (post._id === action.postId) {
+                        return { ...post, comments: [...(post.comments || []), action.msg] }
+                    }
+                    return post
+                })
+                newState = { ...state, posts }
+                
+                // Also update the single post if it exists and matches
+                if (state.post && state.post._id === action.postId) {
+                    newState = { ...state, posts, post: { ...state.post, comments: [...(state.post.comments || []), action.msg] } }
+                }
                 break
             }
         default:

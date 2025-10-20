@@ -5,6 +5,7 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { addPostMsg } from '../store/actions/post.actions'
 import { PostList } from '../cmps/PostList'
 import { PostDetailsModal } from '../cmps/PostDetailsModal'
+import { PostViewModal } from '../cmps/PostViewModal'
 import { postService } from '../services/post'
 import { userService } from '../services/user'
 import { login, signup } from '../store/actions/user.actions'
@@ -15,6 +16,7 @@ export function HomePage() {
     const posts = useSelector(storeState => storeState.postModule.posts)
     const user = useSelector(storeState => storeState.userModule.user)
     const [editingPost, setEditingPost] = useState(null)
+    const [viewingPost, setViewingPost] = useState(null)
 
         // Expose storage clear function to window for console access
         if (typeof window !== 'undefined') {
@@ -97,11 +99,25 @@ export function HomePage() {
                 }
             }
             
+            window.refreshFollowing = async () => {
+                try {
+                    console.log('🔄 Refreshing following status...')
+                    const updatedUser = await userService.getById(user._id)
+                    store.dispatch({ type: 'SET_USER', user: updatedUser })
+                    await loadPosts(filterBy)
+                    console.log('✅ Following status refreshed!')
+                    console.log('👤 Updated user:', updatedUser)
+                    console.log('👥 Following:', updatedUser.following)
+                } catch (err) {
+                    console.error('Error refreshing following:', err)
+                }
+            }
+            
         }
 
     useEffect(() => {
         loadPosts(filterBy)
-    }, [filterBy])
+    }, [filterBy, user])
 
     // Auto-login on mount
     useEffect(() => {
@@ -126,9 +142,10 @@ export function HomePage() {
             ]
 
             let loginSuccess = false
+            let loggedInUser = null
             for (const testUser of testUsers) {
                 try {
-                    const loggedInUser = await login(testUser)
+                    loggedInUser = await login(testUser)
                     if (loggedInUser) {
                         showSuccessMsg(`Auto-logged in as ${testUser.username} for development! 🧪`)
                         loginSuccess = true
@@ -149,13 +166,40 @@ export function HomePage() {
                         imgUrl: 'https://i.pravatar.cc/150?img=1',
                         isAdmin: true
                     }
-                    const savedUser = await signup(defaultUser)
-                    console.log('✅ Created user:', savedUser)
-                    console.log('Profile picture URL:', savedUser.imgUrl)
+                    loggedInUser = await signup(defaultUser)
+                    console.log('✅ Created user:', loggedInUser)
+                    console.log('Profile picture URL:', loggedInUser.imgUrl)
                     showSuccessMsg('Created and logged in as amir.avni! 🧪')
                 } catch (signupErr) {
                     console.log('Failed to create test user:', signupErr)
                     showErrorMsg('Failed to auto-login. Please use the signup page to create an account.')
+                }
+            }
+
+            // Auto-follow all other users so you can see their posts (only if not already following)
+            if (loggedInUser) {
+                try {
+                    const allUsers = await userService.getUsers()
+                    const otherUsers = allUsers.filter(u => u._id !== loggedInUser._id)
+                    const following = loggedInUser.following || []
+                    
+                    for (const otherUser of otherUsers) {
+                        // Only follow if not already following
+                        if (!following.includes(otherUser._id)) {
+                            try {
+                                await userService.toggleFollow(otherUser._id)
+                                console.log(`✅ Auto-followed ${otherUser.username}`)
+                            } catch (err) {
+                                console.log(`Failed to follow ${otherUser.username}:`, err)
+                            }
+                        }
+                    }
+                    
+                    // Reload the user to get updated following list
+                    const updatedUser = await userService.getById(loggedInUser._id)
+                    store.dispatch({ type: 'SET_USER', user: updatedUser })
+                } catch (err) {
+                    console.log('Failed to auto-follow users:', err)
                 }
             }
         } catch (err) {
@@ -217,6 +261,14 @@ export function HomePage() {
         } catch (err) {
             showErrorMsg('Cannot add comment')
         }
+    }
+
+    function onOpenPostDetails(post) {
+        setViewingPost(post)
+    }
+
+    function onClosePostDetails() {
+        setViewingPost(null)
     }
 
     async function onCreatePost() {
@@ -297,6 +349,7 @@ export function HomePage() {
                         onComment={onComment}
                         onDelete={onDeletePost}
                         onEdit={onEditPost}
+                        onOpenDetails={onOpenPostDetails}
                         user={user}
                     />
                 ) : (
@@ -360,6 +413,18 @@ export function HomePage() {
                     caption={editingPost.txt}
                     onClose={onCancelEdit}
                     onPost={onSaveEdit}
+                />
+            )}
+
+            {/* Post View Modal */}
+            {viewingPost && (
+                <PostViewModal
+                    isOpen={!!viewingPost}
+                    onClose={onClosePostDetails}
+                    post={viewingPost}
+                    onLike={onLike}
+                    onDelete={onDeletePost}
+                    onEdit={onEditPost}
                 />
             )}
         </div>

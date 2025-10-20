@@ -342,17 +342,23 @@
 }
 
 .post-preview .add-comment button {
-    background: none;
+    background: none !important;
     border: none;
     color: #0095f6;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     padding: 8px;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+.post-preview .add-comment button.active {
+    opacity: 1;
 }
 
 .post-preview .add-comment button:disabled {
-    color: #8e8e8e;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 

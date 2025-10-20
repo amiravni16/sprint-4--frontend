@@ -47,13 +47,18 @@ export function CropModal({ imageFile, onBack, onNext, onClose, onCropComplete }
     }
 
     const handleNext = async () => {
+        console.log('CropModal handleNext called')
         // Convert image to base64 for persistence
         const reader = new FileReader()
         reader.onloadend = () => {
+            console.log('FileReader onloadend called, image converted to base64')
             if (onCropComplete) {
+                console.log('Calling onCropComplete')
                 onCropComplete(reader.result) // base64 data URL
+            } else {
+                console.log('onCropComplete is not defined!')
             }
-            onNext()
+            // Don't call onNext here - it's handled in handleCropComplete
         }
         reader.readAsDataURL(imageFile)
     }
@@ -70,7 +75,7 @@ export function CropModal({ imageFile, onBack, onNext, onClose, onCropComplete }
             <div className="crop-modal">
                 {/* Header */}
                 <div className="crop-header">
-                    <button className="crop-back-btn" onClick={onClose}>
+                    <button className="crop-back-btn" onClick={onBack}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>

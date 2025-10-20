@@ -1,17 +1,22 @@
-.user-details {
-    max-width: 935px;
-    margin: 0 auto;
-    padding: 0;
+    .user-details {
+        max-width: 935px;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
 
-    .profile-container {
-        background: white;
-    }
+        .profile-container {
+            background: white;
+            width: 100%;
+            max-width: 935px;
+        }
 
     .profile-header {
         display: flex;
         gap: 30px;
         padding: 30px 20px;
         border-bottom: 1px solid #dbdbdb;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .profile-pic {
@@ -42,13 +47,7 @@
         color: #262626;
     }
 
-    .profile-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .edit-profile-btn,
-    .view-archive-btn {
+    .edit-profile-btn {
         background: transparent;
         color: #262626;
         border: 1px solid #dbdbdb;
@@ -60,8 +59,7 @@
         transition: all 0.2s;
     }
 
-    .edit-profile-btn:hover,
-    .view-archive-btn:hover {
+    .edit-profile-btn:hover {
         background: #fafafa;
     }
 
@@ -72,7 +70,12 @@
         .stat {
             display: flex;
             gap: 5px;
-            align-items: baseline;
+            align-items: center;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: opacity 0.2s;
 
             strong {
                 font-size: 16px;
@@ -83,6 +86,10 @@
             span {
                 font-size: 16px;
                 color: #262626;
+            }
+
+            &:hover {
+                opacity: 0.7;
             }
         }
     }
@@ -143,8 +150,8 @@
     /* Tabs */
     .profile-tabs {
         display: flex;
-        justify-content: center;
         border-top: 1px solid #dbdbdb;
+        width: 100%;
     }
 
     .profile-tab {
@@ -156,6 +163,10 @@
         border-top: 1px solid transparent;
         margin-top: -1px;
         transition: all 0.2s;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .profile-tab:hover {

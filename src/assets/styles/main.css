@@ -26,4 +26,5 @@
 @import "cmps/PostFilter.css";
 @import "cmps/UploadModal.css";
 @import "cmps/CropModal.css";
-@import "cmps/PostDetailsModal.css";
+@import "cmps/PostViewModal.css";
+@import "cmps/FollowersModal.css";

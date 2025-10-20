@@ -28,12 +28,17 @@ export function UploadModal({ isOpen, onClose }) {
     }
 
     const handleCropComplete = (imageUrl) => {
+        console.log('handleCropComplete called with:', imageUrl ? 'image' : 'no image')
         setCroppedImage(imageUrl)
+        // After setting the cropped image, show the post details modal
+        setShowCrop(false)
+        setShowPostCreate(true)
+        console.log('State updated: showCrop=false, showPostCreate=true')
     }
 
     const handleNextFromCrop = () => {
-        setShowCrop(false)
-        setShowPostCreate(true)
+        // This is called by CropModal, but we handle the transition in handleCropComplete
+        // No need to do anything here
     }
 
     const handleBackFromPostCreate = () => {
@@ -42,10 +47,13 @@ export function UploadModal({ isOpen, onClose }) {
     }
 
     const handleCloseAttempt = () => {
+        console.log('handleCloseAttempt called, selectedFile:', !!selectedFile, 'croppedImage:', !!croppedImage)
         // Show discard modal if there's progress
         if (selectedFile || croppedImage) {
+            console.log('Showing discard modal')
             setShowDiscardModal(true)
         } else {
+            console.log('Closing modal (no progress)')
             onClose()
         }
     }
@@ -98,6 +106,7 @@ export function UploadModal({ isOpen, onClose }) {
 
     // Show PostDetails modal after crop
     if (showPostCreate && croppedImage) {
+        console.log('Rendering PostDetailsModal with croppedImage')
         return (
             <>
                 <PostDetailsModal

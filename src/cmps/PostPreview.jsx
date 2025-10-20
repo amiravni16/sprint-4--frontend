@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useRef, useState } from 'react'
 
-export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit }) {
+export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, onOpenDetails }) {
     const [isAnimating, setIsAnimating] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const justUnlikedRef = useRef(false)
     const [imageError, setImageError] = useState(false)
     const [showOptionsModal, setShowOptionsModal] = useState(false)
+    const [commentText, setCommentText] = useState('')
     
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -66,6 +67,13 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit })
         }
     }
 
+    const handleSubmitComment = () => {
+        if (commentText.trim() && onComment) {
+            onComment(post._id, commentText.trim())
+            setCommentText('')
+        }
+    }
+
     return (
         <article className="post-preview">
             {/* Post Header */}
@@ -105,6 +113,8 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit })
                     alt="Post" 
                     className="post-image"
                     onError={() => setImageError(true)}
+                    onClick={() => onOpenDetails && onOpenDetails(post)}
+                    style={{ cursor: 'pointer' }}
                 />
             )}
             {imageError && (
@@ -137,7 +147,10 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit })
                             {post.likedBy.length}
                         </span>
                     )}
-                    <button className="action-btn comment-btn">
+                    <button 
+                        className="action-btn comment-btn"
+                        onClick={() => onOpenDetails && onOpenDetails(post)}
+                    >
                         <img 
                             src="/src/assets/icons/comment.svg" 
                             alt="Comment" 
@@ -210,7 +223,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit })
                 <div className="comments-section">
                     {post.comments.length > 2 && (
                         <div style={{ fontSize: '14px', color: '#8e8e8e', marginBottom: '8px' }}>
-                            View all {post.comments.length} comments
+                            View all {post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}
                         </div>
                     )}
                     {post.comments.slice(-2).map(comment => (
@@ -236,14 +249,21 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit })
                 <input 
                     type="text" 
                     placeholder="Add a comment..." 
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
                     onKeyPress={(e) => {
-                        if (e.key === 'Enter' && e.target.value.trim()) {
-                            onComment && onComment(post._id, e.target.value.trim())
-                            e.target.value = ''
+                        if (e.key === 'Enter') {
+                            handleSubmitComment()
                         }
                     }}
                 />
-                <button>Post</button>
+                <button 
+                    onClick={handleSubmitComment}
+                    className={commentText.trim() ? 'active' : ''}
+                    disabled={!commentText.trim()}
+                >
+                    Post
+                </button>
             </div>
 
             {/* Post Options Modal */}

@@ -5,8 +5,29 @@ import { ADD_POST, REMOVE_POST, SET_POSTS, SET_POST, UPDATE_POST, ADD_POST_MSG }
 export async function loadPosts(filterBy) {
     try {
         const posts = await postService.query(filterBy)
-        store.dispatch(getCmdSetPosts(posts))
-        return posts
+        
+        // Filter posts to show only posts from users the current user is following
+        const state = store.getState()
+        const loggedInUser = state.userModule.user
+        
+        if (loggedInUser && loggedInUser.following && loggedInUser.following.length > 0) {
+            const followingIds = loggedInUser.following
+            const filteredPosts = posts.filter(post => {
+                // Include posts from users you're following OR your own posts
+                return followingIds.includes(post.by?._id) || post.by?._id === loggedInUser._id
+            })
+            store.dispatch(getCmdSetPosts(filteredPosts))
+            return filteredPosts
+        } else if (loggedInUser) {
+            // If user is logged in but not following anyone, show only their own posts
+            const ownPosts = posts.filter(post => post.by?._id === loggedInUser._id)
+            store.dispatch(getCmdSetPosts(ownPosts))
+            return ownPosts
+        } else {
+            // If no user is logged in, show all posts
+            store.dispatch(getCmdSetPosts(posts))
+            return posts
+        }
     } catch (err) {
         console.log('Cannot load posts', err)
         throw err
@@ -58,7 +79,7 @@ export async function updatePost(post) {
 export async function addPostMsg(postId, txt) {
     try {
         const msg = await postService.addPostMsg(postId, txt)
-        store.dispatch(getCmdAddPostMsg(msg))
+        store.dispatch(getCmdAddPostMsg(msg, postId))
         return msg
     } catch (err) {
         console.log('Cannot add post msg', err)
@@ -102,10 +123,11 @@ function getCmdUpdatePost(post) {
     }
 }
 
-function getCmdAddPostMsg(msg) {
+function getCmdAddPostMsg(msg, postId) {
     return {
         type: ADD_POST_MSG,
-        msg
+        msg,
+        postId
     }
 }
 

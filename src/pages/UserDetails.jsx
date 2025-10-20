@@ -8,6 +8,8 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { socketService, SOCKET_EVENT_USER_UPDATED, SOCKET_EMIT_USER_WATCH } from '../services/socket.service'
 import { userService } from '../services/user'
 import { postService } from '../services/post'
+import { FollowersModal } from '../cmps/FollowersModal'
+import { FollowingModal } from '../cmps/FollowingModal'
 
 export function UserDetails() {
 
@@ -19,6 +21,8 @@ export function UserDetails() {
   const [savedPosts, setSavedPosts] = useState([])
   const [activeTab, setActiveTab] = useState('posts') // 'posts' or 'saved'
   const [debugUser, setDebugUser] = useState(null)
+  const [showFollowersModal, setShowFollowersModal] = useState(false)
+  const [showFollowingModal, setShowFollowingModal] = useState(false)
 
   useEffect(() => {
     async function ensureUser() {
@@ -47,6 +51,21 @@ export function UserDetails() {
       setIsFollowing(following.includes(user._id))
     }
   }, [loggedinUser, user])
+
+  useEffect(() => {
+    // Refresh logged-in user data when navigating to a new profile
+    async function refreshLoggedInUser() {
+      if (loggedinUser) {
+        try {
+          const freshLoggedinUser = await userService.getById(loggedinUser._id)
+          store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+        } catch (err) {
+          console.error('Error refreshing logged-in user:', err)
+        }
+      }
+    }
+    refreshLoggedInUser()
+  }, [params.id])
 
   useEffect(() => {
     // Load posts for this user
@@ -169,6 +188,21 @@ export function UserDetails() {
     }
   }
 
+  async function handleRefreshUser() {
+    try {
+      const updatedUser = await userService.getById(user._id)
+      store.dispatch({ type: 'SET_WATCHED_USER', user: updatedUser })
+      
+      if (loggedinUser) {
+        const freshLoggedinUser = await userService.getById(loggedinUser._id)
+        store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+        setIsFollowing((freshLoggedinUser.following || []).includes(user._id))
+      }
+    } catch (err) {
+      console.error('Error refreshing user:', err)
+    }
+  }
+
   const isOwnProfile = loggedinUser && user && loggedinUser._id === user._id
 
   return (
@@ -184,10 +218,7 @@ export function UserDetails() {
             <div className="profile-header-top">
               <h2 className="profile-username">{user.username}</h2>
               {isOwnProfile ? (
-                <div className="profile-actions">
-                  <button className="edit-profile-btn">Edit profile</button>
-                  <button className="view-archive-btn">View archive</button>
-                </div>
+                <button className="edit-profile-btn">Edit profile</button>
               ) : (
                 <button 
                   className={`follow-btn ${isFollowing ? 'following' : ''}`}
@@ -199,18 +230,24 @@ export function UserDetails() {
             </div>
 
             <div className="profile-stats">
-              <div className="stat">
+              <button className="stat" onClick={() => {}}>
                 <strong>{userPosts.length}</strong>
-                <span>posts</span>
-              </div>
-              <div className="stat">
+                <span>{userPosts.length === 1 ? 'post' : 'posts'}</span>
+              </button>
+              <button 
+                className="stat"
+                onClick={() => setShowFollowersModal(true)}
+              >
                 <strong>{user.followers?.length || 0}</strong>
-                <span>followers</span>
-              </div>
-              <div className="stat">
+                <span>{user.followers?.length === 1 ? 'follower' : 'followers'}</span>
+              </button>
+              <button 
+                className="stat"
+                onClick={() => setShowFollowingModal(true)}
+              >
                 <strong>{user.following?.length || 0}</strong>
                 <span>following</span>
-              </div>
+              </button>
             </div>
 
             <div className="profile-bio">
@@ -273,77 +310,120 @@ export function UserDetails() {
           </div>
         )}
 
-        {/* Debug info - can remove later */}
-        <details style={{ marginTop: '2rem' }}>
-          <summary>Debug: User Data (click to expand)</summary>
-          <div style={{ marginBottom: '1rem' }}>
-            <button 
-              onClick={async () => {
-                try {
-                  const all = await userService.getUsers()
-                  const adminUser = all.find(u => u.username === 'amir.avni')
-                  console.log('🔍 All users:', all)
-                  console.log('🔍 Admin user found:', adminUser)
-                  setDebugUser(adminUser)
-                } catch (err) {
-                  console.error('Error refreshing debug:', err)
-                }
-              }}
-              style={{ 
-                padding: '8px 16px', 
-                backgroundColor: '#0095f6', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginRight: '8px'
-              }}
-            >
-              Refresh Debug Data
-            </button>
-            <button 
-              onClick={() => {
-                const stored = localStorage.getItem('user')
-                console.log('🔍 Raw localStorage user data:', stored)
-                try {
-                  const parsed = JSON.parse(stored)
-                  console.log('🔍 Parsed localStorage user data:', parsed)
-                } catch (e) {
-                  console.log('🔍 Error parsing localStorage:', e)
-                }
-              }}
-              style={{ 
-                padding: '8px 16px', 
-                backgroundColor: '#8e8e8e', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Check localStorage
-            </button>
-          </div>
-          <pre style={{ fontSize: '12px', background: '#f5f5f5', padding: '1rem', borderRadius: '8px', overflow: 'auto' }}>
-            {JSON.stringify({
-              _id: debugUser?._id,
-              username: debugUser?.username,
-              fullname: debugUser?.fullname,
-              imgUrl: debugUser?.imgUrl,
-              isAdmin: debugUser?.isAdmin,
-              stats: {
-                postsCount: userPosts.length,
-                followersCount: debugUser?.followers?.length || 0,
-                followingCount: debugUser?.following?.length || 0,
-                savedPostsCount: debugUser?.savedPosts?.length || 0
-              },
-              followers: debugUser?.followers || [],
-              following: debugUser?.following || [],
-              savedPosts: debugUser?.savedPosts || []
-            }, null, 2)}
-          </pre>
-        </details>
+        {/* Debug info - only show on own profile */}
+        {isOwnProfile && (
+          <details style={{ marginTop: '2rem' }}>
+            <summary>Debug: User Data (click to expand)</summary>
+            <div style={{ marginBottom: '1rem' }}>
+              <button 
+                onClick={async () => {
+                  try {
+                    const all = await userService.getUsers()
+                    const adminUser = all.find(u => u.username === 'amir.avni')
+                    console.log('🔍 All users:', all)
+                    console.log('🔍 Admin user found:', adminUser)
+                    setDebugUser(adminUser)
+                  } catch (err) {
+                    console.error('Error refreshing debug:', err)
+                  }
+                }}
+                style={{ 
+                  padding: '8px 16px', 
+                  backgroundColor: '#0095f6', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  marginRight: '8px'
+                }}
+              >
+                Refresh Debug Data
+              </button>
+              <button 
+                onClick={() => {
+                  const stored = localStorage.getItem('user')
+                  console.log('🔍 Raw localStorage user data:', stored)
+                  try {
+                    const parsed = JSON.parse(stored)
+                    console.log('🔍 Parsed localStorage user data:', parsed)
+                  } catch (e) {
+                    console.log('🔍 Error parsing localStorage:', e)
+                  }
+                }}
+                style={{ 
+                  padding: '8px 16px', 
+                  backgroundColor: '#8e8e8e', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Check localStorage
+              </button>
+            </div>
+            <pre style={{ fontSize: '12px', background: '#f5f5f5', padding: '1rem', borderRadius: '8px', overflow: 'auto' }}>
+              {JSON.stringify({
+                _id: debugUser?._id,
+                username: debugUser?.username,
+                fullname: debugUser?.fullname,
+                imgUrl: debugUser?.imgUrl,
+                isAdmin: debugUser?.isAdmin,
+                stats: {
+                  postsCount: userPosts.length,
+                  followersCount: debugUser?.followers?.length || 0,
+                  followingCount: debugUser?.following?.length || 0,
+                  savedPostsCount: debugUser?.savedPosts?.length || 0
+                },
+                followers: debugUser?.followers || [],
+                following: debugUser?.following || [],
+                savedPosts: debugUser?.savedPosts || []
+              }, null, 2)}
+            </pre>
+          </details>
+        )}
       </div>}
+
+      {/* Followers Modal */}
+      {isOwnProfile && (
+        <FollowersModal
+          isOpen={showFollowersModal}
+          onClose={() => setShowFollowersModal(false)}
+          followers={user.followers || []}
+          currentUserId={user._id}
+          onUpdate={handleRefreshUser}
+        />
+      )}
+
+      {/* Following Modal */}
+      {isOwnProfile && (
+        <FollowingModal
+          isOpen={showFollowingModal}
+          onClose={() => setShowFollowingModal(false)}
+          following={user.following || []}
+          currentUserId={user._id}
+          onUpdate={handleRefreshUser}
+        />
+      )}
+
+      {/* View-only modals for other users */}
+      {!isOwnProfile && (
+        <FollowersModal
+          isOpen={showFollowersModal}
+          onClose={() => setShowFollowersModal(false)}
+          followers={user.followers || []}
+          currentUserId={user._id}
+        />
+      )}
+
+      {!isOwnProfile && (
+        <FollowingModal
+          isOpen={showFollowingModal}
+          onClose={() => setShowFollowingModal(false)}
+          following={user.following || []}
+          currentUserId={user._id}
+        />
+      )}
     </section>
   )
 }

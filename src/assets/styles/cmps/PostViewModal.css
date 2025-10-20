@@ -147,33 +147,110 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
+    padding: 8px 12px;
     border-top: 1px solid #efefef;
 }
 
-.post-details-action-icons {
+.action-group {
     display: flex;
-    gap: 16px;
+    align-items: center;
 }
 
-.post-details-action-btn {
-    background: none;
+.action-btn {
+    background: none !important;
     border: none;
+    font-size: 24px;
     cursor: pointer;
-    padding: 4px;
+    padding: 8px;
+    margin: 0;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #262626;
-    transition: opacity 0.2s;
+    transition: color 0.15s ease;
 }
 
-.post-details-action-btn:hover {
-    opacity: 0.7;
+.action-btn img,
+.action-btn svg {
+    margin: 0;
+    padding: 0;
+    display: block;
 }
 
-.post-details-action-btn.liked {
+.action-btn.like-btn {
+    color: #262626;
+    position: relative;
+}
+
+.action-btn.like-btn.liked {
     color: #ed4956;
+}
+
+/* Heartbeat animation for like button */
+.action-btn.like-btn.animating {
+    animation: heartbeat 0.4s ease-in-out;
+}
+
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1.3);
+    }
+    40% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.action-btn.like-btn:hover:not(.liked) {
+    color: #8e8e8e;
+}
+
+.action-btn.like-btn.liked:hover {
+    color: #ed4956;
+}
+
+.action-btn.comment-btn,
+.action-btn.share-btn,
+.action-btn.save-btn {
+    color: #262626;
+}
+
+.action-btn.comment-btn img,
+.action-btn.share-btn img,
+.action-btn.save-btn img {
+    transition: opacity 0.15s ease;
+}
+
+.action-btn.comment-btn:hover img {
+    opacity: 0.5;
+}
+
+.action-btn.share-btn:hover img {
+    opacity: 0.5;
+}
+
+.action-btn.save-btn:hover img {
+    opacity: 0.5;
+}
+
+.action-btn.save-btn {
+    margin-left: auto;
+    padding: 8px;
+}
+
+.action-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #262626;
+    cursor: pointer;
+    margin-left: -2px;
+    margin-right: 4px;
 }
 
 .post-details-likes {
@@ -207,7 +284,7 @@
 }
 
 .post-details-comment-submit {
-    background: none;
+    background: none !important;
     border: none;
     color: #0095f6;
     font-size: 14px;
