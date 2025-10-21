@@ -7,7 +7,6 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const justUnlikedRef = useRef(false)
     const [imageError, setImageError] = useState(false)
     const [showOptionsModal, setShowOptionsModal] = useState(false)
-    const [commentText, setCommentText] = useState('')
     
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -67,12 +66,6 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
         }
     }
 
-    const handleSubmitComment = () => {
-        if (commentText.trim() && onComment) {
-            onComment(post._id, commentText.trim())
-            setCommentText('')
-        }
-    }
 
     return (
         <article className="post-preview">
@@ -218,53 +211,12 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                 </div>
             )}
 
-            {/* Comments Section */}
-            {post.comments && post.comments.length > 0 && (
-                <div className="comments-section">
-                    {post.comments.length > 2 && (
-                        <div style={{ fontSize: '14px', color: '#8e8e8e', marginBottom: '8px' }}>
-                            View all {post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}
-                        </div>
-                    )}
-                    {post.comments.slice(-2).map(comment => (
-                        <div key={comment.id} className="comment">
-                            <Link to={`/user/${comment.by._id}`} className="username">
-                                {comment.by.username || comment.by.fullname}
-                            </Link>
-                            {comment.txt}
-                        </div>
-                    ))}
-                </div>
-            )}
-
             {/* Post Time */}
             {post.createdAt && (
                 <div className="post-time">
                     {formatTimeAgo(post.createdAt)} ago
                 </div>
             )}
-
-            {/* Add Comment */}
-            <div className="add-comment">
-                <input 
-                    type="text" 
-                    placeholder="Add a comment..." 
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSubmitComment()
-                        }
-                    }}
-                />
-                <button 
-                    onClick={handleSubmitComment}
-                    className={commentText.trim() ? 'active' : ''}
-                    disabled={!commentText.trim()}
-                >
-                    Post
-                </button>
-            </div>
 
             {/* Post Options Modal */}
             {showOptionsModal && (

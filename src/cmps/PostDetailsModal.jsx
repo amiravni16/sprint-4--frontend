@@ -8,8 +8,20 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
     const user = useSelector(storeState => storeState.userModule.user)
     const isOwnPost = user && post && user._id === post.by?._id
 
+    const formatTimeAgo = (timestamp) => {
+        const now = new Date()
+        const postTime = new Date(timestamp)
+        const diffInSeconds = Math.floor((now - postTime) / 1000)
+        
+        if (diffInSeconds < 60) return 'JUST NOW'
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}M`
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}H`
+        return `${Math.floor(diffInSeconds / 86400)}D`
+    }
+
     // If croppedImage is provided, this is for creating a new post
     if (croppedImage) {
+        console.log('PostDetailsModal: rendering create post modal with croppedImage:', !!croppedImage)
         return renderCreatePostModal()
     }
 
@@ -75,41 +87,6 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                         )}
                     </div>
 
-                    {/* Comments section */}
-                    <div className="post-details-comments">
-                        {/* Caption */}
-                        <div className="post-details-comment">
-                            <img 
-                                src={post.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
-                                alt={post.by?.username}
-                                className="post-details-comment-avatar"
-                            />
-                            <div className="post-details-comment-content">
-                                <span className="post-details-comment-username">{post.by?.username}</span>
-                                <span className="post-details-comment-text">{post.txt}</span>
-                            </div>
-                        </div>
-
-                        {/* Comments */}
-                        {post.comments && post.comments.length > 0 && (
-                            <>
-                                {post.comments.map((comment, idx) => (
-                                    <div key={idx} className="post-details-comment">
-                                        <img 
-                                            src={comment.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
-                                            alt={comment.by?.username}
-                                            className="post-details-comment-avatar"
-                                        />
-                                        <div className="post-details-comment-content">
-                                            <span className="post-details-comment-username">{comment.by?.username}</span>
-                                            <span className="post-details-comment-text">{comment.txt}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </>
-                        )}
-                    </div>
-
                     {/* Actions */}
                     <div className="post-details-actions">
                         <div className="post-details-action-icons">
@@ -145,6 +122,48 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                         <strong>{post.likedBy?.length || 0} likes</strong>
                     </div>
 
+                    {/* Post time */}
+                    {post.createdAt && (
+                        <div className="post-details-time">
+                            {formatTimeAgo(post.createdAt)} ago
+                        </div>
+                    )}
+
+                    {/* Comments section */}
+                    <div className="post-details-comments">
+                        {/* Caption */}
+                        <div className="post-details-comment">
+                            <img 
+                                src={post.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                alt={post.by?.username}
+                                className="post-details-comment-avatar"
+                            />
+                            <div className="post-details-comment-content">
+                                <span className="post-details-comment-username">{post.by?.username}</span>
+                                <span className="post-details-comment-text">{post.txt}</span>
+                            </div>
+                        </div>
+
+                        {/* Comments */}
+                        {post.comments && post.comments.length > 0 && (
+                            <>
+                                {post.comments.map((comment, idx) => (
+                                    <div key={idx} className="post-details-comment">
+                                        <img 
+                                            src={comment.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                            alt={comment.by?.username}
+                                            className="post-details-comment-avatar"
+                                        />
+                                        <div className="post-details-comment-content">
+                                            <span className="post-details-comment-username">{comment.by?.username}</span>
+                                            <span className="post-details-comment-text">{comment.txt}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
+
                     {/* Comment form */}
                     <form className="post-details-comment-form" onSubmit={handleAddComment}>
                         <input
@@ -167,6 +186,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
     )
 
     function renderCreatePostModal() {
+        console.log('renderCreatePostModal called')
         const [caption, setCaption] = useState('')
         const [characterCount, setCharacterCount] = useState(0)
 

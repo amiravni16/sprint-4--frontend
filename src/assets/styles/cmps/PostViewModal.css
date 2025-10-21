@@ -24,7 +24,7 @@
 }
 
 .post-details-close {
-    position: absolute;
+    position: fixed;
     top: 16px;
     right: 16px;
     background: rgba(0, 0, 0, 0.5);
@@ -37,7 +37,7 @@
     justify-content: center;
     cursor: pointer;
     color: white;
-    z-index: 10001;
+    z-index: 10005;
     transition: background-color 0.2s;
 }
 

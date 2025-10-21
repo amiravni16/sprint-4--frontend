@@ -20,6 +20,31 @@ export function HomePage() {
 
         // Expose storage clear function to window for console access
         if (typeof window !== 'undefined') {
+            // Quick fix for following issue - auto-refresh following on page load
+            window.autoFixFollowing = async () => {
+                try {
+                    console.log('🔧 Auto-fixing following status...')
+                    const currentUser = store.getState().userModule.user
+                    if (!currentUser) {
+                        console.log('❌ No user logged in')
+                        return
+                    }
+                    const updatedUser = await userService.getById(currentUser._id)
+                    if (updatedUser && (!updatedUser.following || updatedUser.following.length === 0)) {
+                        // Restore demo following relationships
+                        updatedUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
+                        await userService.save(updatedUser)
+                        store.dispatch({ type: 'SET_USER', user: updatedUser })
+                        await loadPosts(filterBy)
+                        console.log('✅ Following status auto-fixed!')
+                        console.log('👥 Now following:', updatedUser.following)
+                    } else {
+                        console.log('✅ User already following people:', updatedUser.following)
+                    }
+                } catch (err) {
+                    console.error('Error auto-fixing following:', err)
+                }
+            }
             window.clearInstagramStorage = () => {
                 localStorage.clear()
                 sessionStorage.clear()
@@ -117,6 +142,12 @@ export function HomePage() {
 
     useEffect(() => {
         loadPosts(filterBy)
+        
+        // Auto-fix following status if user is loaded but not following anyone
+        if (user && (!user.following || user.following.length === 0)) {
+            console.log('🔧 Auto-fixing following status...')
+            autoFixFollowing()
+        }
     }, [filterBy, user])
 
     // Auto-login on mount
@@ -126,6 +157,23 @@ export function HomePage() {
         }
     }, [])
     
+    async function autoFixFollowing() {
+        try {
+            console.log('🔧 Auto-fixing following status...')
+            const updatedUser = await userService.getById(user._id)
+            if (updatedUser && (!updatedUser.following || updatedUser.following.length === 0)) {
+                // Restore demo following relationships
+                updatedUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
+                await userService.save(updatedUser)
+                store.dispatch({ type: 'SET_USER', user: updatedUser })
+                await loadPosts(filterBy)
+                console.log('✅ Following status auto-fixed!')
+                console.log('👥 Now following:', updatedUser.following)
+            }
+        } catch (err) {
+            console.error('Error auto-fixing following:', err)
+        }
+    }
 
     async function autoLoginForTesting() {
         try {

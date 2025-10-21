@@ -75,10 +75,33 @@ function init() {
                         fullname: admin.fullname,
                         imgUrl: admin.imgUrl,
                         isAdmin: !!admin.isAdmin,
+                        following: admin.following || [],
+                        followers: admin.followers || [],
+                        savedPosts: admin.savedPosts || []
                     }))
                     console.log('🔁 Fixed stale loggedinUser session to', admin._id)
+                    console.log('👥 Restored following:', admin.following)
                 } else {
                     sessionStorage.removeItem('loggedinUser')
+                }
+            } else {
+                // User exists, but check if following relationships are missing
+                const currentUser = users.find(u => u._id === logged._id)
+                if (currentUser && (!currentUser.following || currentUser.following.length === 0)) {
+                    console.log('🔧 Restoring missing following relationships for', currentUser.username)
+                    currentUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
+                    localStorage.setItem('user', JSON.stringify(users))
+                    // Update session storage too
+                    sessionStorage.setItem('loggedinUser', JSON.stringify({
+                        _id: currentUser._id,
+                        fullname: currentUser.fullname,
+                        imgUrl: currentUser.imgUrl,
+                        isAdmin: !!currentUser.isAdmin,
+                        following: currentUser.following,
+                        followers: currentUser.followers || [],
+                        savedPosts: currentUser.savedPosts || []
+                    }))
+                    console.log('✅ Following relationships restored:', currentUser.following)
                 }
             }
         }

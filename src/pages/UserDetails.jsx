@@ -406,8 +406,8 @@ export function UserDetails() {
         />
       )}
 
-      {/* View-only modals for other users */}
-      {!isOwnProfile && (
+      {/* View-only modals for other users - render only when user is loaded */}
+      {!isOwnProfile && user && (
         <FollowersModal
           isOpen={showFollowersModal}
           onClose={() => setShowFollowersModal(false)}
@@ -416,7 +416,7 @@ export function UserDetails() {
         />
       )}
 
-      {!isOwnProfile && (
+      {!isOwnProfile && user && (
         <FollowingModal
           isOpen={showFollowingModal}
           onClose={() => setShowFollowingModal(false)}
