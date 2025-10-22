@@ -9,6 +9,7 @@ import { userService } from '../services/user'
 import { postService } from '../services/post'
 import { FollowersModal } from '../cmps/FollowersModal'
 import { FollowingModal } from '../cmps/FollowingModal'
+import { PostViewModal } from '../cmps/PostViewModal'
 
 export function UserDetails() {
 
@@ -22,6 +23,7 @@ export function UserDetails() {
   const [debugUser, setDebugUser] = useState(null)
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
+  const [viewingPost, setViewingPost] = useState(null)
 
   useEffect(() => {
     async function ensureUser() {
@@ -197,23 +199,34 @@ export function UserDetails() {
     }
   }
 
+  function onOpenPostView(post) {
+    setViewingPost(post)
+  }
+
+  function onClosePostView() {
+    setViewingPost(null)
+  }
+
   const isOwnProfile = loggedinUser && user && loggedinUser._id === user._id
 
   return (
     <section className="user-details">
       {user && <div className="profile-container">
         <div className="profile-header">
-          <img 
-            src={user.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
-            alt={user.fullname}
-            className="profile-pic"
-          />
+          <div className="profile-left">
+            <img 
+              src={user.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+              alt={user.fullname}
+              className="profile-pic"
+            />
+            {isOwnProfile && (
+              <button className="edit-profile-btn">Edit profile</button>
+            )}
+          </div>
           <div className="profile-info">
             <div className="profile-header-top">
               <h2 className="profile-username">{user.username}</h2>
-              {isOwnProfile ? (
-                <button className="edit-profile-btn">Edit profile</button>
-              ) : (
+              {!isOwnProfile && (
                 <button 
                   className={`follow-btn ${isFollowing ? 'following' : ''}`}
                   onClick={onToggleFollow}
@@ -258,10 +271,15 @@ export function UserDetails() {
             onClick={() => setActiveTab('posts')}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
-              <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
-              <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
-              <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill={activeTab === 'posts' ? 'currentColor' : 'none'}/>
+              <rect x="3" y="3" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="9.5" y="3" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="16" y="3" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="3" y="9.5" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="9.5" y="9.5" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="16" y="9.5" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="3" y="16" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="9.5" y="16" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <rect x="16" y="16" width="5" height="5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
             </svg>
           </button>
           
@@ -280,7 +298,11 @@ export function UserDetails() {
         {/* Posts Grid */}
         <div className="profile-posts-grid">
           {(activeTab === 'posts' ? userPosts : savedPosts).map(post => (
-            <div key={post._id} className="profile-post-thumbnail">
+            <div 
+              key={post._id} 
+              className="profile-post-thumbnail"
+              onClick={() => onOpenPostView(post)}
+            >
               <img src={post.imgUrl} alt="Post" />
               <div className="post-overlay">
                 <div className="post-stats">
@@ -416,6 +438,18 @@ export function UserDetails() {
           onClose={() => setShowFollowingModal(false)}
           following={user.following || []}
           currentUserId={user._id}
+        />
+      )}
+
+      {/* Post View Modal */}
+      {viewingPost && (
+        <PostViewModal
+          isOpen={!!viewingPost}
+          onClose={onClosePostView}
+          post={viewingPost}
+          onLike={() => {}} // You can implement like functionality here if needed
+          onDelete={() => {}} // You can implement delete functionality here if needed
+          onEdit={() => {}} // You can implement edit functionality here if needed
         />
       )}
     </section>

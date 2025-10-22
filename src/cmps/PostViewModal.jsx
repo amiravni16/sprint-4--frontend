@@ -6,12 +6,31 @@ import { showSuccessMsg } from '../services/event-bus.service'
 export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit }) {
     const [commentText, setCommentText] = useState('')
     const [isAnimating, setIsAnimating] = useState(false)
+    const [imageAspectRatio, setImageAspectRatio] = useState('square')
     const user = useSelector(storeState => storeState.userModule.user)
     const posts = useSelector(storeState => storeState.postModule.posts)
     
     // Get the updated post from Redux store
     const currentPost = posts.find(p => p._id === post._id) || post
     const isOwnPost = user && currentPost && user._id === currentPost.by?._id
+
+    // Detect image aspect ratio
+    useEffect(() => {
+        if (currentPost?.imgUrl) {
+            const img = new Image()
+            img.onload = () => {
+                const aspectRatio = img.width / img.height
+                if (aspectRatio > 1.1) {
+                    setImageAspectRatio('horizontal')
+                } else if (aspectRatio < 0.9) {
+                    setImageAspectRatio('vertical')
+                } else {
+                    setImageAspectRatio('square')
+                }
+            }
+            img.src = currentPost.imgUrl
+        }
+    }, [currentPost?.imgUrl])
 
     if (!isOpen || !currentPost) return null
 
@@ -54,7 +73,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit 
                 </button>
 
                 {/* Image section */}
-                <div className="post-details-image">
+                <div className={`post-details-image ${imageAspectRatio}`}>
                     <img src={currentPost.imgUrl} alt="Post" />
                 </div>
 

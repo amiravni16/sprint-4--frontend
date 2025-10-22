@@ -57,7 +57,22 @@
 .post-details-image img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+/* Horizontal images - use contain to show full image with black borders */
+.post-details-image.horizontal img {
     object-fit: contain;
+}
+
+/* Vertical images - use cover to fill height without borders */
+.post-details-image.vertical img {
+    object-fit: cover;
+}
+
+/* Square images - use cover for consistency */
+.post-details-image.square img {
+    object-fit: cover;
 }
 
 .post-details-content {
