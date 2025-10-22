@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { loadPosts, addPost, updatePost, removePost } from '../store/actions/post.actions'
-import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { addPostMsg } from '../store/actions/post.actions'
 import { PostList } from '../cmps/PostList'
 import { PostDetailsModal } from '../cmps/PostDetailsModal'
@@ -195,7 +194,6 @@ export function HomePage() {
                 try {
                     loggedInUser = await login(testUser)
                     if (loggedInUser) {
-                        showSuccessMsg(`Auto-logged in as ${testUser.username} for development! 🧪`)
                         loginSuccess = true
                         break
                     }
@@ -217,10 +215,8 @@ export function HomePage() {
                     loggedInUser = await signup(defaultUser)
                     console.log('✅ Created user:', loggedInUser)
                     console.log('Profile picture URL:', loggedInUser.imgUrl)
-                    showSuccessMsg('Created and logged in as amir.avni! 🧪')
                 } catch (signupErr) {
                     console.log('Failed to create test user:', signupErr)
-                    showErrorMsg('Failed to auto-login. Please use the signup page to create an account.')
                 }
             }
 
@@ -291,23 +287,15 @@ export function HomePage() {
 
             await updatePost(updatedPost)
             
-            if (isCurrentlyLiked) {
-                showSuccessMsg('Post unliked! 💔')
-            } else {
-                showSuccessMsg('Post liked! ❤️')
-            }
         } catch (err) {
             console.error('Error toggling like:', err)
-            showErrorMsg('Cannot like post')
         }
     }
 
     async function onComment(postId, commentText) {
         try {
             await addPostMsg(postId, commentText)
-            showSuccessMsg('Comment added! 💬')
         } catch (err) {
-            showErrorMsg('Cannot add comment')
         }
     }
 
@@ -340,22 +328,18 @@ export function HomePage() {
         
         try {
             const savedPost = await addPost(post)
-            showSuccessMsg(`Post created successfully! 🎉`)
             // Reload posts to show the new one
             loadPosts(filterBy)
         } catch (err) {
-            showErrorMsg('Cannot create post')
         }
     }
 
     async function onDeletePost(postId) {
         try {
             await removePost(postId)
-            showSuccessMsg('Post deleted successfully! 🗑️')
             // Reload posts to reflect the deletion
             loadPosts(filterBy)
         } catch (err) {
-            showErrorMsg('Cannot delete post')
         }
     }
 
@@ -373,12 +357,10 @@ export function HomePage() {
                 imgUrl: postData.image || editingPost.imgUrl
             }
             await updatePost(updatedPost)
-            showSuccessMsg('Post updated successfully! ✏️')
             setEditingPost(null)
             // Reload posts to reflect the update
             loadPosts(filterBy)
         } catch (err) {
-            showErrorMsg('Cannot update post')
         }
     }
 

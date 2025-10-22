@@ -7,6 +7,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const justUnlikedRef = useRef(false)
     const [imageError, setImageError] = useState(false)
     const [showOptionsModal, setShowOptionsModal] = useState(false)
+    const [isCaptionExpanded, setIsCaptionExpanded] = useState(false)
     
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -22,6 +23,17 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const isLiked = post.likedBy && user && post.likedBy.includes(user._id)
     const hasComments = post.comments && post.comments.length > 0
     const hasLikes = post.likedBy && post.likedBy.length > 0
+
+    // Caption truncation logic
+    const MAX_CAPTION_LENGTH = 150
+    const shouldTruncate = post.txt && post.txt.length > MAX_CAPTION_LENGTH
+    const displayCaption = shouldTruncate && !isCaptionExpanded 
+        ? post.txt.substring(0, MAX_CAPTION_LENGTH) + '...'
+        : post.txt
+
+    const handleToggleCaption = () => {
+        setIsCaptionExpanded(!isCaptionExpanded)
+    }
 
     const handleLike = () => {
         if (!onLike) return
@@ -190,7 +202,15 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                 <Link to={`/user/${post.by?._id}`} className="username">
                     {post.by?.username || 'amir.avni'}
                 </Link>
-                {post.txt}
+                {displayCaption}
+                {shouldTruncate && (
+                    <button 
+                        className="see-more-btn" 
+                        onClick={handleToggleCaption}
+                    >
+                        {isCaptionExpanded ? 'less' : 'more'}
+                    </button>
+                )}
             </div>
 
             {/* Post Tags */}

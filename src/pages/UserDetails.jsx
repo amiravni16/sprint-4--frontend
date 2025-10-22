@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { loadUser } from '../store/actions/user.actions'
 import { store } from '../store/store'
-import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { socketService, SOCKET_EVENT_USER_UPDATED, SOCKET_EMIT_USER_WATCH } from '../services/socket.service'
 import { userService } from '../services/user'
 import { postService } from '../services/post'
@@ -146,18 +145,15 @@ export function UserDetails() {
   }, [])
 
   function onUserUpdate(user) {
-    showSuccessMsg(`User ${user.fullname} profile was updated`)
     store.dispatch({ type: 'SET_WATCHED_USER', user })
   }
 
   async function onToggleFollow() {
     if (!loggedinUser) {
-      showErrorMsg('Please login to follow users')
       return
     }
 
     if (loggedinUser._id === user._id) {
-      showErrorMsg('You cannot follow yourself')
       return
     }
 
@@ -171,10 +167,8 @@ export function UserDetails() {
         if (!updatedUser.followers.includes(loggedinUser._id)) {
           updatedUser.followers.push(loggedinUser._id)
         }
-        showSuccessMsg(`You are now following ${user.fullname}`)
       } else {
         updatedUser.followers = updatedUser.followers.filter(id => id !== loggedinUser._id)
-        showSuccessMsg(`You unfollowed ${user.fullname}`)
       }
       
       store.dispatch({ type: 'SET_WATCHED_USER', updatedUser })

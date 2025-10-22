@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { CropModal } from './CropModal'
 import { PostDetailsModal } from './PostDetailsModal'
 
@@ -9,6 +9,21 @@ export function UploadModal({ isOpen, onClose }) {
     const [showCrop, setShowCrop] = useState(false)
     const [showPostCreate, setShowPostCreate] = useState(false)
     const [showDiscardModal, setShowDiscardModal] = useState(false)
+    const [discardFromBack, setDiscardFromBack] = useState(false)
+
+    // Disable scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+
+        // Cleanup function to restore scrolling when component unmounts
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isOpen])
 
     const handleSelectClick = () => {
         fileInputRef.current?.click()
@@ -23,8 +38,17 @@ export function UploadModal({ isOpen, onClose }) {
     }
 
     const handleBackFromCrop = () => {
-        setShowCrop(false)
-        setSelectedFile(null)
+        console.log('handleBackFromCrop called, selectedFile:', !!selectedFile)
+        // Show discard modal if there's progress
+        if (selectedFile) {
+            console.log('Showing discard modal from crop back button')
+            setDiscardFromBack(true)
+            setShowDiscardModal(true)
+        } else {
+            console.log('Going back to upload (no progress)')
+            setShowCrop(false)
+            setSelectedFile(null)
+        }
     }
 
     const handleCropComplete = (imageUrl) => {
@@ -42,6 +66,7 @@ export function UploadModal({ isOpen, onClose }) {
     }
 
     const handleBackFromPostCreate = () => {
+        console.log('handleBackFromPostCreate called - going back to crop')
         setShowPostCreate(false)
         setShowCrop(true)
     }
@@ -51,6 +76,7 @@ export function UploadModal({ isOpen, onClose }) {
         // Show discard modal if there's progress
         if (selectedFile || croppedImage) {
             console.log('Showing discard modal')
+            setDiscardFromBack(false)
             setShowDiscardModal(true)
         } else {
             console.log('Closing modal (no progress)')
@@ -67,6 +93,20 @@ export function UploadModal({ isOpen, onClose }) {
         onClose()
     }
 
+    const handleDiscardAndGoBack = () => {
+        setShowDiscardModal(false)
+        if (showPostCreate) {
+            // Going back from post creation to crop
+            setShowPostCreate(false)
+            setShowCrop(true)
+            // Don't clear the cropped image since we're going back to crop
+        } else if (showCrop) {
+            // Going back from crop to upload
+            setShowCrop(false)
+            setSelectedFile(null)
+        }
+    }
+
     const handleCancelDiscard = () => {
         setShowDiscardModal(false)
     }
@@ -75,7 +115,6 @@ export function UploadModal({ isOpen, onClose }) {
         try {
             // Import the addPost action
             const { addPost } = await import('../store/actions/post.actions')
-            const { showSuccessMsg, showErrorMsg } = await import('../services/event-bus.service')
             const { postService } = await import('../services/post')
             
             // Create a post object
@@ -85,7 +124,6 @@ export function UploadModal({ isOpen, onClose }) {
             
             // Save the post
             await addPost(post)
-            showSuccessMsg('Post created successfully! 🎉')
             
             // Close modals and reset state BEFORE calling onClose
             setShowPostCreate(false)
@@ -140,13 +178,13 @@ export function UploadModal({ isOpen, onClose }) {
     if (showCrop && selectedFile) {
         return (
             <>
-                <CropModal
-                    imageFile={selectedFile}
-                    onBack={handleBackFromCrop}
-                    onNext={handleNextFromCrop}
-                    onClose={handleCloseAttempt}
-                    onCropComplete={handleCropComplete}
-                />
+                    <CropModal
+                        imageFile={selectedFile}
+                        onBack={handleBackFromCrop}
+                        onNext={handleNextFromCrop}
+                        onClose={handleCloseAttempt}
+                        onCropComplete={handleCropComplete}
+                    />
                 {/* Discard modal overlay */}
                 {showDiscardModal && (
                     <div className="discard-modal-overlay">
@@ -154,8 +192,8 @@ export function UploadModal({ isOpen, onClose }) {
                             <h3>Discard post?</h3>
                             <p>If you leave, your edits won't be saved.</p>
                             <div className="discard-modal-divider"></div>
-                            <button className="discard-btn" onClick={handleDiscard}>
-                                Discard
+                            <button className="discard-btn" onClick={discardFromBack ? handleDiscardAndGoBack : handleDiscard}>
+                                {discardFromBack ? 'Go back to upload' : 'Discard'}
                             </button>
                             <div className="discard-modal-divider"></div>
                             <button className="cancel-discard-btn" onClick={handleCancelDiscard}>

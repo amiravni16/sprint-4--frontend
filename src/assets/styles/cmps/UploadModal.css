@@ -9,15 +9,14 @@
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    padding: 16px;
 }
 
 .create-post-modal {
     background: white;
     border-radius: 12px;
     width: 100%;
-    max-width: 700px;
-    height: 800px;
+    max-width: 500px;
+    height: 700px;
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -79,7 +78,15 @@
         padding: 5px 40px 40px !important;
     }
     .create-post-modal {
+        max-width: 450px;
         height: 650px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .create-post-modal {
+        max-width: 400px;
+        height: 600px;
     }
 }
 
@@ -89,7 +96,7 @@
     }
     .create-post-modal {
         max-width: 350px;
-        height: 400px;
+        height: 550px;
     }
 }
 

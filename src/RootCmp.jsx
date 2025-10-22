@@ -8,7 +8,6 @@ import { UserDetails } from './pages/UserDetails'
 
 import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
-import { UserMsg } from './cmps/UserMsg.jsx'
 import { InstagramSidebar } from './cmps/InstagramSidebar.jsx'
 import { MobileHeader } from './cmps/MobileHeader.jsx'
 import { MobileFooter } from './cmps/MobileFooter.jsx'
@@ -20,7 +19,6 @@ export function RootCmp() {
         <div className="instagram-app">
             <InstagramSidebar />
             <MobileHeader />
-            <UserMsg />
             
             <div className="main-content">
                 <Routes>

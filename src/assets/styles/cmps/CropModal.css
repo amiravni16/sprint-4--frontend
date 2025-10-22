@@ -37,32 +37,34 @@
 .crop-modal {
     background: #fff;
     width: 100%;
-    max-width: 800px;
-    height: 700px;
+    max-width: 500px;
+    height: 500;
     max-height: 90vh;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
 }
 
 .crop-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 8px 20px;
     border-bottom: 1px solid #dbdbdb;
     background: #fff;
     position: relative;
     z-index: 10;
+    height: 48px;
 }
 
 .crop-back-btn {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px;
+    padding: 4px;
     color: #262626;
     display: flex;
     align-items: center;
@@ -74,7 +76,7 @@
 }
 
 .crop-header h2 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: #262626;
     margin: 0;
@@ -87,9 +89,9 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px 16px;
+    padding: 4px 8px;
     color: #0095f6;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -105,17 +107,16 @@
     overflow: hidden;
     position: relative;
     background: #fff;
+    margin: 0;
+    padding: 0;
 }
 
 .crop-image {
-    max-width: 90%;
-    max-height: 90%;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     user-select: none;
     transition: transform 0.1s ease-out;
-    border: 2px solid #262626;
 }
 
 /* Grid overlay that appears when dragging - positioned around the image */
@@ -163,65 +164,141 @@
     left: 66.666%;
 }
 
-.crop-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    padding: 16px 20px;
-    border-top: 1px solid #dbdbdb;
-    background: #fff;
+/* Zoom Slider */
+.crop-zoom-slider {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.crop-control-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    color: #262626;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.crop-zoom-slider.visible {
+    opacity: 1;
+}
+
+.crop-zoom-range {
+    width: 150px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.crop-zoom-range::-webkit-slider-track {
+    background: rgba(255, 255, 255, 0.3);
+    height: 4px;
+    border-radius: 2px;
+}
+
+.crop-zoom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: white;
     border-radius: 50%;
-    transition: background-color 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.crop-control-btn:hover {
-    background-color: #f0f0f0;
+.crop-zoom-range::-moz-range-track {
+    background: rgba(255, 255, 255, 0.3);
+    height: 4px;
+    border-radius: 2px;
+    border: none;
 }
 
-.crop-control-btn:active {
-    background-color: #e0e0e0;
+.crop-zoom-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
+
+/* Zoom Control */
+.crop-zoom-control {
+    position: absolute;
+    bottom: 20px;
+    left: 60px;
+    z-index: 1000;
+}
+
+.crop-zoom-btn {
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    width: 32px;
+    height: 32px;
+}
+
+.crop-zoom-btn.active {
+    background: white;
+    color: black;
+}
+
+.crop-zoom-btn:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.crop-zoom-btn svg {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+
 
 /* Responsive */
 @media (max-width: 1263px) {
     .crop-modal {
-        max-width: 700px;
-        height: 600px;
+        max-width: 470px;
+        height: 494px;
     }
 }
 
 @media (max-width: 1024px) {
     .crop-modal {
-        max-width: 600px;
-        height: 550px;
+        max-width: 470px;
+        height: 494px;
     }
 }
 
 @media (max-width: 768px) {
     .crop-modal {
-        max-width: 450px;
-        height: 500px;
+        max-width: 340px;
+        height: 370px;
     }
     
     .crop-header {
-        padding: 12px 16px;
+        padding: 8px 16px;
     }
     
-    .crop-controls {
-        padding: 16px;
-        gap: 20px;
+    
+    .crop-zoom-control {
+        bottom: 15px;
+        left: 50px;
+    }
+    
+    .crop-zoom-slider {
+        bottom: 55px;
+        left: 15px;
+    }
+    
+    .crop-zoom-range {
+        width: 120px;
     }
 }
 

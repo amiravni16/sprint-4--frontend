@@ -1,12 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { addPostMsg } from '../store/actions/post.actions'
-import { showSuccessMsg } from '../services/event-bus.service'
 
-export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, croppedImage, onBack, onPost }) {
+export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, croppedImage, caption, onBack, onPost, aspectRatio = '1:1' }) {
     const [commentText, setCommentText] = useState('')
+    const [showCommentEmojiPicker, setShowCommentEmojiPicker] = useState(false)
     const user = useSelector(storeState => storeState.userModule.user)
     const isOwnPost = user && post && user._id === post.by?._id
+
+    // Disable scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+
+        // Cleanup function to restore scrolling when component unmounts
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isOpen])
+
+    // Get user from session storage as fallback
+    const getLoggedInUser = () => {
+        try {
+            const loggedStr = sessionStorage.getItem('loggedinUser')
+            if (loggedStr) {
+                return JSON.parse(loggedStr)
+            }
+        } catch (err) {
+            console.warn('Could not get user from session storage:', err)
+        }
+        return null
+    }
+
+    const loggedInUser = user || getLoggedInUser()
+
+    const emojis = ['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥', '💯', '✨']
+
+    const addCommentEmoji = (emoji) => {
+        setCommentText(prev => prev + emoji)
+        setShowCommentEmojiPicker(false)
+    }
 
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -35,7 +71,6 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         try {
             await addPostMsg(post._id, commentText)
             setCommentText('')
-            showSuccessMsg('Comment added! 💬')
         } catch (err) {
             console.error('Error adding comment:', err)
         }
@@ -172,6 +207,36 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                         />
+                        <div className="post-details-emoji-container">
+                            <button 
+                                type="button"
+                                className="post-details-emoji-btn"
+                                onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                    <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                                    <circle cx="15" cy="9" r="1" fill="currentColor"/>
+                                    <path d="M9 14c0 1.5 1.5 3 3 3s3-1.5 3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                                </svg>
+                            </button>
+                            
+                            {/* Comment Emoji Picker */}
+                            {showCommentEmojiPicker && (
+                                <div className="post-details-emoji-picker">
+                                    {emojis.map((emoji, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            className="post-details-emoji-option"
+                                            onClick={() => addCommentEmoji(emoji)}
+                                        >
+                                            {emoji}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <button 
                             type="submit" 
                             className={`post-details-comment-submit ${commentText.trim() ? 'active' : ''}`}
@@ -187,27 +252,36 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
 
     function renderCreatePostModal() {
         console.log('renderCreatePostModal called')
-        const [caption, setCaption] = useState('')
-        const [characterCount, setCharacterCount] = useState(0)
+        const [captionText, setCaptionText] = useState(caption || '')
+        const [characterCount, setCharacterCount] = useState(captionText.length)
+        const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+
+        const emojis = ['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥', '💯', '✨']
 
         const handleCaptionChange = (e) => {
             const text = e.target.value
-            setCaption(text)
+            setCaptionText(text)
             setCharacterCount(text.length)
+        }
+
+        const addEmoji = (emoji) => {
+            setCaptionText(prev => prev + emoji)
+            setCharacterCount(prev => prev + emoji.length)
+            setShowEmojiPicker(false)
         }
 
         const handlePost = () => {
             if (onPost) {
                 onPost({
                     image: croppedImage,
-                    caption: caption
+                    caption: captionText
                 })
             }
         }
 
         return (
             <div className="post-create-overlay" onClick={onClose}>
-                <div className="post-create-modal" onClick={(e) => e.stopPropagation()}>
+                <div className={`post-create-modal ${aspectRatio === 'original' || aspectRatio === '16:9' ? 'horizontal' : ''}`} onClick={(e) => e.stopPropagation()}>
                     {/* Close button */}
                     <button className="post-create-close-btn" onClick={onClose}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -247,14 +321,14 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                                     alt={user?.username}
                                     className="post-create-avatar"
                                 />
-                                <span className="post-create-username">{user?.username || 'user'}</span>
+                                <span className="post-create-username">{loggedInUser?.username || 'amir.avni'}</span>
                             </div>
 
                             {/* Caption Textarea */}
                             <textarea
                                 className="post-create-caption"
                                 placeholder="Write a caption..."
-                                value={caption}
+                                value={captionText}
                                 onChange={handleCaptionChange}
                                 maxLength={2200}
                             />
@@ -265,13 +339,33 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                             </div>
 
                             {/* Emoji Button */}
-                            <div className="post-create-emoji-btn">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                    <circle cx="9" cy="9" r="1" fill="currentColor"/>
-                                    <circle cx="15" cy="9" r="1" fill="currentColor"/>
-                                    <path d="M9 14c0 1.5 1.5 3 3 3s3-1.5 3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                                </svg>
+                            <div className="post-create-emoji-container">
+                                <div 
+                                    className="post-create-emoji-btn" 
+                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                        <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                                        <circle cx="15" cy="9" r="1" fill="currentColor"/>
+                                        <path d="M9 14c0 1.5 1.5 3 3 3s3-1.5 3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                                    </svg>
+                                </div>
+                                
+                                {/* Emoji Picker */}
+                                {showEmojiPicker && (
+                                    <div className="post-create-emoji-picker">
+                                        {emojis.map((emoji, index) => (
+                                            <button
+                                                key={index}
+                                                className="post-create-emoji-option"
+                                                onClick={() => addEmoji(emoji)}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
