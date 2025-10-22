@@ -60,6 +60,7 @@
     font-size: 14px;
     color: #262626;
     text-decoration: none;
+    
 }
 
 .post-preview .username:hover {
@@ -276,6 +277,7 @@
 .post-preview .post-caption .username {
     font-weight: 600;
     margin-right: 8px;
+    margin-left: -5px;
 }
 
 .post-preview .see-more-btn {
@@ -315,6 +317,7 @@
     color: #8e8e8e;
     text-transform: uppercase;
     letter-spacing: 0.2px;
+    margin-left: -15px;
 }
 
 .post-preview .post-location {

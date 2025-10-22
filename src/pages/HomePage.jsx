@@ -455,6 +455,7 @@ export function HomePage() {
                     onLike={onLike}
                     onDelete={onDeletePost}
                     onEdit={onEditPost}
+                    onPostUnsaved={() => {}} // No saved posts functionality in HomePage
                 />
             )}
         </div>

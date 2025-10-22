@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { userService } from '../services/user'
 
 export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, onOpenDetails }) {
     const [isAnimating, setIsAnimating] = useState(false)
@@ -8,6 +10,14 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const [imageError, setImageError] = useState(false)
     const [showOptionsModal, setShowOptionsModal] = useState(false)
     const [isCaptionExpanded, setIsCaptionExpanded] = useState(false)
+    const loggedInUser = useSelector(storeState => storeState.userModule.user)
+    
+    // Check if post is saved
+    useEffect(() => {
+        if (loggedInUser && loggedInUser.savedPosts) {
+            setIsSaved(loggedInUser.savedPosts.includes(post._id))
+        }
+    }, [loggedInUser, post._id])
     
     const formatTimeAgo = (timestamp) => {
         const now = new Date()
@@ -60,8 +70,23 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
         }
     }
 
-    const handleSave = () => {
-        setIsSaved(!isSaved)
+    const handleSave = async () => {
+        if (!loggedInUser) return
+        
+        try {
+            if (isSaved) {
+                await userService.unsavePost(post._id)
+            } else {
+                await userService.savePost(post._id)
+            }
+            setIsSaved(!isSaved)
+            
+            // Refresh user data to update saved posts
+            const updatedUser = await userService.getById(loggedInUser._id)
+            // You might want to dispatch an action to update the Redux store here
+        } catch (error) {
+            console.error('Error saving/unsaving post:', error)
+        }
     }
 
     const handleDelete = () => {

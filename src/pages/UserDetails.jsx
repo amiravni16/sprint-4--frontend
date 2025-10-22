@@ -207,6 +207,13 @@ export function UserDetails() {
     setViewingPost(null)
   }
 
+  function onPostUnsaved(postId) {
+    // Remove the unsaved post from the saved posts list
+    setSavedPosts(prevSavedPosts => 
+      prevSavedPosts.filter(post => post._id !== postId)
+    )
+  }
+
   const isOwnProfile = loggedinUser && user && loggedinUser._id === user._id
 
   return (
@@ -450,6 +457,7 @@ export function UserDetails() {
           onLike={() => {}} // You can implement like functionality here if needed
           onDelete={() => {}} // You can implement delete functionality here if needed
           onEdit={() => {}} // You can implement edit functionality here if needed
+          onPostUnsaved={onPostUnsaved}
         />
       )}
     </section>

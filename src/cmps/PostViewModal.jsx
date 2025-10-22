@@ -2,17 +2,39 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { addPostMsg } from '../store/actions/post.actions'
 import { showSuccessMsg } from '../services/event-bus.service'
+import { userService } from '../services/user'
 
-export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit }) {
+export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit, onPostUnsaved }) {
     const [commentText, setCommentText] = useState('')
     const [isAnimating, setIsAnimating] = useState(false)
     const [imageAspectRatio, setImageAspectRatio] = useState('square')
+    const [isSaved, setIsSaved] = useState(false)
     const user = useSelector(storeState => storeState.userModule.user)
     const posts = useSelector(storeState => storeState.postModule.posts)
     
     // Get the updated post from Redux store
     const currentPost = posts.find(p => p._id === post._id) || post
     const isOwnPost = user && currentPost && user._id === currentPost.by?._id
+
+    // Check if post is saved
+    useEffect(() => {
+        if (user && user.savedPosts) {
+            setIsSaved(user.savedPosts.includes(currentPost._id))
+        }
+    }, [user, currentPost._id])
+
+    const formatTimeAgo = (timestamp) => {
+        const now = new Date()
+        const postTime = new Date(timestamp)
+        const diffInSeconds = Math.floor((now - postTime) / 1000)
+        
+        if (diffInSeconds < 60) return `${diffInSeconds}s`
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
+        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d`
+        if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}mo`
+        return `${Math.floor(diffInSeconds / 31536000)}y`
+    }
 
     // Detect image aspect ratio
     useEffect(() => {
@@ -45,6 +67,30 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit 
         } catch (err) {
             console.error('Error adding comment:', err)
             showSuccessMsg('Failed to add comment')
+        }
+    }
+
+    const handleSave = async () => {
+        if (!user) return
+        
+        try {
+            if (isSaved) {
+                await userService.unsavePost(currentPost._id)
+                setIsSaved(false)
+                // Notify parent component that post was unsaved
+                if (onPostUnsaved) {
+                    onPostUnsaved(currentPost._id)
+                }
+            } else {
+                await userService.savePost(currentPost._id)
+                setIsSaved(true)
+            }
+            
+            // Refresh user data to update saved posts
+            const updatedUser = await userService.getById(user._id)
+            // You might want to dispatch an action to update the Redux store here
+        } catch (error) {
+            console.error('Error saving/unsaving post:', error)
         }
     }
 
@@ -183,13 +229,22 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit 
                                 />
                             </button>
                         </div>
-                        <button className="action-btn save-btn">
-                            <img 
-                                src="/src/assets/icons/save.svg" 
-                                alt="Save" 
-                                width="24" 
-                                height="24"
-                            />
+                        <button 
+                            className={`action-btn save-btn ${isSaved ? 'saved' : ''}`}
+                            onClick={handleSave}
+                        >
+                            {isSaved ? (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor"/>
+                                </svg>
+                            ) : (
+                                <img 
+                                    src="/src/assets/icons/save.svg" 
+                                    alt="Save" 
+                                    width="24" 
+                                    height="24"
+                                />
+                            )}
                         </button>
                     </div>
 
@@ -197,6 +252,13 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit 
                     <div className="post-details-likes">
                         <strong>{currentPost.likedBy?.length || 0} {currentPost.likedBy?.length === 1 ? 'like' : 'likes'}</strong>
                     </div>
+
+                    {/* Post time */}
+                    {currentPost.createdAt && (
+                        <div className="post-details-time">
+                            {formatTimeAgo(currentPost.createdAt)} ago
+                        </div>
+                    )}
 
                     {/* Comment form */}
                     <form className="post-details-comment-form" onSubmit={handleAddComment}>
