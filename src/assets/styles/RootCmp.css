@@ -1,9 +1,15 @@
+/* ========================================
+   ROOT COMPONENT STYLES
+   ======================================== */
+
+/* Main App Container */
 .instagram-app {
     display: flex;
     min-height: 100vh;
     background-color: white;
 }
 
+/* Main Content Area */
 .main-content {
     flex: 1;
     margin-left: 244px;
@@ -16,13 +22,18 @@
     flex: 1;
 }
 
-/* Mobile responsive */
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet Layout */
 @media (max-width: 1263px) {
     .main-content {
         margin-left: 72px;
     }
 }
 
+/* Mobile Layout */
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;

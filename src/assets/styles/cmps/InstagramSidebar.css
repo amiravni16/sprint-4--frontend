@@ -69,11 +69,15 @@
 }
 
 .instagram-logo {
-    font-family: 'Billabong', cursive;
-    font-size: 32px;
-    font-weight: 400;
-    color: #000; /* Solid black like the official wordmark */
     text-decoration: none;
+    display: block;
+}
+
+.logo-svg {
+    height: 60px;
+    width: auto;
+    max-width: 300px;
+    margin-left: -30px;
 }
 
 
@@ -178,6 +182,27 @@ button.nav-item.create-btn {
     height: 24px;
     flex-shrink: 0;
     transition: transform 0.2s ease;
+}
+
+/* Home icon specific styles */
+.home-icon {
+    color: #000000; /* Default stroke color - black outline */
+}
+
+.home-fill {
+    fill: #ffffff; /* Default inactive fill - white interior */
+}
+
+.home-stroke {
+    stroke: #000000; /* Always black outline */
+}
+
+.nav-item.active .home-fill {
+    fill: #000000; /* Active/pressed fill - filled black */
+}
+
+.nav-item:hover .home-fill {
+    fill: #f0f0f0; /* Hover fill - light gray */
 }
 
 .nav-item span {

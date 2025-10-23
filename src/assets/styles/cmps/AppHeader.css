@@ -1,49 +1,61 @@
+/* ========================================
+   APP HEADER STYLES
+   ======================================== */
+
 .app-header {
     display: flex;
     min-height: 3.5rem;
-
     background-color: var(--clr4);
-    padding: .8rem 1rem;
-    
-    & nav {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        gap: 1em;
-        
-        font-size: .8em;
+    padding: 0.8rem 1rem;
+}
 
-        .active {
-            color: var(--clr1);
-        }
+/* ========================================
+   NAVIGATION
+   ======================================== */
 
-        .logo {
-            font-size: 1.4em;
-            font-weight: bold;
-            margin-inline-end: 2em;
-        }
+.app-header nav {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 1em;
+    font-size: 0.8em;
+}
 
-        .login-link {
-            margin-inline-start: auto;
-        }
+.app-header nav .active {
+    color: var(--clr1);
+}
 
-        & button {
-            margin-inline-end: 0;
-        }
-    }
+.app-header nav .logo {
+    font-family: 'Brush Script MT', 'Lucida Handwriting', cursive, serif;
+    font-size: 1.3em;
+    font-weight: 400;
+    margin-inline-end: 2em;
+    letter-spacing: 1px;
+    color: var(--instagram-black);
+}
 
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-inline-start: auto;
+.app-header nav .login-link {
+    margin-inline-start: auto;
+}
 
-        color: var(--clr1);
+.app-header nav button {
+    margin-inline-end: 0;
+}
 
-        & img {
-            width: 2em;
-            aspect-ratio: 1;
-            border-radius: 50%;
-        }
-    }
+/* ========================================
+   USER INFO
+   ======================================== */
+
+.app-header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-inline-start: auto;
+    color: var(--clr1);
+}
+
+.app-header .user-info img {
+    width: 2em;
+    aspect-ratio: 1;
+    border-radius: 50%;
 }

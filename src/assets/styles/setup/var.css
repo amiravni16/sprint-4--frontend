@@ -1,4 +1,7 @@
 :root {
+  /* ========================================
+     BRAND COLORS
+     ======================================== */
   --clr1: #ce2e6c;
   --clr2: #4f3a65;
   --clr3: #574f7d;
@@ -7,11 +10,27 @@
 
   --clr1-light: color-mix(in lab, var(--clr1), white 15%);
 
+  /* ========================================
+     INSTAGRAM COLORS
+     ======================================== */
+  --instagram-black: #262626;
+  --instagram-gray-light: #efefef;
+  --instagram-gray-medium: #dbdbdb;
+  --instagram-gray-hover: #f5f5f5;
+  --instagram-blue: #0095f6;
+  --instagram-red: #ed4956;
+
+  /* ========================================
+     GRAY SCALE
+     ======================================== */
   --gray1: #ddd;
   --gray2: #aaa;
   --gray3: #777;
   --gray4: #333;
 
+  /* ========================================
+     STATUS COLORS
+     ======================================== */
   --success: rgb(41, 189, 73);
   --error: rgb(216, 59, 59);
 }

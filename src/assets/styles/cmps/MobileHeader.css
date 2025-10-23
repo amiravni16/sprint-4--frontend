@@ -72,3 +72,22 @@
     background-color: #f5f5f5;
     border-radius: 50%;
 }
+
+/* Mobile padding adjustments for screens under 625px */
+@media (max-width: 625px) {
+    .mobile-header-content {
+        padding: 0 20px;
+    }
+    
+    .mobile-search {
+        margin: 0 20px;
+    }
+    
+    .search-input {
+        padding: 10px 14px;
+    }
+    
+    .mobile-notifications {
+        padding: 10px;
+    }
+}

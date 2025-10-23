@@ -1,31 +1,45 @@
 
+/* ========================================
+   CSS IMPORTS - Instagram Clone Frontend
+   ======================================== */
+
+/* Setup & Configuration */
 @import "setup/var.css";
 @import "setup/typography.css";
 
+/* Base Styles */
 @import "basics/helpers.css";
 @import "basics/layout.css";
 @import "basics/base.css";
 @import "basics/forms.css";
 
+/* Root Component */
 @import "RootCmp.css";
 
+/* Page Components */
 @import "cmps/HomePage.css";
 @import "cmps/UserDetails.css";
 @import "cmps/LoginSignup.css";
 @import "cmps/PostIndex.css";
 
+/* Layout Components */
 @import "cmps/AppHeader.css";
 @import "cmps/AppFooter.css";
-@import "cmps/UserMsg.css";
 @import "cmps/InstagramSidebar.css";
 @import "cmps/MobileHeader.css";
 @import "cmps/MobileFooter.css";
 
+/* Post Components */
 @import "cmps/PostPreview.css";
 @import "cmps/PostList.css";
 @import "cmps/PostFilter.css";
-@import "cmps/UploadModal.css";
-@import "cmps/CropModal.css";
 @import "cmps/PostDetailsModal.css";
 @import "cmps/PostViewModal.css";
+
+/* Modal Components */
+@import "cmps/UploadModal.css";
+@import "cmps/CropModal.css";
 @import "cmps/FollowersModal.css";
+
+/* Utility Components */
+@import "cmps/UserMsg.css";
