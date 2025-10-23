@@ -16,21 +16,11 @@ export function InstagramSidebar() {
             <div className="sidebar-content">
                 <div className="logo-section">
                     <Link to="/" className="instagram-logo" aria-label="Instagram home">
-                        <svg width="160" height="40" viewBox="0 0 160 40" fill="none">
-                            {/* Camera Icon */}
-                            <g transform="translate(0, 12)">
-                                <path d="M8 4C6.89543 4 6 4.89543 6 6V14C6 15.1046 6.89543 16 8 16H24C25.1046 16 26 15.1046 26 14V6C26 4.89543 25.1046 4 24 4H22.5L22 2H10L9.5 4H8Z" stroke="#00CED1" strokeWidth="2" fill="none"/>
-                                <circle cx="16" cy="10" r="3" stroke="#00CED1" strokeWidth="2" fill="none"/>
-                                <circle cx="16" cy="10" r="1" fill="#00CED1"/>
-                                <circle cx="22" cy="6" r="0.5" fill="#00CED1"/>
-                                <circle cx="20" cy="6" r="0.5" fill="#00CED1"/>
-                                <circle cx="18" cy="6" r="0.5" fill="#00CED1"/>
-                            </g>
-                            {/* PHOTOGRAPH Text */}
-                            <text x="36" y="28" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="600" fill="#262626" letterSpacing="1px">
-                                PHOTOGRAPH
-                            </text>
-                        </svg>
+                        <img 
+                            src="/src/assets/icons/photograph-logo.svg" 
+                            alt="photograph" 
+                            className="logo-svg"
+                        />
                     </Link>
                     <Link to="/" className="instagram-logo-icon" aria-label="Instagram home">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -45,14 +35,27 @@ export function InstagramSidebar() {
                     <NavLink to="/" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
                         {({ isActive }) => (
                             <>
-                                <svg className="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    {isActive ? (
-                                        // Filled home icon
-                                        <path d="M9 21v-7h6v7h5a1 1 0 0 0 1-1V10.8l-9-6.3-9 6.3V20a1 1 0 0 0 1 1h5z" fill="currentColor"/>
-                                    ) : (
-                                        // Outline home icon
-                                        <path d="M3 20a1 1 0 0 0 1 1h5v-7h6v7h5a1 1 0 0 0 1-1V10.8l-9-6.3-9 6.3V20z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinejoin="round"/>
-                                    )}
+                                <svg 
+                                    className="nav-icon home-icon" 
+                                    width="24" 
+                                    height="24" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none"
+                                >
+                                    <path 
+                                        className="home-fill" 
+                                        d="M4 10L12 3L20 10L20 20H15V16C15 15.2044 14.6839 14.4413 14.1213 13.8787C13.5587 13.3161 12.7957 13 12 13C11.2044 13 10.4413 13.3161 9.87868 13.8787C9.31607 14.4413 9 15.2043 9 16V20H4L4 10Z" 
+                                        fill="currentColor"
+                                    />
+                                    <path 
+                                        className="home-stroke" 
+                                        d="M3.99999 10L12 3L20 10L20 20H15V16C15 15.2044 14.6839 14.4413 14.1213 13.8787C13.5587 13.3161 12.7956 13 12 13C11.2043 13 10.4413 13.3161 9.87868 13.8787C9.31607 14.4413 9 15.2043 9 16V20H4L3.99999 10Z" 
+                                        stroke="currentColor" 
+                                        strokeWidth="1.5" 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round"
+                                        fill="none"
+                                    />
                                 </svg>
                                 <span>Home</span>
                             </>

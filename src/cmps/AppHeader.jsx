@@ -22,7 +22,7 @@ export function AppHeader() {
 		<header className="app-header full">
 			<nav>
 				<NavLink to="/" className="logo">
-					Instagram
+					photograph
 				</NavLink>
 				<NavLink to="post">Posts</NavLink>
 
