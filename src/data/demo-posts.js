@@ -112,5 +112,20 @@ export const demoPosts = [
         likedBy: ['64f0a1c2b3d4e5f678901234', 'user1', 'user2'],
         comments: [],
         createdAt: now - 21600000 // 6 hours ago
+    },
+    {
+        _id: 'post7',
+        txt: 'Testing the follow functionality! This user follows you but you don\'t follow them back 👀',
+        imgUrl: 'https://picsum.photos/400/400?random=7',
+        tags: ['test', 'follow', 'demo'],
+        by: {
+            _id: 'user6',
+            fullname: 'Test Follower',
+            username: 'test_follower',
+            imgUrl: 'https://i.pravatar.cc/150?img=7'
+        },
+        likedBy: ['user1', 'user2'],
+        comments: [],
+        createdAt: now - 1800000 // 30 minutes ago
     }
 ]

@@ -10,7 +10,12 @@ export function FollowersModal({ isOpen, onClose, followers, currentUserId, onUp
 
     useEffect(() => {
         if (isOpen) {
-            loadFollowers()
+            // Add a small delay to ensure the parent component has finished updating
+            const timeoutId = setTimeout(() => {
+                loadFollowers()
+            }, 100)
+            
+            return () => clearTimeout(timeoutId)
         }
     }, [isOpen, followers])
 

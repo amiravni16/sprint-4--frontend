@@ -6,8 +6,8 @@ export const demoUsers = [
         imgUrl: 'https://i.pravatar.cc/150?img=1',
         password: 'admin',
         isAdmin: true,
-        followers: ['user1', 'user2', 'user3', 'user4', 'user5'],
-        following: ['user1', 'user2', 'user3', 'user4', 'user5'],
+        followers: ['user1', 'user2', 'user3', 'user4', 'user5', 'user6'],
+        following: ['user1', 'user2', 'user3', 'user4', 'user5'], // You don't follow user6
         savedPosts: []
     },
     {
@@ -63,6 +63,17 @@ export const demoUsers = [
         isAdmin: false,
         followers: ['64f0a1c2b3d4e5f678901234', 'user3', 'user4'],
         following: ['64f0a1c2b3d4e5f678901234', 'user3', 'user4'],
+        savedPosts: []
+    },
+    {
+        _id: 'user6',
+        username: 'test_follower',
+        fullname: 'Test Follower',
+        imgUrl: 'https://i.pravatar.cc/150?img=7',
+        password: 'demo123',
+        isAdmin: false,
+        followers: ['user1', 'user2'], // This user has followers but not you
+        following: ['64f0a1c2b3d4e5f678901234'], // This user follows you
         savedPosts: []
     }
 ]

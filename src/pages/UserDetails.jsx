@@ -163,21 +163,17 @@ export function UserDetails() {
       const result = await userService.toggleFollow(user._id)
       setIsFollowing(result.isFollowing)
       
-      // Update the user's follower count
-      const updatedUser = { ...user, followers: user.followers || [] }
-      if (result.isFollowing) {
-        if (!updatedUser.followers.includes(loggedinUser._id)) {
-          updatedUser.followers.push(loggedinUser._id)
-        }
-      } else {
-        updatedUser.followers = updatedUser.followers.filter(id => id !== loggedinUser._id)
-      }
-      
-      store.dispatch({ type: 'SET_WATCHED_USER', updatedUser })
-      
-      // Reload the logged in user to update their following list
+      // Reload both users from storage to get the actual updated data
       const freshLoggedinUser = await userService.getById(loggedinUser._id)
+      const freshWatchedUser = await userService.getById(user._id)
+      
+      // Update both users in the store
       store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+      store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+      
+      // Force a small delay to ensure the state is fully updated
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
     } catch (err) {
       console.error('Error toggling follow:', err)
       showErrorMsg('Failed to update follow status')
@@ -432,6 +428,7 @@ export function UserDetails() {
       {/* View-only modals for other users - render only when user is loaded */}
       {!isOwnProfile && user && (
         <FollowersModal
+          key={`followers-${user._id}-${user.followers?.length || 0}`}
           isOpen={showFollowersModal}
           onClose={() => setShowFollowersModal(false)}
           followers={user.followers || []}
