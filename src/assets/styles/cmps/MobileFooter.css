@@ -50,6 +50,7 @@
 }
 
 .mobile-nav-item.active .nav-icon {
+    stroke: currentColor;
     fill: currentColor;
 }
 
@@ -58,6 +59,27 @@
     height: 24px;
     stroke: currentColor;
     fill: none;
+}
+
+/* Home Icon Specific Styles */
+.mobile-nav-item .home-icon {
+    color: #000000; /* Default stroke color - black outline */
+}
+
+.mobile-nav-item .home-fill {
+    fill: #ffffff; /* Default inactive fill - white interior */
+}
+
+.mobile-nav-item .home-stroke {
+    stroke: #000000; /* Always black outline */
+}
+
+.mobile-nav-item.active .home-fill {
+    fill: #000000; /* Active/pressed fill - filled black */
+}
+
+.mobile-nav-item:hover .home-fill {
+    fill: #f0f0f0; /* Hover fill - light gray */
 }
 
 .mobile-profile-avatar {

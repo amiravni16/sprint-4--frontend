@@ -30,6 +30,11 @@
     text-decoration: none;
 }
 
+.mobile-logo-svg {
+    height: 40px;
+    width: auto;
+}
+
 .mobile-search {
     flex: 1;
     max-width: 200px;
