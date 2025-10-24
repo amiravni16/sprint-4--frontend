@@ -90,6 +90,9 @@ function init() {
                 if (currentUser && (!currentUser.following || currentUser.following.length === 0)) {
                     console.log('🔧 Restoring missing following relationships for', currentUser.username)
                     currentUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
+                    // Ensure followers array exists too
+                    currentUser.followers = currentUser.followers || []
+                    currentUser.savedPosts = currentUser.savedPosts || []
                     localStorage.setItem('user', JSON.stringify(users))
                     // Update session storage too
                     sessionStorage.setItem('loggedinUser', JSON.stringify({
@@ -98,10 +101,12 @@ function init() {
                         imgUrl: currentUser.imgUrl,
                         isAdmin: !!currentUser.isAdmin,
                         following: currentUser.following,
-                        followers: currentUser.followers || [],
-                        savedPosts: currentUser.savedPosts || []
+                        followers: currentUser.followers,
+                        savedPosts: currentUser.savedPosts
                     }))
                     console.log('✅ Following relationships restored:', currentUser.following)
+                } else if (currentUser) {
+                    console.log('✅ User has following relationships:', currentUser.following)
                 }
             }
         }

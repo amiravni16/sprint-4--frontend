@@ -1,36 +1,42 @@
 import { postService } from '../../services/post'
+import { feedService } from '../../services/feed.service'
 import { store } from '../store'
 import { ADD_POST, REMOVE_POST, SET_POSTS, SET_POST, UPDATE_POST, ADD_POST_MSG } from '../reducers/post.reducer'
 
 export async function loadPosts(filterBy) {
     try {
-        const posts = await postService.query(filterBy)
-        
-        // Filter posts to show only posts from users the current user is following
+        // Get current user from store
         const state = store.getState()
         const loggedInUser = state.userModule.user
         
-        if (loggedInUser && loggedInUser.following && loggedInUser.following.length > 0) {
-            const followingIds = loggedInUser.following
-            const filteredPosts = posts.filter(post => {
-                // Include posts from users you're following OR your own posts
-                return followingIds.includes(post.by?._id) || post.by?._id === loggedInUser._id
-            })
-            store.dispatch(getCmdSetPosts(filteredPosts))
-            return filteredPosts
-        } else if (loggedInUser) {
-            // If user is logged in but not following anyone, show only their own posts
-            const ownPosts = posts.filter(post => post.by?._id === loggedInUser._id)
-            store.dispatch(getCmdSetPosts(ownPosts))
-            return ownPosts
-        } else {
-            // If no user is logged in, show all posts
-            store.dispatch(getCmdSetPosts(posts))
-            return posts
-        }
+        console.log('🔍 [POSTS] Loading posts with bulletproof feed service...', { 
+            user: loggedInUser?.username, 
+            following: loggedInUser?.following?.length || 0 
+        })
+        
+        // Use bulletproof feed service to get posts
+        const feedPosts = await feedService.getFeedPosts(filterBy, loggedInUser)
+        
+        // Update store with feed posts
+        store.dispatch(getCmdSetPosts(feedPosts))
+        
+        console.log('✅ [POSTS] Feed posts loaded successfully:', feedPosts.length)
+        return feedPosts
+        
     } catch (err) {
-        console.log('Cannot load posts', err)
-        throw err
+        console.error('❌ [POSTS] Error loading posts:', err)
+        
+        // Ultimate fallback: try to get all posts
+        try {
+            const allPosts = await postService.query(filterBy)
+            store.dispatch(getCmdSetPosts(allPosts))
+            console.log('🔄 [POSTS] Fallback: loaded all posts due to error')
+            return allPosts
+        } catch (fallbackErr) {
+            console.error('❌ [POSTS] Fallback also failed:', fallbackErr)
+            store.dispatch(getCmdSetPosts([]))
+            return []
+        }
     }
 }
 
