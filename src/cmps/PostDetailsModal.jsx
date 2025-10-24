@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { addPostMsg } from '../store/actions/post.actions'
 
-export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, croppedImage, caption, onBack, onPost, aspectRatio = '1:1' }) {
+export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, croppedImage, caption, onBack, onPost, aspectRatio = '1:1', isEditMode = false }) {
     const [commentText, setCommentText] = useState('')
     const [showCommentEmojiPicker, setShowCommentEmojiPicker] = useState(false)
+    const [imageAspectRatio, setImageAspectRatio] = useState('square')
     const user = useSelector(storeState => storeState.userModule.user)
     const isOwnPost = user && post && user._id === post.by?._id
 
@@ -21,6 +22,24 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
             document.body.style.overflow = 'unset'
         }
     }, [isOpen])
+
+    // Detect image aspect ratio
+    useEffect(() => {
+        if (post?.imgUrl) {
+            const img = new Image()
+            img.onload = () => {
+                const aspectRatio = img.width / img.height
+                if (aspectRatio > 1.1) {
+                    setImageAspectRatio('horizontal')
+                } else if (aspectRatio < 0.9) {
+                    setImageAspectRatio('vertical')
+                } else {
+                    setImageAspectRatio('square')
+                }
+            }
+            img.src = post.imgUrl
+        }
+    }, [post?.imgUrl])
 
     // Get user from session storage as fallback
     const getLoggedInUser = () => {
@@ -55,7 +74,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         return `${Math.floor(diffInSeconds / 86400)}D`
     }
 
-    // If croppedImage is provided, this is for creating a new post
+    // If croppedImage is provided, this is for creating a new post or editing
     if (croppedImage) {
         console.log('PostDetailsModal: rendering create post modal with croppedImage:', !!croppedImage)
         return renderCreatePostModal()
@@ -89,7 +108,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                 </button>
 
                 {/* Image section */}
-                <div className="post-details-image">
+                <div className={`post-details-image ${imageAspectRatio}`}>
                     <img src={post.imgUrl} alt="Post" />
                 </div>
 
@@ -255,8 +274,27 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         const [captionText, setCaptionText] = useState(caption || '')
         const [characterCount, setCharacterCount] = useState(captionText.length)
         const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+        const [createImageAspectRatio, setCreateImageAspectRatio] = useState('square')
 
         const emojis = ['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥', '💯', '✨']
+
+        // Detect aspect ratio for create post image
+        useEffect(() => {
+            if (croppedImage) {
+                const img = new Image()
+                img.onload = () => {
+                    const aspectRatio = img.width / img.height
+                    if (aspectRatio > 1.1) {
+                        setCreateImageAspectRatio('horizontal')
+                    } else if (aspectRatio < 0.9) {
+                        setCreateImageAspectRatio('vertical')
+                    } else {
+                        setCreateImageAspectRatio('square')
+                    }
+                }
+                img.src = croppedImage
+            }
+        }, [croppedImage])
 
         const handleCaptionChange = (e) => {
             const text = e.target.value
@@ -299,7 +337,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                             </button>
                         )}
                         {!onBack && <div className="post-create-back-btn-placeholder"></div>}
-                        <h2>Create new post</h2>
+                        <h2>{isEditMode ? 'Edit post' : 'Create new post'}</h2>
                         <button className="post-create-share-btn" onClick={handlePost}>
                             Share
                         </button>
@@ -308,7 +346,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                     {/* Content */}
                     <div className="post-create-content">
                         {/* Image Preview */}
-                        <div className="post-create-image">
+                        <div className={`post-create-image ${createImageAspectRatio}`}>
                             <img src={croppedImage} alt="Post" />
                         </div>
 

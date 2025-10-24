@@ -7,6 +7,7 @@ import { PostDetailsModal } from '../cmps/PostDetailsModal'
 import { PostViewModal } from '../cmps/PostViewModal'
 import { postService } from '../services/post'
 import { userService } from '../services/user'
+import { feedService } from '../services/feed.service'
 import { login, signup } from '../store/actions/user.actions'
 import { store } from '../store/store'
 
@@ -137,6 +138,34 @@ export function HomePage() {
                 }
             }
             
+            // Debug function to check feed status
+            window.debugFeed = async () => {
+                try {
+                    console.log('🔍 Debugging feed status...')
+                    const state = store.getState()
+                    const currentUser = state.userModule.user
+                    const currentPosts = state.postModule.posts
+                    
+                    console.log('👤 Current user:', currentUser)
+                    console.log('👥 Following:', currentUser?.following)
+                    console.log('📝 Current posts in state:', currentPosts?.length)
+                    console.log('📝 Posts:', currentPosts)
+                    
+                    // Check all posts in storage
+                    const allPosts = await postService.query()
+                    console.log('📦 All posts in storage:', allPosts.length)
+                    console.log('📦 All posts:', allPosts)
+                    
+                    // Check users in storage
+                    const allUsers = await userService.getUsers()
+                    console.log('👥 All users in storage:', allUsers.length)
+                    console.log('👥 Users:', allUsers)
+                    
+                } catch (err) {
+                    console.error('Error debugging feed:', err)
+                }
+            }
+            
         }
 
     useEffect(() => {
@@ -165,9 +194,12 @@ export function HomePage() {
                 updatedUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
                 await userService.save(updatedUser)
                 store.dispatch({ type: 'SET_USER', user: updatedUser })
-                await loadPosts(filterBy)
                 console.log('✅ Following status auto-fixed!')
                 console.log('👥 Now following:', updatedUser.following)
+                // Reload posts after fixing following relationships
+                await loadPosts(filterBy)
+            } else if (updatedUser) {
+                console.log('✅ User already has following relationships:', updatedUser.following)
             }
         } catch (err) {
             console.error('Error auto-fixing following:', err)
@@ -443,6 +475,7 @@ export function HomePage() {
                     caption={editingPost.txt}
                     onClose={onCancelEdit}
                     onPost={onSaveEdit}
+                    isEditMode={true}
                 />
             )}
 

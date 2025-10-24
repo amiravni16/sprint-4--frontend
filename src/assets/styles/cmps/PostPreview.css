@@ -12,7 +12,7 @@
 }
 
 .post-preview:first-child {
-    border-top: 1px solid var(--instagram-gray-medium);
+    border-top: none;
 }
 
 .post-preview .post-header {

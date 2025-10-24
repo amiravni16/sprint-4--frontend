@@ -57,7 +57,22 @@
 .post-details-image img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+/* Horizontal images - use contain to show full image with black borders */
+.post-details-image.horizontal img {
     object-fit: contain;
+}
+
+/* Vertical images - use cover to fill height without borders */
+.post-details-image.vertical img {
+    object-fit: cover;
+}
+
+/* Square images - use cover for consistency */
+.post-details-image.square img {
+    object-fit: cover;
 }
 
 .post-details-content {
@@ -68,11 +83,23 @@
 }
 
 .post-details-header {
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
+    padding: 0 16px;
     border-bottom: 1px solid #efefef;
+    position: relative;
+}
+
+.post-details-header h2 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
 }
 
 .post-details-user {
@@ -375,11 +402,23 @@
 }
 
 .post-create-header {
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 0 16px;
     border-bottom: 1px solid #efefef;
+    position: relative;
+}
+
+.post-create-header h2 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #262626;
 }
 
 .post-create-back-btn,
@@ -413,6 +452,21 @@
 .post-create-image img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+}
+
+/* Horizontal images in create post modal - use contain to show full image with black borders */
+.post-create-image.horizontal img {
+    object-fit: contain;
+}
+
+/* Vertical images in create post modal - use cover to fill height without borders */
+.post-create-image.vertical img {
+    object-fit: cover;
+}
+
+/* Square images in create post modal - use cover for consistency */
+.post-create-image.square img {
     object-fit: cover;
 }
 
