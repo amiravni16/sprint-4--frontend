@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useRef, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { userService } from '../services/user'
+import { useCurrentUser } from '../customHooks/useCurrentUser'
 
 export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, onOpenDetails }) {
     const [isAnimating, setIsAnimating] = useState(false)
@@ -11,6 +12,9 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const [showOptionsModal, setShowOptionsModal] = useState(false)
     const [isCaptionExpanded, setIsCaptionExpanded] = useState(false)
     const loggedInUser = useSelector(storeState => storeState.userModule.user)
+    
+    // Get current user data instead of using embedded data
+    const { currentUser: postAuthor, loading: authorLoading } = useCurrentUser(post.by?._id)
     
     // Check if post is saved
     useEffect(() => {
@@ -111,8 +115,8 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                 <div className="user-info">
                     <div className="profile-pic-container" style={{ position: 'relative', width: '32px', height: '32px' }}>
                         <img 
-                            src={post.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
-                            alt={post.by?.username || 'Profile'} 
+                            src={authorLoading ? (post.by?.imgUrl || '/img/amir-avni.jpg.jpg') : (postAuthor?.imgUrl || post.by?.imgUrl || '/img/amir-avni.jpg.jpg')} 
+                            alt={authorLoading ? (post.by?.username || 'Profile') : (postAuthor?.username || post.by?.username || 'Profile')} 
                             className="profile-pic"
                             onError={(e) => {
                                 e.target.src = '/img/amir-avni.jpg.jpg';
@@ -127,7 +131,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                         />
                     </div>
                     <Link to={`/user/${post.by?._id}`} className="username">
-                        {post.by?.username || 'amir.avni'}
+                        {authorLoading ? (post.by?.username || 'amir.avni') : (postAuthor?.username || post.by?.username || 'amir.avni')}
                     </Link>
                 </div>
                 <button className="more-btn" onClick={() => setShowOptionsModal(true)}>
@@ -228,7 +232,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
             {/* Post Caption */}
             <div className="post-caption">
                 <Link to={`/user/${post.by?._id}`} className="username">
-                    {post.by?.username || 'amir.avni'}
+                    {authorLoading ? (post.by?.username || 'amir.avni') : (postAuthor?.username || post.by?.username || 'amir.avni')}
                 </Link>
                 {displayCaption}
                 {shouldTruncate && (

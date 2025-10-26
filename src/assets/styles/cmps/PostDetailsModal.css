@@ -142,6 +142,8 @@
     display: flex;
     gap: 12px;
     margin-bottom: 16px;
+    align-items: flex-start;
+    position: relative;
 }
 
 .post-details-comment-avatar {
@@ -155,18 +157,136 @@
 .post-details-comment-content {
     flex: 1;
     display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .post-details-comment-username {
     font-size: 14px;
     font-weight: 600;
     color: #262626;
+    margin-right: 8px;
+    display: inline;
+}
+
+.post-details-comment-username.clickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.post-details-comment-username.clickable:hover {
+    opacity: 0.7;
 }
 
 .post-details-comment-text {
     font-size: 14px;
+    color: #262626;
+    display: inline;
+}
+
+.post-details-comment-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.post-details-comment-time {
+    font-size: 12px;
+    color: #8e8e8e;
+    font-weight: 400;
+}
+
+.post-details-comment-likes {
+    font-size: 12px;
+    color: #8e8e8e;
+    font-weight: 600;
+}
+
+.post-details-comment-like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #262626;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.post-details-comment-like-btn:hover {
+    background-color: var(--instagram-gray-hover);
+}
+
+.post-details-comment-like-btn.liked {
+    color: #ed4956;
+}
+
+.post-details-comment-like-btn.liked:hover {
+    color: #ed4956;
+}
+
+.post-details-comment-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.post-details-comment-like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #262626;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.post-details-comment-options-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #262626;
+    font-weight: 900;
+    transition: all 0.15s ease;
+    border-radius: 50%;
+    opacity: 1;
+    visibility: visible;
+    min-width: 20px;
+    min-height: 20px;
+    margin-left: 8px;
+    margin-top: -2px;
+    vertical-align: baseline;
+    transform: rotate(90deg);
+    line-height: 1;
+}
+
+/* Temporarily show button always for testing */
+.post-details-comment-options-btn.debug-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.post-details-comment:hover .post-details-comment-options-btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.post-details-comment-options-btn:hover {
+    background-color: var(--instagram-gray-hover);
     color: #262626;
 }
 

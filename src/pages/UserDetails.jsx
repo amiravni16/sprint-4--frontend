@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import { loadUser } from '../store/actions/user.actions'
+import { updatePost } from '../store/actions/post.actions'
 import { store } from '../store/store'
 import { socketService, SOCKET_EVENT_USER_UPDATED, SOCKET_EMIT_USER_WATCH } from '../services/socket.service'
 import { userService } from '../services/user'
@@ -10,6 +11,7 @@ import { postService } from '../services/post'
 import { FollowersModal } from '../cmps/FollowersModal'
 import { FollowingModal } from '../cmps/FollowingModal'
 import { PostViewModal } from '../cmps/PostViewModal'
+import { ProfileSkeleton } from '../cmps/ProfileSkeleton'
 
 export function UserDetails() {
 
@@ -24,15 +26,31 @@ export function UserDetails() {
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
   const [viewingPost, setViewingPost] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(params.id)
 
   useEffect(() => {
+    // Detect user change and show loading buffer
+    if (params.id !== currentUserId) {
+      setIsTransitioning(true)
+      setCurrentUserId(params.id)
+    }
+
     async function ensureUser() {
       const loaded = await loadUser(params.id)
-      if (!loaded) return
+      if (!loaded) {
+        setIsTransitioning(false)
+        return
+      }
       // If the loaded user id differs from the URL param, redirect to the correct stable id
       if (loaded && loaded._id && loaded._id !== params.id) {
         window.history.replaceState(null, '', `/user/${loaded._id}`)
       }
+      
+      // Small delay to prevent flash, then show content
+      setTimeout(() => {
+        setIsTransitioning(false)
+      }, 200)
     }
     ensureUser()
 
@@ -212,9 +230,14 @@ export function UserDetails() {
 
   const isOwnProfile = loggedinUser && user && loggedinUser._id === user._id
 
+  // Show skeleton during transitions or when no user data matches current URL
+  if (isTransitioning || !user || user._id !== params.id) {
+    return <ProfileSkeleton />
+  }
+
   return (
     <section className="user-details">
-      {user && <div className="profile-container">
+      <div className="profile-container">
         <div className="profile-header">
           <div className="profile-left">
             <img 
@@ -466,6 +489,7 @@ export function UserDetails() {
           onLike={() => {}} // You can implement like functionality here if needed
           onDelete={() => {}} // You can implement delete functionality here if needed
           onEdit={() => {}} // You can implement edit functionality here if needed
+          onUpdate={updatePost}
           onPostUnsaved={onPostUnsaved}
         />
       )}

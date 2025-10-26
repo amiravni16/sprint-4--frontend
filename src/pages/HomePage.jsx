@@ -171,11 +171,17 @@ export function HomePage() {
     useEffect(() => {
         loadPosts(filterBy)
         
-        // Auto-fix following status if user is loaded but not following anyone
-        if (user && (!user.following || user.following.length === 0)) {
-            console.log('🔧 Auto-fixing following status...')
+        // Auto-fix following status if user is loaded but not following enough people
+        if (user && user.username === 'amir.avni' && (!user.following || user.following.length < 5)) {
+            console.log('🔧 Auto-fixing following status for amir.avni...')
             autoFixFollowing()
         }
+        
+        // Profile picture fix disabled - let user keep their chosen profile picture
+        // if (user && user.username === 'amir.avni' && user.imgUrl !== '/img/amir-avni.jpg.jpg') {
+        //     console.log('🔧 Fixing profile picture for amir.avni...')
+        //     fixProfilePicture()
+        // }
     }, [filterBy, user])
 
     // Auto-login on mount
@@ -189,20 +195,44 @@ export function HomePage() {
         try {
             console.log('🔧 Auto-fixing following status...')
             const updatedUser = await userService.getById(user._id)
-            if (updatedUser && (!updatedUser.following || updatedUser.following.length === 0)) {
-                // Restore demo following relationships
+            if (updatedUser && (!updatedUser.following || updatedUser.following.length < 5)) {
+                console.log(`📊 Current following count: ${updatedUser.following?.length || 0}, expected: 5`)
+                // Restore demo following relationships - amir.avni should follow these 5 users
                 updatedUser.following = ['user1', 'user2', 'user3', 'user4', 'user5']
-                await userService.save(updatedUser)
+                await userService.update(updatedUser)
                 store.dispatch({ type: 'SET_USER', user: updatedUser })
                 console.log('✅ Following status auto-fixed!')
                 console.log('👥 Now following:', updatedUser.following)
                 // Reload posts after fixing following relationships
                 await loadPosts(filterBy)
             } else if (updatedUser) {
-                console.log('✅ User already has following relationships:', updatedUser.following)
+                console.log('✅ User already has correct following relationships:', updatedUser.following)
             }
         } catch (err) {
             console.error('Error auto-fixing following:', err)
+        }
+    }
+
+    async function fixProfilePicture() {
+        try {
+            console.log('🔧 Fixing profile picture for amir.avni...')
+            const freshUser = await userService.getById(user._id)
+            if (freshUser && freshUser.username === 'amir.avni') {
+                // Update the user data with correct profile picture
+                freshUser.imgUrl = '/img/amir-avni.jpg.jpg'
+                const updatedUser = await userService.update(freshUser)
+                
+                // Update Redux store
+                store.dispatch({ type: 'SET_USER', user: updatedUser })
+                
+                // Update sessionStorage directly
+                userService.saveLoggedinUser(updatedUser)
+                
+                console.log('✅ Profile picture fixed for amir.avni!')
+                console.log('🖼️ Profile picture URL:', updatedUser.imgUrl)
+            }
+        } catch (err) {
+            console.error('Error fixing profile picture:', err)
         }
     }
 
@@ -237,13 +267,13 @@ export function HomePage() {
             if (!loginSuccess) {
                 // Create a default test user
                 try {
-                    const defaultUser = {
-                        username: 'amir.avni',
-                        password: 'admin',
-                        fullname: 'Amir Avni',
-                        imgUrl: 'https://i.pravatar.cc/150?img=1',
-                        isAdmin: true
-                    }
+                const defaultUser = {
+                    username: 'amir.avni',
+                    password: 'admin',
+                    fullname: 'Amir Avni',
+                    imgUrl: '/img/amir-avni.jpg.jpg',
+                    isAdmin: true
+                }
                     loggedInUser = await signup(defaultUser)
                     console.log('✅ Created user:', loggedInUser)
                     console.log('Profile picture URL:', loggedInUser.imgUrl)
@@ -475,6 +505,7 @@ export function HomePage() {
                     caption={editingPost.txt}
                     onClose={onCancelEdit}
                     onPost={onSaveEdit}
+                    onUpdate={updatePost}
                     isEditMode={true}
                 />
             )}
@@ -488,6 +519,7 @@ export function HomePage() {
                     onLike={onLike}
                     onDelete={onDeletePost}
                     onEdit={onEditPost}
+                    onUpdate={updatePost}
                     onPostUnsaved={() => {}} // No saved posts functionality in HomePage
                 />
             )}

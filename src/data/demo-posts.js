@@ -17,9 +17,10 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment1',
-                by: { _id: '64f0a1c2b3d4e5f678901234', fullname: 'Amir Avni', username: 'amir.avni' },
+                by: { _id: '64f0a1c2b3d4e5f678901234', fullname: 'Amir Avni', username: 'amir.avni', imgUrl: '/img/amir-avni.jpg.jpg' },
                 txt: 'Amazing shot! 📸',
-                createdAt: now - 1800000
+                createdAt: now - 1800000,
+                likedBy: ['user1'] // Sarah Johnson likes this comment
             }
         ],
         createdAt: now - 3600000 // 1 hour ago
@@ -54,9 +55,10 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment2',
-                by: { _id: 'user1', fullname: 'Sarah Johnson', username: 'sarah_photography' },
+                by: { _id: 'user1', fullname: 'Sarah Johnson', username: 'sarah_photography', imgUrl: 'https://i.pravatar.cc/150?img=1' },
                 txt: 'Looks incredible!',
-                createdAt: now - 900000
+                createdAt: now - 900000,
+                likedBy: ['64f0a1c2b3d4e5f678901234', 'user2', 'user4'] // Liked by Amir, Mike, and Alex
             }
         ],
         createdAt: now - 10800000 // 3 hours ago
@@ -91,9 +93,10 @@ export const demoPosts = [
         comments: [
             {
                 id: 'comment3',
-                by: { _id: 'user5', fullname: 'Luna Martinez', username: 'luna_art' },
+                by: { _id: 'user5', fullname: 'Luna Martinez', username: 'luna_art', imgUrl: 'https://i.pravatar.cc/150?img=5' },
                 txt: 'Great job! 🔥',
-                createdAt: now - 300000
+                createdAt: now - 300000,
+                likedBy: ['user3', 'user2'] // Liked by Emma and Mike
             }
         ],
         createdAt: now - 18000000 // 5 hours ago

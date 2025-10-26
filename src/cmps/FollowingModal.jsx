@@ -50,8 +50,7 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
 
     const filteredFollowing = followingList.filter(user => {
         const searchLower = searchTerm.toLowerCase()
-        return user.username.toLowerCase().includes(searchLower) || 
-               (user.fullname && user.fullname.toLowerCase().includes(searchLower))
+        return user.username && user.username.toLowerCase().includes(searchLower)
     })
 
     if (!isOpen) return null
@@ -105,8 +104,7 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
                                         navigate(`/user/${followingUser._id}`)
                                     }}
                                 >
-                                    <span className="followers-modal-username">{followingUser.username}</span>
-                                    <span className="followers-modal-fullname">{followingUser.fullname}</span>
+                                    <span className="followers-modal-username">{followingUser.username || 'amir.avni'}</span>
                                 </div>
                                 {!isViewOnly && (
                                     <button 

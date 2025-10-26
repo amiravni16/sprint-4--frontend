@@ -1,0 +1,129 @@
+/* Profile Skeleton Loading Animation */
+
+.skeleton-loading {
+    background: white;
+    min-height: 100vh;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Skeleton base styles */
+.skeleton-loading [class*="skeleton-"] {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Specific skeleton elements */
+.skeleton-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50% !important;
+}
+
+.skeleton-username {
+    height: 28px;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.skeleton-button {
+    height: 32px;
+    width: 120px;
+    border-radius: 6px;
+}
+
+.skeleton-stat {
+    height: 20px;
+    width: 80px;
+    margin-right: 40px;
+}
+
+.skeleton-fullname {
+    height: 16px;
+    width: 150px;
+    margin-top: 20px;
+}
+
+.skeleton-tab {
+    height: 20px;
+    width: 60px;
+    margin-right: 60px;
+}
+
+.skeleton-tab.active {
+    opacity: 0.8;
+}
+
+.skeleton-post {
+    aspect-ratio: 1;
+    width: 100%;
+    border-radius: 0;
+}
+
+/* Layout adjustments for skeleton */
+.skeleton-loading .profile-header {
+    padding: 30px 0;
+}
+
+.skeleton-loading .profile-info {
+    padding-left: 80px;
+}
+
+.skeleton-loading .profile-stats {
+    display: flex;
+    margin: 20px 0;
+}
+
+.skeleton-loading .profile-tabs {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    border-top: 1px solid #efefef;
+}
+
+.skeleton-loading .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    max-width: 935px;
+    margin: 0 auto;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .skeleton-avatar {
+        width: 77px;
+        height: 77px;
+    }
+
+    .skeleton-username {
+        height: 24px;
+        width: 150px;
+        margin-bottom: 15px;
+    }
+
+    .skeleton-loading .profile-info {
+        padding-left: 30px;
+    }
+
+    .skeleton-stat {
+        width: 60px;
+        margin-right: 20px;
+    }
+
+    .skeleton-fullname {
+        width: 120px;
+        margin-top: 15px;
+    }
+}

@@ -44,7 +44,7 @@ export function AppHeader() {
 								marginRight: '8px'
 							}}
 						/>
-						{user.fullname}
+						{user.username || 'amir.avni'}
 					</Link>
 					<button onClick={onLogout}>logout</button>
 				</div>

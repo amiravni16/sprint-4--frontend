@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { addPostMsg } from '../store/actions/post.actions'
+import { useCurrentUser } from '../customHooks/useCurrentUser'
+import { CommentItem } from './CommentItem'
+import { formatTimeAgo } from '../services/util.service'
 
-export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, croppedImage, caption, onBack, onPost, aspectRatio = '1:1', isEditMode = false }) {
+export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, onUpdate, croppedImage, caption, onBack, onPost, aspectRatio = '1:1', isEditMode = false }) {
     const [commentText, setCommentText] = useState('')
     const [showCommentEmojiPicker, setShowCommentEmojiPicker] = useState(false)
     const [imageAspectRatio, setImageAspectRatio] = useState('square')
+    const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false)
+    const [commentToDelete, setCommentToDelete] = useState(null)
+    const navigate = useNavigate()
     const user = useSelector(storeState => storeState.userModule.user)
     const isOwnPost = user && post && user._id === post.by?._id
+    
+    // Get current post author data
+    const { currentUser: postAuthor, loading: authorLoading } = useCurrentUser(post.by?._id)
 
     // Disable scrolling when modal is open
     useEffect(() => {
@@ -95,6 +105,63 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         }
     }
 
+    const handleCommentLike = async (commentId) => {
+        if (!loggedInUser) return
+        
+        try {
+            // Find the comment and toggle the like
+            const updatedComments = post.comments.map(comment => {
+                if (comment.id === commentId) {
+                    const likedBy = comment.likedBy || []
+                    const isLiked = likedBy.includes(loggedInUser._id)
+                    
+                    return {
+                        ...comment,
+                        likedBy: isLiked 
+                            ? likedBy.filter(id => id !== loggedInUser._id)
+                            : [...likedBy, loggedInUser._id]
+                    }
+                }
+                return comment
+            })
+            
+            // Update the post with new comment likes
+            const updatedPost = { ...post, comments: updatedComments }
+            await onUpdate(updatedPost)
+            
+        } catch (err) {
+            console.error('Error liking comment:', err)
+        }
+    }
+
+    const handleDeleteComment = (comment) => {
+        setCommentToDelete(comment)
+        setShowDeleteCommentModal(true)
+    }
+
+    const confirmDeleteComment = async () => {
+        if (!commentToDelete || !loggedInUser) return
+
+        try {
+            // Remove the comment from the post
+            const updatedComments = post.comments.filter(comment => comment.id !== commentToDelete.id)
+            const updatedPost = { ...post, comments: updatedComments }
+            await onUpdate(updatedPost)
+            
+            // Close modal and reset state
+            setShowDeleteCommentModal(false)
+            setCommentToDelete(null)
+        } catch (err) {
+            console.error('Error deleting comment:', err)
+        }
+    }
+
+    const canDeleteComment = (comment) => {
+        if (!loggedInUser) return false
+        // User can delete if they own the post OR they wrote the comment
+        return loggedInUser._id === post.by?._id || loggedInUser._id === comment.by?._id
+    }
+
     const isLiked = user && post.likedBy?.includes(user._id)
 
     return (
@@ -122,7 +189,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                                 alt={post.by?.username}
                                 className="post-details-avatar"
                             />
-                            <span className="post-details-username">{post.by?.username}</span>
+                            <span className="post-details-username">{post.by?.username || 'amir.avni'}</span>
                         </div>
                         {isOwnPost && (
                             <button 
@@ -188,12 +255,15 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                         {/* Caption */}
                         <div className="post-details-comment">
                             <img 
-                                src={post.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
-                                alt={post.by?.username}
+                                src={authorLoading ? (post.by?.imgUrl || '/img/amir-avni.jpg.jpg') : (postAuthor?.imgUrl || post.by?.imgUrl || '/img/amir-avni.jpg.jpg')} 
+                                alt={authorLoading ? (post.by?.username) : (postAuthor?.username || post.by?.username)}
                                 className="post-details-comment-avatar"
                             />
                             <div className="post-details-comment-content">
-                                <span className="post-details-comment-username">{post.by?.username}</span>
+                                <span className="post-details-comment-username clickable" onClick={() => {
+                                    onClose()
+                                    navigate(`/user/${post.by?._id}`)
+                                }}>{authorLoading ? (post.by?.username || 'amir.avni') : (postAuthor?.username || post.by?.username || 'amir.avni')}</span>
                                 <span className="post-details-comment-text">{post.txt}</span>
                             </div>
                         </div>
@@ -201,19 +271,62 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                         {/* Comments */}
                         {post.comments && post.comments.length > 0 && (
                             <>
-                                {post.comments.map((comment, idx) => (
-                                    <div key={idx} className="post-details-comment">
-                                        <img 
-                                            src={comment.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
-                                            alt={comment.by?.username}
-                                            className="post-details-comment-avatar"
-                                        />
-                                        <div className="post-details-comment-content">
-                                            <span className="post-details-comment-username">{comment.by?.username}</span>
-                                            <span className="post-details-comment-text">{comment.txt}</span>
+                                {post.comments.map((comment, idx) => {
+                                    const isCommentLiked = loggedInUser && comment.likedBy?.includes(loggedInUser._id)
+                                    const commentLikeCount = comment.likedBy?.length || 0
+                                    const canDelete = canDeleteComment(comment)
+                                    
+                                    return (
+                                        <div key={idx} className="post-details-comment">
+                                            <img 
+                                                src={comment.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
+                                                alt={comment.by?.username}
+                                                className="post-details-comment-avatar"
+                                            />
+                                            <div className="post-details-comment-content">
+                                                <span className="post-details-comment-username clickable" onClick={() => {
+                                                    onClose()
+                                                    navigate(`/user/${comment.by?._id}`)
+                                                }}>{comment.by?.username || 'amir.avni'}</span>
+                                                <span className="post-details-comment-text">{comment.txt}</span>
+                                                <div className="post-details-comment-actions">
+                                                    <span className="post-details-comment-time">
+                                                        {formatTimeAgo(comment.createdAt)}
+                                                    </span>
+                                                    {commentLikeCount > 0 && (
+                                                        <span className="post-details-comment-likes">
+                                                            {commentLikeCount} {commentLikeCount === 1 ? 'like' : 'likes'}
+                                                        </span>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button 
+                                                            className="post-details-comment-options-btn"
+                                                            onClick={() => handleDeleteComment(comment)}
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                                <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
+                                                                <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+                                                                <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
+                                                            </svg>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <button 
+                                                className={`post-details-comment-like-btn ${isCommentLiked ? 'liked' : ''}`}
+                                                onClick={() => handleCommentLike(comment.id)}
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                                    {isCommentLiked ? (
+                                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+                                                    ) : (
+                                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                                    )}
+                                                </svg>
+                                            </button>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </>
                         )}
                     </div>
@@ -266,6 +379,21 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                     </form>
                 </div>
             </div>
+
+            {/* Delete Comment Modal */}
+            {showDeleteCommentModal && (
+                <div className="post-options-overlay" onClick={() => setShowDeleteCommentModal(false)}>
+                    <div className="post-options-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="post-option-btn post-option-delete" onClick={confirmDeleteComment}>
+                            Delete
+                        </button>
+                        <div className="post-option-divider"></div>
+                        <button className="post-option-btn" onClick={() => setShowDeleteCommentModal(false)}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 
@@ -412,6 +540,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                     </div>
                 </div>
             </div>
+
         )
     }
 }
