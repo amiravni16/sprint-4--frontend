@@ -129,7 +129,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                     <div className="post-details-header">
                         <div className="post-details-user">
                             <img 
-                                src={currentPost.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                src={currentPost.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                 alt={currentPost.by?.username}
                                 className="post-details-avatar"
                             />
@@ -157,7 +157,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                         {/* Caption */}
                         <div className="post-details-comment">
                             <img 
-                                src={currentPost.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                src={currentPost.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                 alt={currentPost.by?.username}
                                 className="post-details-comment-avatar"
                             />
@@ -173,7 +173,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                                 {currentPost.comments.map((comment, idx) => (
                                     <div key={idx} className="post-details-comment">
                                         <img 
-                                            src={comment.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                            src={comment.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                             alt={comment.by?.username}
                                             className="post-details-comment-avatar"
                                         />

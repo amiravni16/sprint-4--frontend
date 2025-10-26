@@ -118,7 +118,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                     <div className="post-details-header">
                         <div className="post-details-user">
                             <img 
-                                src={post.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                src={post.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                 alt={post.by?.username}
                                 className="post-details-avatar"
                             />
@@ -188,7 +188,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                         {/* Caption */}
                         <div className="post-details-comment">
                             <img 
-                                src={post.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                src={post.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                 alt={post.by?.username}
                                 className="post-details-comment-avatar"
                             />
@@ -204,7 +204,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                                 {post.comments.map((comment, idx) => (
                                     <div key={idx} className="post-details-comment">
                                         <img 
-                                            src={comment.by?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                            src={comment.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                             alt={comment.by?.username}
                                             className="post-details-comment-avatar"
                                         />
@@ -355,9 +355,12 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                             {/* User Info */}
                             <div className="post-create-user-info">
                                 <img 
-                                    src={user?.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                    src={user?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                     alt={user?.username}
                                     className="post-create-avatar"
+                                    onError={(e) => {
+                                        e.target.src = '/img/amir-avni.jpg.jpg';
+                                    }}
                                 />
                                 <span className="post-create-username">{loggedInUser?.username || 'amir.avni'}</span>
                             </div>

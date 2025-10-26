@@ -24,7 +24,7 @@
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .instagram-sidebar {
         display: none;
     }
@@ -52,19 +52,20 @@
     display: none;
 }
 
-@media (max-width: 1263px) {
+@media (max-width: 1263px) and (min-width: 601px) {
     .logo-section {
         padding-left: 0;
         text-align: center;
     }
     
     .instagram-logo {
-        display: none;
+        display: none !important;
     }
     
     .instagram-logo-icon {
-        display: block;
+        display: block !important;
         color: #000;
+        transform: translateY(19px);
     }
 }
 
@@ -104,6 +105,7 @@ button.nav-item {
     vertical-align: baseline;
     height: 48px;
     box-sizing: border-box;
+    border-bottom: none;
 }
 
 @media (max-width: 1263px) {
@@ -126,6 +128,8 @@ button.nav-item {
 
 .nav-item.active {
     font-weight: 600;
+    text-decoration: none;
+    border-bottom: none;
 }
 
 .nav-item.active .nav-icon {
@@ -270,8 +274,3 @@ button.nav-item.create-btn {
     }
 }
 
-@media (max-width: 768px) {
-    .instagram-sidebar {
-        display: none;
-    }
-}

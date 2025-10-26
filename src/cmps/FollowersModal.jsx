@@ -106,7 +106,7 @@ export function FollowersModal({ isOpen, onClose, followers, currentUserId, onUp
                         filteredFollowers.map(follower => (
                             <div key={follower._id} className="followers-modal-item">
                                 <img 
-                                    src={follower.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+                                    src={follower.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                     alt={follower.username}
                                     className="followers-modal-avatar"
                                     onClick={() => {

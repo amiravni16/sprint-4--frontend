@@ -31,8 +31,11 @@ export function AppHeader() {
 				<div className="user-info">
 					<Link to={`user/${user._id}`}>
 						<img 
-							src="https://i.pravatar.cc/32?img=1" 
+							src={user?.imgUrl || '/img/amir-avni.jpg.jpg'} 
 							alt={user.fullname}
+							onError={(e) => {
+								e.target.src = '/img/amir-avni.jpg.jpg';
+							}}
 							style={{
 								width: '32px',
 								height: '32px',

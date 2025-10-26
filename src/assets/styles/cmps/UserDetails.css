@@ -96,14 +96,19 @@
         }
     }
 
+    .profile-fullname-section {
+        margin: 1px 0 8px 4px;
+    }
+
+    .profile-fullname {
+        font-size: 16px;
+        font-weight: 600;
+        color: #262626;
+        margin: 0;
+        line-height: 1.2;
+    }
+
     .profile-bio {
-        .profile-fullname {
-            font-size: 16px;
-            font-weight: 600;
-            color: #262626;
-            margin: 0 0 12px 0;
-            line-height: 1.2;
-        }
 
 
         .profile-bio-text {
@@ -179,7 +184,7 @@
     .profile-tab {
         background: none;
         border: none;
-        padding: 12px 0;
+        padding: 16px 0 8px 0;
         cursor: pointer;
         color: #8e8e8e;
         border-bottom: 1px solid transparent;
@@ -202,11 +207,11 @@
     .profile-tab.active::after {
         content: '';
         position: absolute;
-        bottom: 0;
+        bottom: -5px;
         left: 50%;
         transform: translateX(-50%);
-        width: 50px;
-        height: 2px;
+        width: 60px;
+        height: 1px;
         background-color: #262626;
     }
 

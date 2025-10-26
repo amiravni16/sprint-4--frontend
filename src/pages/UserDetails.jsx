@@ -218,9 +218,12 @@ export function UserDetails() {
         <div className="profile-header">
           <div className="profile-left">
             <img 
-              src={user.imgUrl || 'https://i.pravatar.cc/150?img=1'} 
+              src={user.imgUrl || '/img/amir-avni.jpg.jpg'} 
               alt={user.fullname}
               className="profile-pic"
+              onError={(e) => {
+                e.target.src = '/img/amir-avni.jpg.jpg';
+              }}
             />
             {isOwnProfile && (
               <button className="edit-profile-btn">Edit profile</button>
@@ -237,6 +240,10 @@ export function UserDetails() {
                   {isFollowing ? 'Following' : 'Follow'}
                 </button>
               )}
+            </div>
+
+            <div className="profile-fullname-section">
+              <p className="profile-fullname">{user.fullname}</p>
             </div>
 
             <div className="profile-stats">
@@ -261,7 +268,6 @@ export function UserDetails() {
             </div>
 
             <div className="profile-bio">
-              <p className="profile-fullname">{user.fullname}</p>
               {user.bio && <p className="profile-bio-text">{user.bio}</p>}
             </div>
           </div>
@@ -306,7 +312,13 @@ export function UserDetails() {
               className="profile-post-thumbnail"
               onClick={() => onOpenPostView(post)}
             >
-              <img src={post.imgUrl} alt="Post" />
+              <img 
+                src={post.imgUrl} 
+                alt="Post" 
+                onError={(e) => {
+                  e.target.src = '/img/sunflowers.jpg';
+                }}
+              />
               <div className="post-overlay">
                 <div className="post-stats">
                   <span>❤️ {post.likedBy?.length || 0}</span>

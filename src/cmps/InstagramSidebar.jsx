@@ -83,8 +83,11 @@ export function InstagramSidebar() {
                     <NavLink to={`/user/${user?._id || 'profile'}`} className="nav-item">
                         <div className="profile-avatar">
                             <img 
-                                src={user?.imgUrl || 'https://i.pravatar.cc/24?img=1'} 
+                                src={user?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                                 alt="Profile"
+                                onError={(e) => {
+                                    e.target.src = '/img/amir-avni.jpg.jpg';
+                                }}
                                 style={{
                                     width: '100%',
                                     height: '100%',

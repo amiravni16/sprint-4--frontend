@@ -111,9 +111,12 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                 <div className="user-info">
                     <div className="profile-pic-container" style={{ position: 'relative', width: '32px', height: '32px' }}>
                         <img 
-                            src={post.by?.imgUrl || 'https://i.pravatar.cc/32?img=1'} 
+                            src={post.by?.imgUrl || '/img/amir-avni.jpg.jpg'} 
                             alt={post.by?.username || 'Profile'} 
                             className="profile-pic"
+                            onError={(e) => {
+                                e.target.src = '/img/amir-avni.jpg.jpg';
+                            }}
                             style={{
                                 width: '32px',
                                 height: '32px',
