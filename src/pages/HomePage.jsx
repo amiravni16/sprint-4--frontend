@@ -5,6 +5,7 @@ import { addPostMsg } from '../store/actions/post.actions'
 import { PostList } from '../cmps/PostList'
 import { PostDetailsModal } from '../cmps/PostDetailsModal'
 import { PostViewModal } from '../cmps/PostViewModal'
+import { SuggestedUsers } from '../cmps/SuggestedUsers'
 import { postService } from '../services/post'
 import { userService } from '../services/user'
 import { feedService } from '../services/feed.service'
@@ -433,7 +434,8 @@ export function HomePage() {
 
     return (
         <div className="instagram-home">
-            <div className="feed-container">
+            <div className="home-content">
+                <div className="feed-container">
                 {posts && posts.length > 0 ? (
                     <PostList 
                         posts={posts}
@@ -496,6 +498,12 @@ export function HomePage() {
                         </div>
                     </div>
                 )}
+                </div>
+
+                {/* Suggested Users Sidebar */}
+                <div className="sidebar-container">
+                    <SuggestedUsers />
+                </div>
             </div>
 
             {/* Edit Post Modal */}

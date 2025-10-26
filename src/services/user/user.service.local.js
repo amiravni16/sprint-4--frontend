@@ -89,7 +89,9 @@ async function logout() {
 }
 
 function getLoggedinUser() {
-    return JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
+    const user = JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
+    console.log('🔍 Current logged-in user:', user?.username, 'ID:', user?._id)
+    return user
 }
 
 function saveLoggedinUser(user) {
@@ -107,6 +109,7 @@ function saveLoggedinUser(user) {
 // Instagram-specific functions
 
 async function toggleFollow(userIdToFollow) {
+    console.log('🔄 toggleFollow called for user:', userIdToFollow)
     const loggedinUser = getLoggedinUser()
     if (!loggedinUser) throw new Error('User not logged in')
     
@@ -114,29 +117,42 @@ async function toggleFollow(userIdToFollow) {
     const currentUser = await storageService.get('user', loggedinUser._id)
     const targetUser = await storageService.get('user', userIdToFollow)
     
+    console.log('📊 Before follow:')
+    console.log('- Current user following:', currentUser.following?.length || 0, 'users')
+    console.log('- Target user followers:', targetUser.followers?.length || 0, 'users')
+    
     // Initialize arrays if they don't exist
     currentUser.following = currentUser.following || []
     targetUser.followers = targetUser.followers || []
     
     // Check if already following
     const isFollowing = currentUser.following.includes(userIdToFollow)
+    console.log('- Already following?', isFollowing)
     
     if (isFollowing) {
         // Unfollow
         currentUser.following = currentUser.following.filter(id => id !== userIdToFollow)
         targetUser.followers = targetUser.followers.filter(id => id !== loggedinUser._id)
+        console.log('👋 Unfollowed user')
     } else {
         // Follow
         currentUser.following.push(userIdToFollow)
         targetUser.followers.push(loggedinUser._id)
+        console.log('✅ Followed user')
     }
+    
+    console.log('📊 After follow:')
+    console.log('- Current user now following:', currentUser.following.length, 'users')
+    console.log('- Target user now has:', targetUser.followers.length, 'followers')
     
     // Save both users
     await storageService.put('user', currentUser)
     await storageService.put('user', targetUser)
+    console.log('💾 Saved both users to storage')
     
     // Update logged in user session
     saveLoggedinUser(currentUser)
+    console.log('🔄 Updated logged-in user session')
     
     return { isFollowing: !isFollowing, followersCount: targetUser.followers.length }
 }

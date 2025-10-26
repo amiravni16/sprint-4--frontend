@@ -364,8 +364,8 @@ export function UserDetails() {
           </div>
         )}
 
-        {/* Debug info - only show on own profile */}
-        {isOwnProfile && (
+        {/* Debug info - hidden for demo presentation */}
+        {false && isOwnProfile && (
           <details style={{ marginTop: '2rem' }}>
             <summary>Debug: User Data (click to expand)</summary>
             <div style={{ marginBottom: '1rem' }}>
@@ -436,7 +436,7 @@ export function UserDetails() {
             </pre>
           </details>
         )}
-      </div>}
+      </div>
 
       {/* Followers Modal */}
       {isOwnProfile && (

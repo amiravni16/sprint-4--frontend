@@ -96,7 +96,7 @@ async function ensureFollowingRelationships(user) {
         }
 
         // Save updated user
-        await userService.save(updatedUser)
+        await userService.update(updatedUser)
         console.log('✅ [FEED] User following relationships restored:', updatedUser.following)
 
         return updatedUser
