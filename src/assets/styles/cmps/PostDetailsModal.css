@@ -191,12 +191,14 @@
     display: inline;
 }
 
-.post-details-comment-username.clickable {
+.post-details-comment-username.clickable,
+.post-details-username.clickable {
     cursor: pointer;
     transition: opacity 0.15s ease;
 }
 
-.post-details-comment-username.clickable:hover {
+.post-details-comment-username.clickable:hover,
+.post-details-username.clickable:hover {
     opacity: 0.7;
 }
 

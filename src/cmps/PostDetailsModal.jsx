@@ -273,6 +273,13 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         try {
             await addPostMsg(post._id, commentText)
             setCommentText('')
+            
+            // Refetch the post to get the new comment
+            if (onUpdate) {
+                const { postService } = await import('../services/post')
+                const updatedPost = await postService.getById(post._id)
+                await onUpdate(updatedPost)
+            }
         } catch (err) {
             console.error('Error adding comment:', err)
         }
@@ -378,7 +385,15 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                                 alt={post.by?.username}
                                 className="post-details-avatar"
                             />
-                            <span className="post-details-username">{post.by?.username || 'amir.avni'}</span>
+                            <span 
+                                className="post-details-username clickable"
+                                onClick={() => {
+                                    onClose()
+                                    navigate(`/user/${post.by?._id}`)
+                                }}
+                            >
+                                {post.by?.username || 'amir.avni'}
+                            </span>
                         </div>
                         <button
                             className="post-details-options"

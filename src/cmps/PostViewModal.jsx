@@ -20,10 +20,22 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
     const user = useSelector(storeState => storeState.userModule.user)
     const posts = useSelector(storeState => storeState.postModule.posts)
     
-    // Get the updated post from Redux store
-    const currentPost = posts.find(p => p._id === post._id) || post
+    // Use useState to track the post locally
+    const [localPost, setLocalPost] = useState(() => {
+        const fromStore = posts.find(p => p._id === post._id)
+        return fromStore || post
+    })
+    
+    // Get the updated post from Redux store or local state
+    const currentPost = localPost
     const isOwnPost = user && currentPost && user._id === currentPost.by?._id
     
+    // Update localPost when post._id changes
+    useEffect(() => {
+        const fromStore = posts.find(p => p._id === post._id)
+        setLocalPost(fromStore || post)
+    }, [post._id])
+
     // Get current post author data
     const { currentUser: postAuthor, loading: authorLoading } = useCurrentUser(currentPost.by?._id)
 
@@ -75,6 +87,16 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
             await addPostMsg(currentPost._id, commentText)
             setCommentText('')
             showSuccessMsg('Comment added! 💬')
+            
+            // Refetch the post to get the new comment
+            const { postService } = await import('../services/post')
+            const updatedPost = await postService.getById(currentPost._id)
+            setLocalPost(updatedPost)
+            
+            // Update the parent if onUpdate is provided
+            if (onUpdate) {
+                await onUpdate(updatedPost)
+            }
         } catch (err) {
             console.error('Error adding comment:', err)
             showSuccessMsg('Failed to add comment')
@@ -103,7 +125,12 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
             
             // Update the post with new comment likes
             const updatedPost = { ...currentPost, comments: updatedComments }
-            await onUpdate(updatedPost)
+            setLocalPost(updatedPost)
+            
+            // Update the parent if onUpdate is provided
+            if (onUpdate) {
+                await onUpdate(updatedPost)
+            }
             
         } catch (err) {
             console.error('Error liking comment:', err)
@@ -122,7 +149,12 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
             // Remove the comment from the post
             const updatedComments = currentPost.comments.filter(comment => comment.id !== commentToDelete.id)
             const updatedPost = { ...currentPost, comments: updatedComments }
-            await onUpdate(updatedPost)
+            setLocalPost(updatedPost)
+            
+            // Update the parent if onUpdate is provided
+            if (onUpdate) {
+                await onUpdate(updatedPost)
+            }
             
             // Close modal and reset state
             setShowDeleteCommentModal(false)
@@ -217,7 +249,15 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                                 alt={authorLoading ? (currentPost.by?.username) : (postAuthor?.username || currentPost.by?.username)}
                                 className="post-details-avatar"
                             />
-                            <span className="post-details-username">{authorLoading ? (currentPost.by?.username || 'amir.avni') : (postAuthor?.username || currentPost.by?.username || 'amir.avni')}</span>
+                            <span 
+                                className="post-details-username clickable" 
+                                onClick={() => {
+                                    onClose()
+                                    navigate(`/user/${currentPost.by?._id}`)
+                                }}
+                            >
+                                {authorLoading ? (currentPost.by?.username || 'amir.avni') : (postAuthor?.username || currentPost.by?.username || 'amir.avni')}
+                            </span>
                         </div>
                         <button 
                             className="post-details-options"

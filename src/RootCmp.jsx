@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage'
 import { PostIndex } from './pages/PostIndex.jsx'
 import { PostDetails } from './pages/PostDetails'
 import { UserDetails } from './pages/UserDetails'
+import { ExplorePage } from './pages/ExplorePage'
 
 import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
@@ -27,7 +28,7 @@ export function RootCmp() {
                     <Route path="post/:postId" element={<PostDetails />} />
                     <Route path="user/:id" element={<UserDetails />} />
                     <Route path="search" element={<div>Search Page (Coming Soon)</div>} />
-                    <Route path="explore" element={<div>Explore Page (Coming Soon)</div>} />
+                    <Route path="explore" element={<ExplorePage />} />
                     <Route path="reels" element={<div>Reels Page (Coming Soon)</div>} />
                     <Route path="auth" element={<LoginSignup />}>
                         <Route path="login" element={<Login />} />
