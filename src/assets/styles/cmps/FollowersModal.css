@@ -135,26 +135,29 @@
 
 .followers-modal-action-btn {
     padding: 6px 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    border: 1px solid #dbdbdb;
-    background-color: white;
-    color: #262626;
-    transition: background-color 0.2s;
+    border: none;
+    background-color: #0095f6;
+    color: white;
+    transition: all 0.2s;
 }
 
 .followers-modal-action-btn:hover {
-    background-color: #fafafa;
+    background-color: #1877f2;
 }
 
 .followers-modal-action-btn.following {
-    background-color: #efefef;
+    background-color: transparent;
+    color: #262626;
+    border: 1px solid #dbdbdb;
 }
 
 .followers-modal-action-btn.following:hover {
-    background-color: #dbdbdb;
+    background-color: #fafafa;
+    border-color: #262626;
 }
 
 /* Scrollbar styling */

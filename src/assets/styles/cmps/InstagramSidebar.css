@@ -11,6 +11,22 @@
     transition: width 0.3s ease;
 }
 
+.instagram-sidebar.compact {
+    width: 72px;
+}
+
+.instagram-sidebar.compact .nav-item span {
+    display: none;
+}
+
+.instagram-sidebar.compact .logo-section .instagram-logo-icon {
+    display: block;
+}
+
+.instagram-sidebar.compact .logo-section .instagram-logo {
+    display: none;
+}
+
 /* For screens wider than 1920px, use wider sidebar like Instagram */
 @media (min-width: 1920px) {
     .instagram-sidebar {
@@ -126,10 +142,47 @@ button.nav-item {
     background-color: #fafafa;
 }
 
+button.nav-item {
+    background: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    font-family: inherit !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    text-align: left !important;
+    line-height: 1.4 !important;
+}
+
+button.nav-item,
+button.nav-item:focus,
+button.nav-item:active {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+button.nav-item:hover {
+    background-color: #fafafa !important;
+}
+
+button.nav-item.active {
+    font-weight: 600 !important;
+}
+
+.nav-item button:hover {
+    background-color: #fafafa !important;
+    color: #262626 !important;
+}
+
 .nav-item.active {
     font-weight: 600;
     text-decoration: none;
     border-bottom: none;
+    background-color: transparent !important;
+}
+
+.nav-item.active:hover {
+    background-color: #fafafa !important;
 }
 
 .nav-item.active .nav-icon {

@@ -16,6 +16,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
     const [isSaved, setIsSaved] = useState(false)
     const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false)
     const [commentToDelete, setCommentToDelete] = useState(null)
+    const [showOptionsModal, setShowOptionsModal] = useState(false)
     const user = useSelector(storeState => storeState.userModule.user)
     const posts = useSelector(storeState => storeState.postModule.posts)
     
@@ -167,9 +168,25 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
             setIsAnimating(true)
             setTimeout(() => setIsAnimating(false), 400)
         }
-        
+
         if (onLike) {
             onLike(currentPost._id)
+        }
+    }
+
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(currentPost._id)
+            setShowOptionsModal(false)
+            onClose() // Close the modal after deletion
+        }
+    }
+
+    const handleEdit = () => {
+        if (onEdit) {
+            onEdit(currentPost)
+            setShowOptionsModal(false)
+            onClose() // Close the modal when editing
         }
     }
 
@@ -202,21 +219,19 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                             />
                             <span className="post-details-username">{authorLoading ? (currentPost.by?.username || 'amir.avni') : (postAuthor?.username || currentPost.by?.username || 'amir.avni')}</span>
                         </div>
-                        {isOwnPost && (
-                            <button 
-                                className="post-details-options"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    // Options menu will be handled by parent
-                                }}
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="5" r="1" fill="currentColor"/>
-                                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
-                                    <circle cx="12" cy="19" r="1" fill="currentColor"/>
-                                </svg>
-                            </button>
-                        )}
+                        <button 
+                            className="post-details-options"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setShowOptionsModal(true)
+                            }}
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="5" r="1" fill="currentColor"/>
+                                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                                <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                            </svg>
+                        </button>
                     </div>
 
                     {/* Comments section */}
@@ -403,6 +418,34 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                         <button className="post-option-btn" onClick={() => setShowDeleteCommentModal(false)}>
                             Cancel
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Post Options Modal */}
+            {showOptionsModal && (
+                <div className="post-options-overlay" onClick={() => setShowOptionsModal(false)}>
+                    <div className="post-options-modal" onClick={(e) => e.stopPropagation()}>
+                        {/* Only show options if user owns the post */}
+                        {user && currentPost.by?._id === user._id ? (
+                            <>
+                                <button className="post-option-btn post-option-delete" onClick={handleDelete}>
+                                    Delete
+                                </button>
+                                <div className="post-option-divider"></div>
+                                <button className="post-option-btn" onClick={handleEdit}>
+                                    Edit
+                                </button>
+                                <div className="post-option-divider"></div>
+                                <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                    Cancel
+                                </button>
+                            </>
+                        ) : (
+                            <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                Cancel
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

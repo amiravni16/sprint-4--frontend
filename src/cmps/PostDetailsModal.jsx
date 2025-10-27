@@ -12,6 +12,12 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
     const [imageAspectRatio, setImageAspectRatio] = useState('square')
     const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false)
     const [commentToDelete, setCommentToDelete] = useState(null)
+    const [showOptionsModal, setShowOptionsModal] = useState(false)
+    // Create post modal state
+    const [captionText, setCaptionText] = useState(caption || '')
+    const [characterCount, setCharacterCount] = useState((caption || '').length)
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [createImageAspectRatio, setCreateImageAspectRatio] = useState('square')
     const navigate = useNavigate()
     const user = useSelector(storeState => storeState.userModule.user)
     const isOwnPost = user && post && user._id === post.by?._id
@@ -51,6 +57,24 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         }
     }, [post?.imgUrl])
 
+    // Detect aspect ratio for create post image
+    useEffect(() => {
+        if (croppedImage) {
+            const img = new Image()
+            img.onload = () => {
+                const aspectRatio = img.width / img.height
+                if (aspectRatio > 1.1) {
+                    setCreateImageAspectRatio('horizontal')
+                } else if (aspectRatio < 0.9) {
+                    setCreateImageAspectRatio('vertical')
+                } else {
+                    setCreateImageAspectRatio('square')
+                }
+            }
+            img.src = croppedImage
+        }
+    }, [croppedImage])
+
     // Get user from session storage as fallback
     const getLoggedInUser = () => {
         try {
@@ -82,6 +106,156 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}M`
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}H`
         return `${Math.floor(diffInSeconds / 86400)}D`
+    }
+
+    // Helper function to render create post modal
+    const renderCreatePostModal = () => {
+        console.log('renderCreatePostModal called')
+
+        const handleCaptionChange = (e) => {
+            const text = e.target.value
+            setCaptionText(text)
+            setCharacterCount(text.length)
+        }
+
+        const addEmoji = (emoji) => {
+            setCaptionText(prev => prev + emoji)
+            setCharacterCount(prev => prev + emoji.length)
+            setShowEmojiPicker(false)
+        }
+
+        const handlePost = () => {
+            if (onPost) {
+                onPost({
+                    image: croppedImage,
+                    caption: captionText
+                })
+            }
+        }
+
+        return (
+            <div className="post-create-overlay" onClick={onClose}>
+                <div className={`post-create-modal ${aspectRatio === 'original' || aspectRatio === '16:9' ? 'horizontal' : ''}`} onClick={(e) => e.stopPropagation()}>
+                    {/* Close button */}
+                    <button className="post-create-close-btn" onClick={onClose}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+
+                    {/* Header */}
+                    <div className="post-create-header">
+                        {onBack && (
+                            <button className="post-create-back-btn" onClick={onBack}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
+                        )}
+                        {!onBack && <div className="post-create-back-btn-placeholder"></div>}
+                        <h2>{isEditMode ? 'Edit post' : 'Create new post'}</h2>
+                        <button className="post-create-share-btn" onClick={handlePost}>
+                            Share
+                        </button>
+                    </div>
+
+                    {/* Content */}
+                    <div className="post-create-content">
+                        {/* Image Preview */}
+                        <div className={`post-create-image ${createImageAspectRatio}`}>
+                            <img src={croppedImage} alt="Post" />
+                        </div>
+
+                        {/* Right Panel */}
+                        <div className="post-create-right">
+                            {/* User Info */}
+                            <div className="post-create-user-info">
+                                <img 
+                                    src={user?.imgUrl || '/img/amir-avni.jpg.jpg'} 
+                                    alt={user?.username}
+                                    className="post-create-avatar"
+                                    onError={(e) => {
+                                        e.target.src = '/img/amir-avni.jpg.jpg';
+                                    }}
+                                />
+                                <span className="post-create-username">{loggedInUser?.username || 'amir.avni'}</span>
+                            </div>
+
+                            {/* Caption Textarea */}
+                            <textarea
+                                className="post-create-caption"
+                                placeholder="Write a caption..."
+                                value={captionText}
+                                onChange={handleCaptionChange}
+                                maxLength={2200}
+                            />
+
+                            {/* Character Count */}
+                            <div className="post-create-char-count">
+                                {characterCount}/2,200
+                            </div>
+
+                            {/* Emoji Button */}
+                            <div className="post-create-emoji-container">
+                                <div 
+                                    className="post-create-emoji-btn" 
+                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                        <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                                        <circle cx="15" cy="9" r="1" fill="currentColor"/>
+                                        <path d="M9 14c0 1.5 1.5 3 3 3s3-1.5 3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                                    </svg>
+                                </div>
+                                
+                                {/* Emoji Picker */}
+                                {showEmojiPicker && (
+                                    <div className="post-create-emoji-picker">
+                                        {emojis.map((emoji, index) => (
+                                            <button
+                                                key={index}
+                                                className="post-create-emoji-option"
+                                                onClick={() => addEmoji(emoji)}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Post Options Modal */}
+                {showOptionsModal && (
+                    <div className="post-options-overlay" onClick={() => setShowOptionsModal(false)}>
+                        <div className="post-options-modal" onClick={(e) => e.stopPropagation()}>
+                            {user && post?.by?._id === user._id ? (
+                                <>
+                                    <button className="post-option-btn post-option-delete" onClick={handleDelete}>
+                                        Delete
+                                    </button>
+                                    <div className="post-option-divider"></div>
+                                    <button className="post-option-btn" onClick={handleEdit}>
+                                        Edit
+                                    </button>
+                                    <div className="post-option-divider"></div>
+                                    <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="post-option-btn" onClick={() => setShowOptionsModal(false)}>
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
     }
 
     // If croppedImage is provided, this is for creating a new post or editing
@@ -139,6 +313,22 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         setShowDeleteCommentModal(true)
     }
 
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(post._id)
+            setShowOptionsModal(false)
+            onClose() // Close the modal after deletion
+        }
+    }
+
+    const handleEdit = () => {
+        if (onEdit) {
+            onEdit(post)
+            setShowOptionsModal(false)
+            onClose() // Close the modal when editing
+        }
+    }
+
     const confirmDeleteComment = async () => {
         if (!commentToDelete || !loggedInUser) return
 
@@ -191,21 +381,19 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                             />
                             <span className="post-details-username">{post.by?.username || 'amir.avni'}</span>
                         </div>
-                        {isOwnPost && (
-                            <button 
-                                className="post-details-options"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    // Options menu will be handled by parent
-                                }}
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="5" r="1" fill="currentColor"/>
-                                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
-                                    <circle cx="12" cy="19" r="1" fill="currentColor"/>
-                                </svg>
-                            </button>
-                        )}
+                        <button
+                            className="post-details-options"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setShowOptionsModal(true)
+                            }}
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="5" r="1" fill="currentColor"/>
+                                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                                <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                            </svg>
+                        </button>
                     </div>
 
                     {/* Actions */}
@@ -396,151 +584,4 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
             )}
         </div>
     )
-
-    function renderCreatePostModal() {
-        console.log('renderCreatePostModal called')
-        const [captionText, setCaptionText] = useState(caption || '')
-        const [characterCount, setCharacterCount] = useState(captionText.length)
-        const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-        const [createImageAspectRatio, setCreateImageAspectRatio] = useState('square')
-
-        const emojis = ['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥', '💯', '✨']
-
-        // Detect aspect ratio for create post image
-        useEffect(() => {
-            if (croppedImage) {
-                const img = new Image()
-                img.onload = () => {
-                    const aspectRatio = img.width / img.height
-                    if (aspectRatio > 1.1) {
-                        setCreateImageAspectRatio('horizontal')
-                    } else if (aspectRatio < 0.9) {
-                        setCreateImageAspectRatio('vertical')
-                    } else {
-                        setCreateImageAspectRatio('square')
-                    }
-                }
-                img.src = croppedImage
-            }
-        }, [croppedImage])
-
-        const handleCaptionChange = (e) => {
-            const text = e.target.value
-            setCaptionText(text)
-            setCharacterCount(text.length)
-        }
-
-        const addEmoji = (emoji) => {
-            setCaptionText(prev => prev + emoji)
-            setCharacterCount(prev => prev + emoji.length)
-            setShowEmojiPicker(false)
-        }
-
-        const handlePost = () => {
-            if (onPost) {
-                onPost({
-                    image: croppedImage,
-                    caption: captionText
-                })
-            }
-        }
-
-        return (
-            <div className="post-create-overlay" onClick={onClose}>
-                <div className={`post-create-modal ${aspectRatio === 'original' || aspectRatio === '16:9' ? 'horizontal' : ''}`} onClick={(e) => e.stopPropagation()}>
-                    {/* Close button */}
-                    <button className="post-create-close-btn" onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                    </button>
-
-                    {/* Header */}
-                    <div className="post-create-header">
-                        {onBack && (
-                            <button className="post-create-back-btn" onClick={onBack}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                            </button>
-                        )}
-                        {!onBack && <div className="post-create-back-btn-placeholder"></div>}
-                        <h2>{isEditMode ? 'Edit post' : 'Create new post'}</h2>
-                        <button className="post-create-share-btn" onClick={handlePost}>
-                            Share
-                        </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="post-create-content">
-                        {/* Image Preview */}
-                        <div className={`post-create-image ${createImageAspectRatio}`}>
-                            <img src={croppedImage} alt="Post" />
-                        </div>
-
-                        {/* Right Panel */}
-                        <div className="post-create-right">
-                            {/* User Info */}
-                            <div className="post-create-user-info">
-                                <img 
-                                    src={user?.imgUrl || '/img/amir-avni.jpg.jpg'} 
-                                    alt={user?.username}
-                                    className="post-create-avatar"
-                                    onError={(e) => {
-                                        e.target.src = '/img/amir-avni.jpg.jpg';
-                                    }}
-                                />
-                                <span className="post-create-username">{loggedInUser?.username || 'amir.avni'}</span>
-                            </div>
-
-                            {/* Caption Textarea */}
-                            <textarea
-                                className="post-create-caption"
-                                placeholder="Write a caption..."
-                                value={captionText}
-                                onChange={handleCaptionChange}
-                                maxLength={2200}
-                            />
-
-                            {/* Character Count */}
-                            <div className="post-create-char-count">
-                                {characterCount}/2,200
-                            </div>
-
-                            {/* Emoji Button */}
-                            <div className="post-create-emoji-container">
-                                <div 
-                                    className="post-create-emoji-btn" 
-                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                        <circle cx="9" cy="9" r="1" fill="currentColor"/>
-                                        <circle cx="15" cy="9" r="1" fill="currentColor"/>
-                                        <path d="M9 14c0 1.5 1.5 3 3 3s3-1.5 3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                                    </svg>
-                                </div>
-                                
-                                {/* Emoji Picker */}
-                                {showEmojiPicker && (
-                                    <div className="post-create-emoji-picker">
-                                        {emojis.map((emoji, index) => (
-                                            <button
-                                                key={index}
-                                                className="post-create-emoji-option"
-                                                onClick={() => addEmoji(emoji)}
-                                            >
-                                                {emoji}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        )
-    }
 }

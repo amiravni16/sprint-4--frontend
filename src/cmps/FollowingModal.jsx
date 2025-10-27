@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { userService } from '../services/user'
+import { store } from '../store/store'
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 
 export function FollowingModal({ isOpen, onClose, following, currentUserId, onUpdate }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [followingList, setFollowingList] = useState([])
+    const loggedinUser = useSelector(storeState => storeState.userModule.user)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -33,6 +36,18 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
             // Remove from local state
             setFollowingList(prev => prev.filter(user => user._id !== followingId))
             
+            // Refresh logged-in user data
+            if (loggedinUser) {
+                const freshLoggedinUser = await userService.getById(loggedinUser._id)
+                store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+            }
+            
+            // Refresh watched user data
+            if (currentUserId) {
+                const freshWatchedUser = await userService.getById(currentUserId)
+                store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+            }
+            
             // Notify parent to refresh
             if (onUpdate) {
                 onUpdate()
@@ -45,8 +60,64 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
         }
     }
 
-    // Check if this is view-only mode (no onUpdate callback means it's another user's profile)
-    const isViewOnly = !onUpdate
+    async function handleFollow(userId) {
+        if (!loggedinUser) return
+        
+        try {
+            await userService.toggleFollow(userId)
+            
+            // Refresh logged-in user data
+            const freshLoggedinUser = await userService.getById(loggedinUser._id)
+            store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+            
+            // Refresh watched user data
+            if (currentUserId) {
+                const freshWatchedUser = await userService.getById(currentUserId)
+                store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+            }
+            
+            showSuccessMsg('Followed')
+        } catch (err) {
+            console.error('Error following:', err)
+            showErrorMsg('Failed to follow')
+        }
+    }
+
+    async function handleUnfollowFromView(userId) {
+        if (!loggedinUser) return
+        
+        try {
+            await userService.toggleFollow(userId)
+            
+            // Refresh logged-in user data
+            const freshLoggedinUser = await userService.getById(loggedinUser._id)
+            store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+            
+            // Refresh watched user data
+            if (currentUserId) {
+                const freshWatchedUser = await userService.getById(currentUserId)
+                store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+            }
+            
+            showSuccessMsg('Unfollowed')
+        } catch (err) {
+            console.error('Error unfollowing:', err)
+            showErrorMsg('Failed to unfollow')
+        }
+    }
+
+    function isFollowingUser(userId) {
+        if (!loggedinUser) return false
+        return (loggedinUser.following || []).includes(userId)
+    }
+
+    function isOwnFollowing() {
+        if (!loggedinUser) return false
+        return loggedinUser._id === currentUserId
+    }
+
+    // Check if this is view-only mode (no onUpdate callback AND it's not the logged-in user's own profile)
+    const isViewOnly = !onUpdate && !isOwnFollowing()
 
     const filteredFollowing = followingList.filter(user => {
         const searchLower = searchTerm.toLowerCase()
@@ -106,7 +177,7 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
                                 >
                                     <span className="followers-modal-username">{followingUser.username || 'amir.avni'}</span>
                                 </div>
-                                {!isViewOnly && (
+                                {onUpdate && (
                                     <button 
                                         className="followers-modal-action-btn following"
                                         onClick={(e) => {
@@ -116,6 +187,29 @@ export function FollowingModal({ isOpen, onClose, following, currentUserId, onUp
                                     >
                                         Following
                                     </button>
+                                )}
+                                {!onUpdate && loggedinUser && followingUser._id !== loggedinUser._id && (
+                                    isFollowingUser(followingUser._id) ? (
+                                        <button 
+                                            className="followers-modal-action-btn following"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleUnfollowFromView(followingUser._id)
+                                            }}
+                                        >
+                                            Following
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            className="followers-modal-action-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleFollow(followingUser._id)
+                                            }}
+                                        >
+                                            Follow
+                                        </button>
+                                    )
                                 )}
                             </div>
                         ))

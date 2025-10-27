@@ -4,11 +4,10 @@ button {
 	border: 0;
 	margin: .5em;
 	cursor: pointer;
-	background-color: var(--clr1);
-	color: whitesmoke;
+	background-color: transparent;
 }
 
 button:hover {
 	transition: 0.3s;
-	background-color: var(--clr1-light)
+	background-color: #fafafa;
 }

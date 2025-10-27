@@ -177,9 +177,32 @@ export function UserDetails() {
       return
     }
 
+    // Optimistic update - update state immediately for better UX
+    const previousIsFollowing = isFollowing
+    setIsFollowing(!isFollowing)
+    
+    // Optimistically update followers count
+    const previousFollowers = user.followers || []
+    const optimisticFollowers = previousIsFollowing
+      ? previousFollowers.filter(id => id !== loggedinUser._id) // Remove from followers
+      : [...previousFollowers, loggedinUser._id] // Add to followers
+    
+    // Update watched user optimistically
+    const optimisticUser = {
+      ...user,
+      followers: optimisticFollowers
+    }
+    store.dispatch({ type: 'SET_WATCHED_USER', user: optimisticUser })
+
     try {
       const result = await userService.toggleFollow(user._id)
-      setIsFollowing(result.isFollowing)
+      
+      // Verify the actual result matches our optimistic update
+      if (result.isFollowing !== !previousIsFollowing) {
+        // Rollback if there was an error
+        setIsFollowing(previousIsFollowing)
+        store.dispatch({ type: 'SET_WATCHED_USER', user })
+      }
       
       // Reload both users from storage to get the actual updated data
       const freshLoggedinUser = await userService.getById(loggedinUser._id)
@@ -189,11 +212,11 @@ export function UserDetails() {
       store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
       store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
       
-      // Force a small delay to ensure the state is fully updated
-      await new Promise(resolve => setTimeout(resolve, 50))
-      
     } catch (err) {
       console.error('Error toggling follow:', err)
+      // Rollback on error
+      setIsFollowing(previousIsFollowing)
+      store.dispatch({ type: 'SET_WATCHED_USER', user })
       showErrorMsg('Failed to update follow status')
     }
   }
@@ -259,6 +282,8 @@ export function UserDetails() {
                 <button 
                   className={`follow-btn ${isFollowing ? 'following' : ''}`}
                   onClick={onToggleFollow}
+                  key={`follow-${user._id}-${isFollowing}`}
+                  style={{ opacity: 1, visibility: 'visible' }}
                 >
                   {isFollowing ? 'Following' : 'Follow'}
                 </button>

@@ -122,14 +122,36 @@
 }
 
 .post-details-options {
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
     cursor: pointer;
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #262626;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: all 0.15s ease;
+    transform: rotate(90deg);
+}
+
+.post-details-options:hover {
+    background-color: var(--instagram-gray-hover) !important;
+    border-radius: 50%;
+    transform: rotate(90deg);
+}
+
+.post-details-options:focus {
+    outline: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    transform: rotate(90deg);
+}
+
+.post-details-options:active {
+    background: none !important;
+    transform: rotate(90deg) !important;
 }
 
 .post-details-comments {
@@ -273,12 +295,7 @@
     line-height: 1;
 }
 
-/* Temporarily show button always for testing */
-.post-details-comment-options-btn.debug-visible {
-    opacity: 1 !important;
-    visibility: visible !important;
-    background-color: rgba(255, 0, 0, 0.1);
-}
+/* Remove the debug red background */
 
 .post-details-comment:hover .post-details-comment-options-btn {
     opacity: 1 !important;

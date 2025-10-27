@@ -95,15 +95,18 @@ function getLoggedinUser() {
 }
 
 function saveLoggedinUser(user) {
-	user = { 
+	const userToSave = { 
         _id: user._id,
         username: user.username,
         fullname: user.fullname, 
         imgUrl: user.imgUrl, 
-        isAdmin: user.isAdmin 
+        isAdmin: user.isAdmin,
+        following: user.following || [],
+        followers: user.followers || [],
+        savedPosts: user.savedPosts || []
     }
-	sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
-	return user
+	sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userToSave))
+	return userToSave
 }
 
 // Instagram-specific functions
