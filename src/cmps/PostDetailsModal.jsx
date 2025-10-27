@@ -20,10 +20,9 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
     const [createImageAspectRatio, setCreateImageAspectRatio] = useState('square')
     const navigate = useNavigate()
     const user = useSelector(storeState => storeState.userModule.user)
-    const isOwnPost = user && post && user._id === post.by?._id
     
     // Get current post author data
-    const { currentUser: postAuthor, loading: authorLoading } = useCurrentUser(post.by?._id)
+    const { currentUser: postAuthor, loading: authorLoading } = useCurrentUser(post?.by?._id)
 
     // Disable scrolling when modal is open
     useEffect(() => {
@@ -53,7 +52,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                     setImageAspectRatio('square')
                 }
             }
-            img.src = post.imgUrl
+            img.src = post.imgUrl || ''
         }
     }, [post?.imgUrl])
 

@@ -67,7 +67,7 @@
 }
 
 .mobile-nav-item .home-fill {
-    fill: #ffffff; /* Default inactive fill - white interior */
+    fill: none; /* Default inactive fill - empty */
 }
 
 .mobile-nav-item .home-stroke {
@@ -75,7 +75,11 @@
 }
 
 .mobile-nav-item.active .home-fill {
-    fill: #000000; /* Active/pressed fill - filled black */
+    fill: #000000 !important; /* Active/pressed fill - filled black */
+}
+
+.mobile-nav-item:not(.active) .home-fill {
+    fill: none !important; /* Inactive - no fill */
 }
 
 .mobile-nav-item:hover .home-fill {

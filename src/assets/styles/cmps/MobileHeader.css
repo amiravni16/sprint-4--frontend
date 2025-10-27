@@ -35,31 +35,127 @@
     width: auto;
 }
 
-.mobile-search {
+.mobile-search-container {
     flex: 1;
     max-width: 200px;
     margin: 0 16px;
+    position: relative;
 }
 
-.search-input {
+.mobile-search {
     display: flex;
     align-items: center;
     background: #efefef;
     border-radius: 8px;
     padding: 8px 12px;
     gap: 8px;
+    position: relative;
+}
+
+.mobile-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #262626;
+    padding: 0;
+}
+
+.mobile-search-input::placeholder {
+    color: #8e8e8e;
 }
 
 .search-icon {
     width: 16px;
     height: 16px;
     color: #8e8e8e;
+    flex-shrink: 0;
 }
 
-.search-placeholder {
+.mobile-search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 10001;
+}
+
+.mobile-search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mobile-search-result-item:hover {
+    background-color: #fafafa;
+}
+
+.mobile-search-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.mobile-search-user-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding-right: 8px;
+}
+
+.mobile-search-username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #262626;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile-search-subtitle {
+    font-size: 14px;
+    color: #8e8e8e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile-search-empty {
+    padding: 40px 16px;
+    text-align: center;
     color: #8e8e8e;
     font-size: 14px;
-    font-weight: 400;
+}
+
+/* Scrollbar for mobile search results */
+.mobile-search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mobile-search-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mobile-search-results::-webkit-scrollbar-thumb {
+    background: #dbdbdb;
+    border-radius: 4px;
+}
+
+.mobile-search-results::-webkit-scrollbar-thumb:hover {
+    background: #c7c7c7;
 }
 
 .mobile-notifications {
@@ -81,15 +177,21 @@
 /* Mobile padding adjustments for screens under 625px */
 @media (max-width: 625px) {
     .mobile-header-content {
-        padding: 0 20px;
+        padding: 0 12px;
+    }
+    
+    .mobile-search-container {
+        margin: 0 12px;
+        max-width: none;
+        flex: 1;
     }
     
     .mobile-search {
-        margin: 0 20px;
+        padding: 8px 10px;
     }
     
-    .search-input {
-        padding: 10px 14px;
+    .mobile-search-results {
+        max-height: calc(100vh - 80px);
     }
     
     .mobile-notifications {

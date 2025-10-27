@@ -703,8 +703,45 @@
         height: 100vh;
         max-height: 100vh;
         border-radius: 0;
+        overflow: visible !important;
     }
+    
+    .post-create-overlay {
+        overflow: visible !important;
+    }
+    
     .post-create-content {
         grid-template-columns: 1fr;
+        overflow: visible !important;
+    }
+    
+    .post-create-close-btn {
+        top: 35px;
+    }
+    
+    .post-create-right {
+        overflow: visible !important;
+        max-height: none !important;
+        position: relative !important;
+    }
+    
+    .post-create-emoji-container {
+        position: relative !important;
+        overflow: visible !important;
+    }
+    
+    .post-create-emoji-picker {
+        position: fixed !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        top: 85% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 280px !important;
+        max-width: calc(100vw - 30px) !important;
+        z-index: 10010 !important;
+        background: white !important;
+        padding: 20px !important;
     }
 }
