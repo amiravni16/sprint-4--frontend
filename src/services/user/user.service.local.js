@@ -85,11 +85,11 @@ async function signup(userCred) {
 }
 
 async function logout() {
-    sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+    localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
 }
 
 function getLoggedinUser() {
-    const user = JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
+    const user = JSON.parse(localStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
     console.log('🔍 Current logged-in user:', user?.username, 'ID:', user?._id)
     return user
 }
@@ -105,7 +105,7 @@ function saveLoggedinUser(user) {
         followers: user.followers || [],
         savedPosts: user.savedPosts || []
     }
-	sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userToSave))
+	localStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(userToSave))
 	return userToSave
 }
 

@@ -34,11 +34,15 @@ async function ajax(endpoint, method = 'GET', data = null) {
     } catch (err) {
         console.log(`Had Issues ${method}ing to the backend, endpoint: ${endpoint}, with data: `, data)
         console.dir(err)
-        // Temporarily disabled to prevent infinite reload loop
-        // if (err.response && err.response.status === 401) {
-        //     sessionStorage.clear()
-        //     window.location.assign('/')
-        // }
+        // Handle unauthorized error - clear localStorage and redirect to login
+        if (err.response && err.response.status === 401) {
+            localStorage.removeItem('loggedinUser')
+            console.log('⚠️ 401 Unauthorized - cleared loggedinUser from localStorage')
+            // Only redirect if not already on login page to prevent infinite loop
+            if (!window.location.pathname.includes('/auth')) {
+                window.location.assign('/auth/login')
+            }
+        }
         throw err
     }
 }

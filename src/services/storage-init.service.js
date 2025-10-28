@@ -62,7 +62,7 @@ function init() {
 
     // Ensure loggedinUser points to an existing user; fallback to admin if present
     try {
-        const loggedStr = sessionStorage.getItem('loggedinUser')
+        const loggedStr = localStorage.getItem('loggedinUser')
         if (loggedStr) {
             const logged = JSON.parse(loggedStr)
             const users = JSON.parse(localStorage.getItem('user') || '[]')
@@ -70,7 +70,7 @@ function init() {
             if (!exists) {
                 const admin = users.find(u => u._id === '64f0a1c2b3d4e5f678901234') || users.find(u => u.username === 'amir.avni') || users[0]
                 if (admin) {
-                    sessionStorage.setItem('loggedinUser', JSON.stringify({
+                    localStorage.setItem('loggedinUser', JSON.stringify({
                         _id: admin._id,
                         fullname: admin.fullname,
                         imgUrl: admin.imgUrl,
@@ -82,7 +82,7 @@ function init() {
                     console.log('🔁 Fixed stale loggedinUser session to', admin._id)
                     console.log('👥 Restored following:', admin.following)
                 } else {
-                    sessionStorage.removeItem('loggedinUser')
+                    localStorage.removeItem('loggedinUser')
                 }
             } else {
                 // User exists, but check if following relationships are missing
@@ -94,8 +94,8 @@ function init() {
                     currentUser.followers = currentUser.followers || []
                     currentUser.savedPosts = currentUser.savedPosts || []
                     localStorage.setItem('user', JSON.stringify(users))
-                    // Update session storage too
-                    sessionStorage.setItem('loggedinUser', JSON.stringify({
+                    // Update localStorage too
+                    localStorage.setItem('loggedinUser', JSON.stringify({
                         _id: currentUser._id,
                         fullname: currentUser.fullname,
                         imgUrl: currentUser.imgUrl,

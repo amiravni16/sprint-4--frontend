@@ -74,15 +74,15 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         }
     }, [croppedImage])
 
-    // Get user from session storage as fallback
+    // Get user from localStorage as fallback
     const getLoggedInUser = () => {
         try {
-            const loggedStr = sessionStorage.getItem('loggedinUser')
+            const loggedStr = localStorage.getItem('loggedinUser')
             if (loggedStr) {
                 return JSON.parse(loggedStr)
             }
         } catch (err) {
-            console.warn('Could not get user from session storage:', err)
+            console.warn('Could not get user from localStorage:', err)
         }
         return null
     }

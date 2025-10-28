@@ -123,14 +123,14 @@ export function UploadModal({ isOpen, onClose }) {
             const post = postService.getEmptyPost()
             post.txt = postData.caption || ''
             post.imgUrl = postData.image
-            // Resolve logged-in user from store or session
+            // Resolve logged-in user from store or localStorage
             let loggedinUser = storeUser
             if (!loggedinUser) {
                 try {
-                    const str = sessionStorage.getItem('loggedinUser')
+                    const str = localStorage.getItem('loggedinUser')
                     if (str) loggedinUser = JSON.parse(str)
                 } catch (err) {
-                    console.warn('Could not parse loggedinUser from sessionStorage', err)
+                    console.warn('Could not parse loggedinUser from localStorage', err)
                 }
             }
             if (loggedinUser?._id) {
