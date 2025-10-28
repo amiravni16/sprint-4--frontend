@@ -54,10 +54,36 @@ export function HomePage() {
             
             // Simple storage clear function for development
             window.clearStorage = () => {
-                localStorage.clear()
+                // Force remove all user and post data to trigger reinit
+                localStorage.removeItem('user')
+                localStorage.removeItem('post')
+                localStorage.removeItem('loggedinUser')
                 sessionStorage.clear()
                 console.log('🗑️ Storage cleared! Reloading...')
                 setTimeout(() => window.location.reload(), 500)
+            }
+            
+            // Force reinitialize demo data
+            window.forceReinit = async () => {
+                console.log('🔄 Force reinitializing demo data...')
+                const { userService } = await import('../services/user')
+                const { postService } = await import('../services/post')
+                
+                // Check current state
+                const users = await userService.getUsers()
+                const posts = await postService.query()
+                
+                console.log('📊 Current state:', { users: users.length, posts: posts.length })
+                
+                // If data is missing or corrupted, clear and reload
+                if (users.length < 5 || posts.length < 5) {
+                    console.log('⚠️ Data insufficient, resetting...')
+                    localStorage.removeItem('user')
+                    localStorage.removeItem('post')
+                    window.location.reload()
+                } else {
+                    console.log('✅ Data looks good')
+                }
             }
             
             // Force clean admin user creation

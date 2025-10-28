@@ -102,7 +102,11 @@ function _initializeDemoData() {
         const users = existingUsers ? JSON.parse(existingUsers) : []
         const posts = existingPosts ? JSON.parse(existingPosts) : []
         
-        // Only initialize if storage is empty
+        // Check if data is corrupted or missing
+        const hasValidUsers = Array.isArray(users) && users.length > 0
+        const hasValidPosts = Array.isArray(posts) && posts.length > 0
+        
+        // Only initialize if storage is empty OR corrupted
         if (users.length === 0 && posts.length === 0) {
             console.log('🚀 Initializing demo data on first load...')
             
@@ -116,6 +120,17 @@ function _initializeDemoData() {
                 users: demoUsers.length,
                 posts: demoPosts.length
             })
+        } else if (!hasValidUsers || !hasValidPosts) {
+            console.warn('⚠️ Corrupted or invalid data detected. Reinitializing...')
+            
+            // Fix corrupted storage
+            localStorage.setItem('user', JSON.stringify(demoUsers))
+            localStorage.setItem('post', JSON.stringify(demoPosts))
+            
+            console.log('✅ Demo data reinitialized:', {
+                users: demoUsers.length,
+                posts: demoPosts.length
+            })
         } else {
             console.log('📊 Existing data found:', {
                 users: users.length,
@@ -124,5 +139,13 @@ function _initializeDemoData() {
         }
     } catch (err) {
         console.error('❌ Error initializing demo data:', err)
+        // On error, try to initialize anyway
+        try {
+            localStorage.setItem('user', JSON.stringify(demoUsers))
+            localStorage.setItem('post', JSON.stringify(demoPosts))
+            console.log('✅ Demo data initialized after error recovery')
+        } catch (recoveryErr) {
+            console.error('❌ Failed to recover:', recoveryErr)
+        }
     }
 }
