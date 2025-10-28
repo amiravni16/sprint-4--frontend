@@ -20,7 +20,7 @@ export function InstagramSidebar() {
                     <div className="logo-section">
                         <Link to="/" className="instagram-logo" aria-label="Instagram home">
                             <img 
-                                src="/src/assets/icons/photograph-logo.svg" 
+                                src="/photograph-logo.svg" 
                                 alt="photograph" 
                                 className="logo-svg"
                             />
@@ -80,7 +80,7 @@ export function InstagramSidebar() {
                                 <>
                                     <img
                                         className="nav-icon"
-                                        src={isActive ? '/src/assets/icons/compas-onclick.svg' : '/src/assets/icons/compass.svg'}
+                                        src={isActive ? '/compas-onclick.svg' : '/compass.svg'}
                                         alt="Explore"
                                         width="24"
                                         height="24"

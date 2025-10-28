@@ -48,7 +48,7 @@ export function MobileFooter() {
                     {({ isActive }) => (
                         <img
                             className="nav-icon"
-                            src={isActive ? '/src/assets/icons/compas-onclick.svg' : '/src/assets/icons/compass.svg'}
+                            src={isActive ? '/compas-onclick.svg' : '/compass.svg'}
                             alt="Explore"
                             width="24"
                             height="24"
