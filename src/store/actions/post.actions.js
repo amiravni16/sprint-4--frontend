@@ -64,6 +64,8 @@ export async function addPost(post) {
     try {
         const savedPost = await postService.save(post)
         store.dispatch(getCmdAddPost(savedPost))
+        // Immediately reload feed posts so the new post appears
+        await loadPosts()
         return savedPost
     } catch (err) {
         console.log('Cannot add post', err)

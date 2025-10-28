@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { CropModal } from './CropModal'
 import { PostDetailsModal } from './PostDetailsModal'
 
 export function UploadModal({ isOpen, onClose }) {
+    const storeUser = useSelector(storeState => storeState.userModule.user)
     const fileInputRef = useRef(null)
     const [selectedFile, setSelectedFile] = useState(null)
     const [croppedImage, setCroppedImage] = useState(null)
@@ -121,6 +123,24 @@ export function UploadModal({ isOpen, onClose }) {
             const post = postService.getEmptyPost()
             post.txt = postData.caption || ''
             post.imgUrl = postData.image
+            // Resolve logged-in user from store or session
+            let loggedinUser = storeUser
+            if (!loggedinUser) {
+                try {
+                    const str = sessionStorage.getItem('loggedinUser')
+                    if (str) loggedinUser = JSON.parse(str)
+                } catch (err) {
+                    console.warn('Could not parse loggedinUser from sessionStorage', err)
+                }
+            }
+            if (loggedinUser?._id) {
+                post.by = {
+                    _id: loggedinUser._id,
+                    fullname: loggedinUser.fullname || '',
+                    username: loggedinUser.username || '',
+                    imgUrl: loggedinUser.imgUrl || ''
+                }
+            }
             
             // Save the post
             await addPost(post)

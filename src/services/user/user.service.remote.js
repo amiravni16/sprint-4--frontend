@@ -12,6 +12,9 @@ export const userService = {
 	update,
     getLoggedinUser,
     saveLoggedinUser,
+    toggleFollow,
+    savePost,
+    unsavePost,
 }
 
 function getUsers() {
@@ -61,10 +64,54 @@ function getLoggedinUser() {
 function saveLoggedinUser(user) {
 	user = { 
         _id: user._id, 
+        username: user.username,
         fullname: user.fullname, 
         imgUrl: user.imgUrl, 
-        isAdmin: user.isAdmin 
+        isAdmin: user.isAdmin,
+        following: user.following || [],
+        followers: user.followers || [],
+        savedPosts: user.savedPosts || []
     }
 	sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
 	return user
+}
+
+// Instagram-specific functions
+async function toggleFollow(userIdToFollow) {
+    const loggedinUser = getLoggedinUser()
+    if (!loggedinUser) throw new Error('User not logged in')
+    
+    const result = await httpService.post(`user/${loggedinUser._id}/toggleFollow/${userIdToFollow}`)
+    
+    // Update session with new following list
+    const updatedUser = await getById(loggedinUser._id)
+    saveLoggedinUser(updatedUser)
+    
+    return result
+}
+
+async function savePost(postId) {
+    const loggedinUser = getLoggedinUser()
+    if (!loggedinUser) throw new Error('User not logged in')
+    
+    const result = await httpService.post(`user/${loggedinUser._id}/save/${postId}`)
+    
+    // Update session
+    const updatedUser = await getById(loggedinUser._id)
+    saveLoggedinUser(updatedUser)
+    
+    return result
+}
+
+async function unsavePost(postId) {
+    const loggedinUser = getLoggedinUser()
+    if (!loggedinUser) throw new Error('User not logged in')
+    
+    const result = await httpService.delete(`user/${loggedinUser._id}/save/${postId}`)
+    
+    // Update session
+    const updatedUser = await getById(loggedinUser._id)
+    saveLoggedinUser(updatedUser)
+    
+    return result
 }
