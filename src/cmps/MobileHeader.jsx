@@ -71,7 +71,7 @@ export function MobileHeader() {
                 <div className="mobile-header-content">
                     <Link to="/" className="mobile-logo">
                         <img 
-                            src="/src/assets/icons/photograph-logo.svg" 
+                            src="/photograph-logo.svg" 
                             alt="photograph" 
                             className="mobile-logo-svg"
                         />

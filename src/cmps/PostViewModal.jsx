@@ -377,7 +377,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                             )}
                             <button className="action-btn comment-btn">
                                 <img 
-                                    src="/src/assets/icons/comment.svg" 
+                                    src="/comment.svg" 
                                     alt="Comment" 
                                     width="24" 
                                     height="24"
@@ -390,7 +390,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                             )}
                             <button className="action-btn share-btn">
                                 <img 
-                                    src="/src/assets/icons/share.svg" 
+                                    src="/share.svg" 
                                     alt="Share" 
                                     width="24" 
                                     height="24"
@@ -407,7 +407,7 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
                                 </svg>
                             ) : (
                                 <img 
-                                    src="/src/assets/icons/save.svg" 
+                                    src="/save.svg" 
                                     alt="Save" 
                                     width="24" 
                                     height="24"

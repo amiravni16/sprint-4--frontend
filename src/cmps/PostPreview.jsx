@@ -189,7 +189,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                         onClick={() => onOpenDetails && onOpenDetails(post)}
                     >
                         <img 
-                            src="/src/assets/icons/comment.svg" 
+                            src="/comment.svg" 
                             alt="Comment" 
                             width="24" 
                             height="24"
@@ -202,7 +202,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                     )}
                     <button className="action-btn share-btn">
                         <img 
-                            src="/src/assets/icons/share.svg" 
+                            src="/share.svg" 
                             alt="Share" 
                             width="24" 
                             height="24"
@@ -219,7 +219,7 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                         </svg>
                     ) : (
                         <img 
-                            src="/src/assets/icons/save.svg" 
+                            src="/save.svg"
                             alt="Save" 
                             width="24" 
                             height="24"
