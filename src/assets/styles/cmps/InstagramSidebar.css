@@ -258,6 +258,9 @@ button.nav-item.create-btn {
     fill: #000000; /* Active/pressed fill - filled black */
 }
 
+/* Explore icon active state - black background with white icon */
+/* Removed per request: icon asset already provides filled look */
+
 .nav-item:hover .home-fill {
     fill: #f0f0f0; /* Hover fill - light gray */
 }
@@ -325,5 +328,10 @@ button.nav-item.create-btn {
         justify-content: center;
         padding: 12px 8px;
     }
+}
+
+/* Rotate inactive Explore icon 180deg */
+.nav-item[href="/explore"]:not(.active) .nav-icon {
+    transform: rotate(180deg);
 }
 

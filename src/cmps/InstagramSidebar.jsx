@@ -75,11 +75,19 @@ export function InstagramSidebar() {
                             <span>Search</span>
                         </button>
 
-                        <NavLink to="/explore" className="nav-item">
-                            <svg className="nav-icon" width="24" height="24" viewBox="0 0 512 512" fill="currentColor">
-                                <path d="M256,0C114.6,0,0,114.6,0,256s114.6,256,256,256s256-114.6,256-256S397.4,0,256,0z M256,472.6 c-119.6,0-216.6-97-216.6-216.6S136.4,39.4,256,39.4s216.6,97,216.6,216.6S375.6,472.6,256,472.6z M118.2,393.8l187.1-88.6 l88.6-187.1l-187.1,88.6L118.2,393.8z M285.5,285.5l-118.2,59.1l59.1-118.2L285.5,285.5z"/>
-                            </svg>
-                            <span>Explore</span>
+                        <NavLink to="/explore" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+                            {({ isActive }) => (
+                                <>
+                                    <img
+                                        className="nav-icon"
+                                        src={isActive ? '/src/assets/icons/compas-onclick.svg' : '/src/assets/icons/compass.svg'}
+                                        alt="Explore"
+                                        width="24"
+                                        height="24"
+                                    />
+                                    <span>Explore</span>
+                                </>
+                            )}
                         </NavLink>
 
                     <button 

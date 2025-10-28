@@ -11,10 +11,13 @@ export function SuggestedUsers() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        ensureDemoUsersExist().then(() => {
-            loadSuggestedUsers()
-        })
-    }, [loggedInUser])
+        // Load suggested users immediately
+        loadSuggestedUsers()
+        
+        // Ensure demo users exist in the background (non-blocking)
+        ensureDemoUsersExist()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loggedInUser?._id])
 
     async function ensureDemoUsersExist() {
         try {
@@ -182,9 +185,6 @@ export function SuggestedUsers() {
             <div className="suggested-content">
                 <div className="suggested-section-header">
                     <h3>Suggested for you</h3>
-                    <button className="see-all-btn" onClick={() => loadSuggestedUsers()}>
-                        See All
-                    </button>
                 </div>
 
                 <div className="suggested-users-list">
