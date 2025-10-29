@@ -508,9 +508,8 @@ export function UserDetails() {
 
         {/* Posts Grid */}
         <div className="profile-posts-grid">
-          {(isLoadingPosts && (activeTab === 'posts' ? userPosts.length === 0 : savedPosts.length === 0)) && 
-           !(activeTab === 'posts' ? userPosts : savedPosts).length ? (
-            // Show skeleton grid while loading (only if no cached data)
+          {isLoadingPosts && userPosts.length === 0 ? (
+            // Show skeleton grid while loading (only if no cached data and still loading)
             Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="profile-post-thumbnail skeleton-post">
                 <div className="skeleton-image"></div>
