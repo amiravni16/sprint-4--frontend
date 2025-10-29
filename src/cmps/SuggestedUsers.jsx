@@ -87,11 +87,22 @@ export function SuggestedUsers() {
             const allUsers = await userService.getUsers()
             const following = loggedInUser.following || []
             
+            // Normalize IDs to strings for comparison
+            const normalizeId = (id) => {
+                if (id && typeof id === 'object' && id.toString) {
+                    return id.toString()
+                }
+                return String(id)
+            }
+            
+            const loggedInUserIdStr = normalizeId(loggedInUser._id)
+            const followingIdsStr = following.map(normalizeId)
+            
             // Filter out users already being followed and the logged-in user
-            const nonFollowedUsers = allUsers.filter(user => 
-                user._id !== loggedInUser._id && 
-                !following.includes(user._id)
-            )
+            const nonFollowedUsers = allUsers.filter(user => {
+                const userIdStr = normalizeId(user._id)
+                return userIdStr !== loggedInUserIdStr && !followingIdsStr.includes(userIdStr)
+            })
 
             // Randomize and take 5 users
             const shuffled = nonFollowedUsers.sort(() => Math.random() - 0.5)
@@ -105,6 +116,22 @@ export function SuggestedUsers() {
 
     async function handleFollow(userId) {
         try {
+            // Prevent self-follow
+            const normalizeId = (id) => {
+                if (id && typeof id === 'object' && id.toString) {
+                    return id.toString()
+                }
+                return String(id)
+            }
+            
+            const loggedInUserIdStr = normalizeId(loggedInUser._id)
+            const userIdToFollowStr = normalizeId(userId)
+            
+            if (loggedInUserIdStr === userIdToFollowStr) {
+                console.log('⚠️ Cannot follow yourself')
+                return
+            }
+            
             console.log('🔄 Following user:', userId)
             
             // Actually follow the user first
