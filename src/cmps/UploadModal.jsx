@@ -1,9 +1,11 @@
 import { useRef, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { CropModal } from './CropModal'
 import { PostDetailsModal } from './PostDetailsModal'
 
 export function UploadModal({ isOpen, onClose }) {
+    const navigate = useNavigate()
     const storeUser = useSelector(storeState => storeState.userModule.user)
     const fileInputRef = useRef(null)
     const [selectedFile, setSelectedFile] = useState(null)
@@ -145,14 +147,19 @@ export function UploadModal({ isOpen, onClose }) {
             // Save the post
             await addPost(post)
             
-            // Close modals and reset state BEFORE calling onClose
+            // Close modals and reset state
             setShowPostCreate(false)
             setShowCrop(false)
             setCroppedImage(null)
             setSelectedFile(null)
+            onClose()
             
-            // Reload the page to show the new post
-            window.location.reload()
+            // Show success message
+            const { showSuccessMsg } = await import('../services/event-bus.service')
+            showSuccessMsg('Post shared successfully!')
+            
+            // Navigate to home feed to see the new post immediately
+            navigate('/')
         } catch (err) {
             console.error('Error creating post:', err)
             const { showErrorMsg } = await import('../services/event-bus.service')
