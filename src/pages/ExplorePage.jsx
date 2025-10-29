@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { store } from '../store/store'
 import { showErrorMsg } from '../services/event-bus.service'
@@ -7,30 +7,44 @@ import { updatePost } from '../store/actions/post.actions'
 import { PostViewModal } from '../cmps/PostViewModal'
 import '../assets/styles/cmps/ExplorePage.css'
 
+// Store explore posts outside component to persist across mounts
+let cachedExplorePosts = []
+let lastCachedUserId = null
+
 export function ExplorePage() {
     const user = useSelector(storeState => storeState.userModule.user)
     const [explorePosts, setExplorePosts] = useState([])
     const [selectedPost, setSelectedPost] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
-    const [lastUserId, setLastUserId] = useState(null)
+    const hasMountedRef = useRef(false)
 
     useEffect(() => {
         const userId = user?._id
         
-        // If we already have posts loaded and user hasn't changed, keep showing them
-        if (explorePosts.length > 0 && hasLoadedOnce && userId === lastUserId) {
-            return // Don't reload if we already have content and user is the same
+        if (!userId) {
+            setExplorePosts([])
+            return
         }
         
-        // Only load if:
-        // 1. We don't have posts yet, OR
-        // 2. User has changed (different user logged in)
-        if (userId && (!hasLoadedOnce || userId !== lastUserId)) {
+        // On first mount, check if we have cached posts for this user
+        if (!hasMountedRef.current) {
+            hasMountedRef.current = true
+            
+            // If we have cached posts for this user ID, use them immediately
+            if (cachedExplorePosts.length > 0 && lastCachedUserId === userId) {
+                setExplorePosts(cachedExplorePosts)
+                return // Don't reload, just show cached content
+            }
+            
+            // Otherwise, load from cache or backend
             loadExplorePosts()
-            setLastUserId(userId)
+        } else {
+            // On subsequent renders (user change), reload only if user changed
+            if (lastCachedUserId !== userId) {
+                loadExplorePosts()
+            }
         }
-    }, [user?._id]) // Only depend on user ID, not the entire user object
+    }, [user?._id]) // Only depend on user ID
 
     function filterExplorePosts(posts, followingIds, userId) {
         // Show all posts from users you DON'T follow (excluding your own posts)
@@ -72,6 +86,7 @@ export function ExplorePage() {
             
             if (!userId) {
                 setExplorePosts([])
+                cachedExplorePosts = []
                 return
             }
             
@@ -81,17 +96,13 @@ export function ExplorePage() {
             
             // Always show cached data immediately if available
             if (cachedPosts.length > 0) {
-                const cachedExplorePosts = filterExplorePosts(cachedPosts, followingIds, userId)
-                if (cachedExplorePosts.length > 0) {
-                    setExplorePosts(cachedExplorePosts)
+                const filtered = filterExplorePosts(cachedPosts, followingIds, userId)
+                if (filtered.length > 0) {
+                    setExplorePosts(filtered)
+                    cachedExplorePosts = filtered
+                    lastCachedUserId = userId
                     setIsLoading(false)
-                    // Only fetch fresh data on first load, otherwise keep cached
-                    const wasFirstLoad = !hasLoadedOnce
-                    setHasLoadedOnce(true)
-                    if (wasFirstLoad) {
-                        // Fetch fresh data in background (non-blocking)
-                        fetchFreshData(followingIds, userId)
-                    }
+                    // Don't fetch fresh data - keep cached content
                     return
                 }
             }
@@ -113,7 +124,9 @@ export function ExplorePage() {
             
             const freshExplorePosts = filterExplorePosts(posts, followingIds, userId)
             setExplorePosts(freshExplorePosts)
-            setHasLoadedOnce(true)
+            // Cache the results for next visit
+            cachedExplorePosts = freshExplorePosts
+            lastCachedUserId = userId
         } catch (err) {
             console.error('Failed to fetch fresh explore posts:', err)
             // Don't show error if we already have cached data
