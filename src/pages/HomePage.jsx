@@ -18,6 +18,8 @@ export function HomePage() {
     const user = useSelector(storeState => storeState.userModule.user)
     const [editingPost, setEditingPost] = useState(null)
     const [viewingPost, setViewingPost] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
 
         // Expose storage clear function to window for console access
         if (typeof window !== 'undefined') {
@@ -196,7 +198,21 @@ export function HomePage() {
         }
 
     useEffect(() => {
-        loadPosts(filterBy)
+        // Show cached posts immediately, then fetch fresh data in background
+        const cachedPosts = store.getState().postModule.posts
+        if (cachedPosts && cachedPosts.length > 0 && !hasLoadedOnce) {
+            // We have cached posts, show them immediately
+            setHasLoadedOnce(true)
+            // Fetch fresh data in background without blocking
+            loadPosts(filterBy).then(() => setIsLoading(false)).catch(() => setIsLoading(false))
+        } else {
+            // No cache or filter changed, load fresh data
+            setIsLoading(true)
+            loadPosts(filterBy).then(() => {
+                setIsLoading(false)
+                setHasLoadedOnce(true)
+            }).catch(() => setIsLoading(false))
+        }
         
         // Auto-fix following status if user is loaded but not following enough people
         if (user && user.username === 'amir.avni' && (!user.following || user.following.length < 5)) {
@@ -472,6 +488,18 @@ export function HomePage() {
                         onOpenDetails={onOpenPostDetails}
                         user={user}
                     />
+                ) : (isLoading && !hasLoadedOnce) ? (
+                    // Show skeleton while loading for first time
+                    <div className="feed-loading">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div key={i} className="post-skeleton">
+                                <div className="skeleton-header"></div>
+                                <div className="skeleton-image"></div>
+                                <div className="skeleton-actions"></div>
+                                <div className="skeleton-content"></div>
+                            </div>
+                        ))}
+                    </div>
                 ) : (
                     <div className="empty-feed">
                         <div className="empty-feed-content">

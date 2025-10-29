@@ -28,6 +28,7 @@ export function UserDetails() {
   const [viewingPost, setViewingPost] = useState(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [currentUserId, setCurrentUserId] = useState(params.id)
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false)
 
   useEffect(() => {
     // Detect user change and show loading buffer
@@ -87,9 +88,20 @@ export function UserDetails() {
   }, [params.id])
 
   useEffect(() => {
-    // Load posts for this user
+    // Load posts for this user - show cached immediately if available
     async function loadUserPosts() {
       if (user && user._id) {
+        // Check if we have cached posts for this user in Redux store
+        const state = store.getState()
+        const cachedPosts = state.postModule.posts.filter(post => post.by?._id === user._id)
+        
+        if (cachedPosts.length > 0) {
+          // Show cached posts immediately
+          setUserPosts(cachedPosts)
+        }
+        
+        // Fetch fresh data in background
+        setIsLoadingPosts(true)
         try {
           // Use the optimized endpoint to get posts by user ID
           const postsByUser = await postService.getByUserId(user._id)
@@ -98,7 +110,12 @@ export function UserDetails() {
           setUserPosts(postsByUser)
         } catch (err) {
           console.error('Error loading user posts:', err)
-          setUserPosts([])
+          // If fetch fails but we have cache, keep showing cache
+          if (cachedPosts.length === 0) {
+            setUserPosts([])
+          }
+        } finally {
+          setIsLoadingPosts(false)
         }
       }
     }
@@ -354,30 +371,44 @@ export function UserDetails() {
 
         {/* Posts Grid */}
         <div className="profile-posts-grid">
-          {(activeTab === 'posts' ? userPosts : savedPosts).map(post => (
-            <div 
-              key={post._id} 
-              className="profile-post-thumbnail"
-              onClick={() => onOpenPostView(post)}
-            >
-              <img 
-                src={post.imgUrl} 
-                alt="Post" 
-                onError={(e) => {
-                  e.target.src = '/img/sunflowers.jpg';
-                }}
-              />
-              <div className="post-overlay">
-                <div className="post-stats">
-                  <span>❤️ {post.likedBy?.length || 0}</span>
-                  <span>💬 {post.comments?.length || 0}</span>
+          {isLoadingPosts && userPosts.length === 0 ? (
+            // Show skeleton grid while loading
+            Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="profile-post-thumbnail skeleton-post">
+                <div className="skeleton-image"></div>
+              </div>
+            ))
+          ) : (activeTab === 'posts' ? userPosts : savedPosts).length > 0 ? (
+            (activeTab === 'posts' ? userPosts : savedPosts).map(post => (
+              <div 
+                key={post._id} 
+                className="profile-post-thumbnail"
+                onClick={() => onOpenPostView(post)}
+              >
+                <img 
+                  src={post.imgUrl} 
+                  alt="Post" 
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.src = '/img/sunflowers.jpg';
+                  }}
+                />
+                <div className="post-overlay">
+                  <div className="post-stats">
+                    <span>❤️ {post.likedBy?.length || 0}</span>
+                    <span>💬 {post.comments?.length || 0}</span>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="empty-state">
+              <p>No posts yet</p>
             </div>
-          ))}
+          )}
         </div>
 
-        {activeTab === 'posts' && userPosts.length === 0 && (
+        {activeTab === 'posts' && userPosts.length === 0 && !isLoadingPosts && (
           <div className="empty-state">
             <p>No posts yet</p>
           </div>
