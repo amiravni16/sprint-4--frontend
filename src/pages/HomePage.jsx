@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { loadPosts, addPost, updatePost, removePost } from '../store/actions/post.actions'
 import { addPostMsg } from '../store/actions/post.actions'
@@ -12,6 +12,10 @@ import { feedService } from '../services/feed.service'
 import { login, signup } from '../store/actions/user.actions'
 import { store } from '../store/store'
 
+// Cache posts outside component to persist across mounts
+let cachedHomePosts = []
+let lastCachedUserId = null
+
 export function HomePage() {
     const [filterBy, setFilterBy] = useState({ txt: '', sortField: '', sortDir: '' })
     const posts = useSelector(storeState => storeState.postModule.posts)
@@ -19,7 +23,7 @@ export function HomePage() {
     const [editingPost, setEditingPost] = useState(null)
     const [viewingPost, setViewingPost] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+    const hasMountedRef = useRef(false)
 
         // Expose storage clear function to window for console access
         if (typeof window !== 'undefined') {
@@ -198,20 +202,25 @@ export function HomePage() {
         }
 
     useEffect(() => {
-        // Show cached posts immediately, then fetch fresh data in background
-        const cachedPosts = store.getState().postModule.posts
-        if (cachedPosts && cachedPosts.length > 0 && !hasLoadedOnce) {
-            // We have cached posts, show them immediately
-            setHasLoadedOnce(true)
-            // Fetch fresh data in background without blocking
-            loadPosts(filterBy).then(() => setIsLoading(false)).catch(() => setIsLoading(false))
+        const userId = user?._id
+        
+        // On first mount, use cached posts if available
+        if (!hasMountedRef.current) {
+            hasMountedRef.current = true
+            
+            // Check if we have cached posts for this user
+            if (cachedHomePosts.length > 0 && lastCachedUserId === userId) {
+                // Don't reload, cached posts will be shown from Redux
+                return
+            }
+            
+            // Load posts
+            loadPostsWithCache()
         } else {
-            // No cache or filter changed, load fresh data
-            setIsLoading(true)
-            loadPosts(filterBy).then(() => {
-                setIsLoading(false)
-                setHasLoadedOnce(true)
-            }).catch(() => setIsLoading(false))
+            // If filter or user changed, reload
+            if (filterBy.txt || filterBy.sortField || lastCachedUserId !== userId) {
+                loadPostsWithCache()
+            }
         }
         
         // Auto-fix following status if user is loaded but not following enough people
@@ -219,13 +228,34 @@ export function HomePage() {
             console.log('🔧 Auto-fixing following status for amir.avni...')
             autoFixFollowing()
         }
+    }, [filterBy.txt, filterBy.sortField, filterBy.sortDir, user?._id])
+    
+    async function loadPostsWithCache() {
+        const userId = user?._id
         
-        // Profile picture fix disabled - let user keep their chosen profile picture
-        // if (user && user.username === 'amir.avni' && user.imgUrl !== '/img/amir-avni.jpg.jpg') {
-        //     console.log('🔧 Fixing profile picture for amir.avni...')
-        //     fixProfilePicture()
-        // }
-    }, [filterBy, user])
+        // Show cached Redux posts immediately
+        const state = store.getState()
+        const cachedPosts = state.postModule.posts || []
+        if (cachedPosts.length > 0 && !isLoading) {
+            // Posts already in Redux, no need to reload unless filter changed
+            if (!filterBy.txt && !filterBy.sortField) {
+                lastCachedUserId = userId
+                cachedHomePosts = cachedPosts
+                return
+            }
+        }
+        
+        // Only load if no cache or filter is active
+        setIsLoading(true)
+        try {
+            await loadPosts(filterBy)
+            lastCachedUserId = userId
+        } catch (err) {
+            console.error('Error loading posts:', err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     // Auto-login on mount
     useEffect(() => {

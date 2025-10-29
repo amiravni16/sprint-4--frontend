@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, startTransition } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -238,15 +238,18 @@ export function UserDetails() {
       ? [...previousFollowers, loggedinUser._id] // Add to followers
       : previousFollowers.filter(id => normalizeId(id) !== loggedInUserIdStr) // Remove from followers
     
-    // Update BOTH button state and follower count simultaneously
-    setIsFollowing(newIsFollowing)
-    
-    // Update watched user optimistically with new follower count
+    // Update BOTH button state and follower count in the SAME synchronous operation
+    // Use startTransition to ensure both updates happen together
     const optimisticUser = {
       ...user,
       followers: newFollowers
     }
-    store.dispatch({ type: 'SET_WATCHED_USER', user: optimisticUser })
+    
+    // Update both simultaneously - React will batch these in the same render
+    startTransition(() => {
+      setIsFollowing(newIsFollowing)
+      store.dispatch({ type: 'SET_WATCHED_USER', user: optimisticUser })
+    })
 
     try {
       const result = await userService.toggleFollow(user._id)

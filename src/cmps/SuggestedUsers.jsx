@@ -84,7 +84,17 @@ export function SuggestedUsers() {
         }
 
         try {
-            const allUsers = await userService.getUsers()
+            // Use cached users from Redux store first
+            const { store } = await import('../store/store')
+            const state = store.getState()
+            let allUsers = state.userModule.users || []
+            
+            // If no cached users, fetch them and cache in Redux
+            if (allUsers.length === 0) {
+                allUsers = await userService.getUsers()
+                store.dispatch({ type: 'SET_USERS', users: allUsers })
+            }
+            
             const following = loggedInUser.following || []
             
             // Normalize IDs to strings for comparison
@@ -107,6 +117,13 @@ export function SuggestedUsers() {
             // Randomize and take 5 users
             const shuffled = nonFollowedUsers.sort(() => Math.random() - 0.5)
             setSuggestedUsers(shuffled.slice(0, 5))
+            
+            // Fetch fresh users in background to update cache
+            if (state.userModule.users.length > 0) {
+                userService.getUsers().then(freshUsers => {
+                    store.dispatch({ type: 'SET_USERS', users: freshUsers })
+                }).catch(() => {}) // Silently fail - we have cached data
+            }
         } catch (err) {
             console.error('Error loading suggested users:', err)
         } finally {
