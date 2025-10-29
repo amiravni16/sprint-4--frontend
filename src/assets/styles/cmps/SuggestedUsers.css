@@ -1,7 +1,7 @@
 /* Suggested Users Sidebar */
 .suggested-users {
-    width: 319px;
-    padding: 20px 0;
+    width: 400px;
+    padding: 0px 70px;
     position: sticky;
     top: 84px;
     height: fit-content;
