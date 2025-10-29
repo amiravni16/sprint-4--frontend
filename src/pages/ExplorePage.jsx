@@ -84,10 +84,11 @@ export function ExplorePage() {
                 const cachedExplorePosts = filterExplorePosts(cachedPosts, followingIds, userId)
                 if (cachedExplorePosts.length > 0) {
                     setExplorePosts(cachedExplorePosts)
-                    setHasLoadedOnce(true)
                     setIsLoading(false)
-                    // Only fetch fresh data if this is the first load, otherwise keep cached
-                    if (!hasLoadedOnce) {
+                    // Only fetch fresh data on first load, otherwise keep cached
+                    const wasFirstLoad = !hasLoadedOnce
+                    setHasLoadedOnce(true)
+                    if (wasFirstLoad) {
                         // Fetch fresh data in background (non-blocking)
                         fetchFreshData(followingIds, userId)
                     }
