@@ -47,21 +47,33 @@ export function ExplorePage() {
     }, [user?._id]) // Only depend on user ID
 
     function filterExplorePosts(posts, followingIds, userId) {
+        // Normalize IDs to strings for consistent comparison
+        const normalizeId = (id) => {
+            if (!id) return ''
+            if (typeof id === 'object' && id.toString) {
+                return id.toString()
+            }
+            return String(id)
+        }
+        
+        const userIdStr = normalizeId(userId)
+        const followingIdsStr = followingIds.map(normalizeId)
+        
         // Show all posts from users you DON'T follow (excluding your own posts)
         const explorePosts = posts.filter(post => {
             const byId = typeof post.by === 'string' ? post.by : post.by?._id
+            const byIdStr = normalizeId(byId)
             
             // Must have an author ID and image
             if (!byId || !post.imgUrl) return false
             
-            // Must NOT be from someone you follow
-            const isFollowed = followingIds.some(followId => {
-                const followUserId = typeof followId === 'string' ? followId : followId._id || followId
-                return followUserId === byId
-            })
+            // Must NOT be your own post
+            if (byIdStr === userIdStr) return false
             
-            // Must not be your own post
-            return !isFollowed && byId !== userId
+            // Must NOT be from someone you follow
+            const isFollowed = followingIdsStr.includes(byIdStr)
+            
+            return !isFollowed
         })
 
         // If no posts from unfollowed users, show all posts except your own
