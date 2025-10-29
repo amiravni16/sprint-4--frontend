@@ -16,16 +16,38 @@
 .explore-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, auto);
+    grid-auto-flow: dense;
     gap: 4px;
     margin-top: 12px;
 }
 
 .explore-post-wrapper {
-    aspect-ratio: 1;
-    overflow: hidden;
     position: relative;
     cursor: pointer;
     background: #000;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Pattern: 10-tile layout with vertical rectangles */
+/* All default to square (1x1) */
+.explore-post-wrapper {
+    aspect-ratio: 1;
+}
+
+/* Cell 3 (positions 3, 13, 23, etc.) - vertical rectangle spanning 2 rows in right column */
+.explore-post-wrapper:nth-child(10n + 3) {
+    grid-column: 3;
+    grid-row: span 2;
+    aspect-ratio: 0.5; /* Height is 2x width for vertical rectangle */
+}
+
+/* Cell 6 (positions 6, 16, 26, etc.) - vertical rectangle spanning 2 rows in left column */
+.explore-post-wrapper:nth-child(10n + 6) {
+    grid-column: 1;
+    grid-row: span 2;
+    aspect-ratio: 0.5; /* Height is 2x width for vertical rectangle */
 }
 
 .explore-post-wrapper:hover .explore-post-overlay {

@@ -71,11 +71,9 @@ export function ExplorePage() {
                 return byId && post.imgUrl && byId !== userId
             })
 
-        // Shuffle and take at least 12 posts
+        // Shuffle and take exactly up to 10 posts (pattern uses 10 tiles)
         const shuffled = shuffleArray([...finalPosts])
-        const minPosts = 12
-        const postCount = Math.max(minPosts, Math.min(30, shuffled.length))
-        
+        const postCount = Math.min(10, shuffled.length)
         return shuffled.slice(0, postCount)
     }
 
@@ -221,7 +219,7 @@ export function ExplorePage() {
         return (
             <div className="explore-page">
                 <div className="explore-grid">
-                    {Array.from({ length: 12 }).map((_, i) => (
+                    {Array.from({ length: 10 }).map((_, i) => (
                         <div key={i} className="explore-post-wrapper skeleton-post">
                             <div className="skeleton-image"></div>
                         </div>
