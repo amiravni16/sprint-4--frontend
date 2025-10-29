@@ -200,9 +200,12 @@ export function ExplorePage() {
     async function handleUpdatePost(updatedPost) {
         try {
             // Update the post in explorePosts
-            setExplorePosts(prevPosts => 
-                prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p)
-            )
+            setExplorePosts(prevPosts => {
+                const updated = prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p)
+                // Also update cached posts
+                cachedExplorePosts = cachedExplorePosts.map(p => p._id === updatedPost._id ? updatedPost : p)
+                return updated
+            })
             
             // Also update selectedPost if it's the one being updated
             if (selectedPost && selectedPost._id === updatedPost._id) {
