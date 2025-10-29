@@ -76,15 +76,9 @@ export function ExplorePage() {
             return !isFollowed
         })
 
-        // If no posts from unfollowed users, show all posts except your own
-        const finalPosts = explorePosts.length > 0 ? explorePosts : 
-            posts.filter(post => {
-                const byId = typeof post.by === 'string' ? post.by : post.by?._id
-                return byId && post.imgUrl && byId !== userId
-            })
-
+        // Only show posts from unfollowed users (no fallback - stay strict)
         // Shuffle and take exactly up to 10 posts (pattern uses 10 tiles)
-        const shuffled = shuffleArray([...finalPosts])
+        const shuffled = shuffleArray([...explorePosts])
         const postCount = Math.min(10, shuffled.length)
         return shuffled.slice(0, postCount)
     }
