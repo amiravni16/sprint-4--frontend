@@ -26,7 +26,8 @@ export function postReducer(state = initialState, action) {
             newState = { ...state, posts, lastRemovedPost }
             break
         case ADD_POST:
-            newState = { ...state, posts: [...state.posts, action.post] }
+            // Add new posts at the beginning (top of feed) for better UX
+            newState = { ...state, posts: [action.post, ...state.posts] }
             break
         case UPDATE_POST:
             posts = state.posts.map(post => (post._id === action.post._id) ? action.post : post)

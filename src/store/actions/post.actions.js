@@ -61,14 +61,47 @@ export async function removePost(postId) {
 }
 
 export async function addPost(post) {
+    // Store optimistic post ID for cleanup
+    let optimisticPostId = null
+    
     try {
+        // Get current user to populate post.by data immediately
+        const state = store.getState()
+        const currentUser = state.userModule.user
+        
+        // Create optimistic post with user data for instant display
+        optimisticPostId = `temp_${Date.now()}`
+        const optimisticPost = {
+            ...post,
+            _id: optimisticPostId, // Temporary ID until saved
+            by: currentUser ? {
+                _id: currentUser._id,
+                fullname: currentUser.fullname,
+                username: currentUser.username,
+                imgUrl: currentUser.imgUrl
+            } : post.by,
+            createdAt: Date.now(),
+            likedBy: [],
+            comments: []
+        }
+        
+        // Add to store immediately (optimistic update) - appears instantly at top of feed
+        store.dispatch(getCmdAddPost(optimisticPost))
+        
+        // Save to backend in background (non-blocking)
         const savedPost = await postService.save(post)
+        
+        // Replace optimistic post with saved post (remove temp, add real)
+        store.dispatch(getCmdRemovePost(optimisticPostId))
         store.dispatch(getCmdAddPost(savedPost))
-        // Immediately reload feed posts so the new post appears
-        await loadPosts()
+        
         return savedPost
     } catch (err) {
         console.log('Cannot add post', err)
+        // Remove optimistic post on error
+        if (optimisticPostId) {
+            store.dispatch(getCmdRemovePost(optimisticPostId))
+        }
         throw err
     }
 }
