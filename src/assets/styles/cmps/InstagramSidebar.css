@@ -124,6 +124,27 @@ button.nav-item {
     border-bottom: none;
 }
 
+/* Ensure no underline appears on any sidebar links at any state */
+.nav-item,
+.nav-item:hover,
+.nav-item:focus,
+.nav-item:active,
+.nav-item:visited {
+    text-decoration: none;
+}
+
+/* Explicitly target Explore and Profile links to never show underline */
+.nav-item[href="/explore"],
+.nav-item[href="/explore"]:hover,
+.nav-item[href="/explore"]:focus,
+.nav-item[href="/explore"]:active,
+.nav-item[href^="/user/"],
+.nav-item[href^="/user/"]:hover,
+.nav-item[href^="/user/"]:focus,
+.nav-item[href^="/user/"]:active {
+    text-decoration: none;
+}
+
 @media (max-width: 1263px) {
     .nav-item,
     button.nav-item {
