@@ -123,19 +123,43 @@ export function UserDetails() {
   }, [user])
 
   useEffect(() => {
-    // Load saved posts
+    // Load saved posts - show cached immediately if available
     async function loadSavedPosts() {
       if (user && loggedinUser && user._id === loggedinUser._id) {
+        const savedPostIds = loggedinUser.savedPosts || []
+        
+        if (savedPostIds.length === 0) {
+          setSavedPosts([])
+          return
+        }
+        
+        // Try to get cached posts from Redux store immediately
+        const state = store.getState()
+        const cachedPosts = state.postModule.posts || []
+        
+        if (cachedPosts.length > 0) {
+          // Filter cached posts immediately for instant display
+          const cachedSavedPosts = cachedPosts.filter(post => savedPostIds.includes(post._id))
+          cachedSavedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          setSavedPosts(cachedSavedPosts)
+        }
+        
+        // Fetch fresh data in background
+        setIsLoadingPosts(true)
         try {
           const posts = await postService.query()
-          const savedPostIds = loggedinUser.savedPosts || []
           const savedPostsData = posts.filter(post => savedPostIds.includes(post._id))
           // Sort by createdAt descending (newest first)
           savedPostsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           setSavedPosts(savedPostsData)
         } catch (err) {
           console.error('Error loading saved posts:', err)
-          setSavedPosts([])
+          // If fetch fails but we have cache, keep showing cache
+          if (cachedPosts.length === 0) {
+            setSavedPosts([])
+          }
+        } finally {
+          setIsLoadingPosts(false)
         }
       }
     }
@@ -371,8 +395,9 @@ export function UserDetails() {
 
         {/* Posts Grid */}
         <div className="profile-posts-grid">
-          {isLoadingPosts && userPosts.length === 0 ? (
-            // Show skeleton grid while loading
+          {(isLoadingPosts && (activeTab === 'posts' ? userPosts.length === 0 : savedPosts.length === 0)) && 
+           !(activeTab === 'posts' ? userPosts : savedPosts).length ? (
+            // Show skeleton grid while loading (only if no cached data)
             Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="profile-post-thumbnail skeleton-post">
                 <div className="skeleton-image"></div>

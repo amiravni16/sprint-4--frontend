@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { store } from '../store/store'
 import { showErrorMsg } from '../services/event-bus.service'
 import { shuffleArray } from '../services/util.service'
 import { PostViewModal } from '../cmps/PostViewModal'
@@ -9,52 +10,78 @@ export function ExplorePage() {
     const user = useSelector(storeState => storeState.userModule.user)
     const [explorePosts, setExplorePosts] = useState([])
     const [selectedPost, setSelectedPost] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
 
     useEffect(() => {
         loadExplorePosts()
     }, [user])
 
+    function filterExplorePosts(posts, followingIds, userId) {
+        // Show all posts from users you DON'T follow (excluding your own posts)
+        const explorePosts = posts.filter(post => {
+            const byId = typeof post.by === 'string' ? post.by : post.by?._id
+            
+            // Must have an author ID and image
+            if (!byId || !post.imgUrl) return false
+            
+            // Must NOT be from someone you follow
+            const isFollowed = followingIds.some(followId => {
+                const followUserId = typeof followId === 'string' ? followId : followId._id || followId
+                return followUserId === byId
+            })
+            
+            // Must not be your own post
+            return !isFollowed && byId !== userId
+        })
+
+        // If no posts from unfollowed users, show all posts except your own
+        const finalPosts = explorePosts.length > 0 ? explorePosts : 
+            posts.filter(post => {
+                const byId = typeof post.by === 'string' ? post.by : post.by?._id
+                return byId && post.imgUrl && byId !== userId
+            })
+
+        // Shuffle and take at least 12 posts
+        const shuffled = shuffleArray([...finalPosts])
+        const minPosts = 12
+        const postCount = Math.max(minPosts, Math.min(30, shuffled.length))
+        
+        return shuffled.slice(0, postCount)
+    }
+
     async function loadExplorePosts() {
         try {
             const followingIds = user?.following || []
+            const userId = user?._id
             
-            // Load posts directly from the service
+            // Try to get cached posts from Redux store immediately
+            const state = store.getState()
+            const cachedPosts = state.postModule.posts || []
+            
+            if (cachedPosts.length > 0 && !hasLoadedOnce) {
+                // Filter cached posts immediately for instant display
+                const cachedExplorePosts = filterExplorePosts(cachedPosts, followingIds, userId)
+                if (cachedExplorePosts.length > 0) {
+                    setExplorePosts(cachedExplorePosts)
+                    setHasLoadedOnce(true)
+                    // Continue loading fresh data in background
+                }
+            }
+            
+            // Fetch fresh data (or if no cache, this is the first load)
+            setIsLoading(true)
             const { postService } = await import('../services/post')
             const posts = await postService.query() || []
             
-            // Show all posts from users you DON'T follow (excluding your own posts)
-            const explorePosts = posts.filter(post => {
-                const byId = typeof post.by === 'string' ? post.by : post.by?._id
-                
-                // Must have an author ID and image
-                if (!byId || !post.imgUrl) return false
-                
-                // Must NOT be from someone you follow
-                const isFollowed = followingIds.some(followId => {
-                    const followUserId = typeof followId === 'string' ? followId : followId._id || followId
-                    return followUserId === byId
-                })
-                
-                // Must not be your own post
-                return !isFollowed && byId !== user?._id
-            })
-
-            // If no posts from unfollowed users, show all posts except your own
-            const finalPosts = explorePosts.length > 0 ? explorePosts : 
-                posts.filter(post => {
-                    const byId = typeof post.by === 'string' ? post.by : post.by?._id
-                    return byId && post.imgUrl && byId !== user?._id
-                })
-
-            // Shuffle and take at least 12 posts
-            const shuffled = shuffleArray([...finalPosts])
-            const minPosts = 12
-            const postCount = Math.max(minPosts, Math.min(30, shuffled.length))
-            
-            setExplorePosts(shuffled.slice(0, postCount))
+            const freshExplorePosts = filterExplorePosts(posts, followingIds, userId)
+            setExplorePosts(freshExplorePosts)
+            setHasLoadedOnce(true)
         } catch (err) {
             console.error('Failed to load explore posts:', err)
             showErrorMsg('Failed to load explore posts')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -82,7 +109,22 @@ export function ExplorePage() {
         }
     }
 
-    if (!explorePosts.length) {
+    // Show skeleton loader only if loading and no cached posts
+    if (isLoading && explorePosts.length === 0 && !hasLoadedOnce) {
+        return (
+            <div className="explore-page">
+                <div className="explore-grid">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <div key={i} className="explore-post-wrapper skeleton-post">
+                            <div className="skeleton-image"></div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    if (!explorePosts.length && hasLoadedOnce) {
         return (
             <div className="explore-page">
                 <div className="explore-empty">
