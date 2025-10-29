@@ -217,7 +217,7 @@ export function ExplorePage() {
     }
 
     // Show skeleton loader only if loading and no cached posts
-    if (isLoading && explorePosts.length === 0 && !hasLoadedOnce) {
+    if (isLoading && explorePosts.length === 0 && cachedExplorePosts.length === 0) {
         return (
             <div className="explore-page">
                 <div className="explore-grid">
@@ -231,7 +231,7 @@ export function ExplorePage() {
         )
     }
 
-    if (!explorePosts.length && hasLoadedOnce) {
+    if (!explorePosts.length && cachedExplorePosts.length === 0 && !isLoading) {
         return (
             <div className="explore-page">
                 <div className="explore-empty">
