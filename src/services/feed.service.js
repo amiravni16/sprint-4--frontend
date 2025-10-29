@@ -158,6 +158,19 @@ function getFollowingIds(user) {
 }
 
 /**
+ * Normalize ID to string for comparison
+ * @param {*} id - ID to normalize
+ * @returns {String} Normalized ID as string
+ */
+function normalizeId(id) {
+    if (!id) return ''
+    if (typeof id === 'object' && id.toString) {
+        return id.toString()
+    }
+    return String(id)
+}
+
+/**
  * Filter posts based on following relationships
  * @param {Array} posts - All posts
  * @param {Array} followingIds - IDs of users being followed
@@ -170,15 +183,23 @@ function filterPostsByFollowing(posts, followingIds, currentUserId) {
         return posts
     }
 
+    // Normalize all following IDs and current user ID to strings for comparison
+    const followingIdsStr = followingIds.map(normalizeId)
+    const currentUserIdStr = normalizeId(currentUserId)
+
     const filteredPosts = posts.filter(post => {
+        const postUserId = normalizeId(post.by?._id)
+        
         // Include posts from users you're following OR your own posts
-        const isFromFollowedUser = followingIds.includes(post.by?._id)
-        const isOwnPost = post.by?._id === currentUserId
+        const isFromFollowedUser = followingIdsStr.includes(postUserId)
+        const isOwnPost = postUserId === currentUserIdStr
         
         return isFromFollowedUser || isOwnPost
     })
 
     console.log(`📝 [FEED] Filtered ${filteredPosts.length} posts from ${posts.length} total posts`)
+    console.log(`🔍 [FEED] Following IDs (normalized):`, followingIdsStr.slice(0, 5), '...')
+    console.log(`🔍 [FEED] Sample post by._id values:`, posts.slice(0, 3).map(p => normalizeId(p.by?._id)))
     return filteredPosts
 }
 
