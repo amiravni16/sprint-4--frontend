@@ -13,10 +13,24 @@ export function ExplorePage() {
     const [selectedPost, setSelectedPost] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+    const [lastUserId, setLastUserId] = useState(null)
 
     useEffect(() => {
-        loadExplorePosts()
-    }, [user])
+        const userId = user?._id
+        
+        // If we already have posts loaded and user hasn't changed, keep showing them
+        if (explorePosts.length > 0 && hasLoadedOnce && userId === lastUserId) {
+            return // Don't reload if we already have content and user is the same
+        }
+        
+        // Only load if:
+        // 1. We don't have posts yet, OR
+        // 2. User has changed (different user logged in)
+        if (userId && (!hasLoadedOnce || userId !== lastUserId)) {
+            loadExplorePosts()
+            setLastUserId(userId)
+        }
+    }, [user?._id]) // Only depend on user ID, not the entire user object
 
     function filterExplorePosts(posts, followingIds, userId) {
         // Show all posts from users you DON'T follow (excluding your own posts)
@@ -56,22 +70,43 @@ export function ExplorePage() {
             const followingIds = user?.following || []
             const userId = user?._id
             
+            if (!userId) {
+                setExplorePosts([])
+                return
+            }
+            
             // Try to get cached posts from Redux store immediately
             const state = store.getState()
             const cachedPosts = state.postModule.posts || []
             
-            if (cachedPosts.length > 0 && !hasLoadedOnce) {
-                // Filter cached posts immediately for instant display
+            // Always show cached data immediately if available
+            if (cachedPosts.length > 0) {
                 const cachedExplorePosts = filterExplorePosts(cachedPosts, followingIds, userId)
                 if (cachedExplorePosts.length > 0) {
                     setExplorePosts(cachedExplorePosts)
                     setHasLoadedOnce(true)
-                    // Continue loading fresh data in background
+                    setIsLoading(false)
+                    // Only fetch fresh data if this is the first load, otherwise keep cached
+                    if (!hasLoadedOnce) {
+                        // Fetch fresh data in background (non-blocking)
+                        fetchFreshData(followingIds, userId)
+                    }
+                    return
                 }
             }
             
-            // Fetch fresh data (or if no cache, this is the first load)
+            // Only fetch from backend if no cache available
             setIsLoading(true)
+            await fetchFreshData(followingIds, userId)
+        } catch (err) {
+            console.error('Failed to load explore posts:', err)
+            showErrorMsg('Failed to load explore posts')
+            setIsLoading(false)
+        }
+    }
+    
+    async function fetchFreshData(followingIds, userId) {
+        try {
             const { postService } = await import('../services/post')
             const posts = await postService.query() || []
             
@@ -79,8 +114,8 @@ export function ExplorePage() {
             setExplorePosts(freshExplorePosts)
             setHasLoadedOnce(true)
         } catch (err) {
-            console.error('Failed to load explore posts:', err)
-            showErrorMsg('Failed to load explore posts')
+            console.error('Failed to fetch fresh explore posts:', err)
+            // Don't show error if we already have cached data
         } finally {
             setIsLoading(false)
         }
