@@ -89,10 +89,10 @@ export function UserDetails() {
   useEffect(() => {
     // Load posts for this user
     async function loadUserPosts() {
-      if (user) {
+      if (user && user._id) {
         try {
-          const posts = await postService.query()
-          const postsByUser = posts.filter(post => post.by?._id === user._id)
+          // Use the optimized endpoint to get posts by user ID
+          const postsByUser = await postService.getByUserId(user._id)
           // Sort by createdAt descending (newest first)
           postsByUser.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           setUserPosts(postsByUser)

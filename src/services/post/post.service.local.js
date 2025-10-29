@@ -7,6 +7,7 @@ const STORAGE_KEY = 'post'
 export const postService = {
     query,
     getById,
+    getByUserId,
     save,
     remove,
     addPostMsg
@@ -43,6 +44,15 @@ async function query(filterBy = { txt: '' }) {
 
 function getById(postId) {
     return storageService.get(STORAGE_KEY, postId)
+}
+
+async function getByUserId(userId) {
+    const posts = await query()
+    return posts.filter(post => {
+        const postUserId = post.by?._id?.toString ? post.by._id.toString() : String(post.by?._id || '')
+        const normalizedUserId = userId.toString ? userId.toString() : String(userId)
+        return postUserId === normalizedUserId
+    })
 }
 
 async function remove(postId) {

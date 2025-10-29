@@ -3,6 +3,7 @@ import { httpService } from '../http.service'
 export const postService = {
     query,
     getById,
+    getByUserId,
     save,
     remove,
     addPostMsg
@@ -14,6 +15,10 @@ async function query(filterBy = { txt: '' }) {
 
 function getById(postId) {
     return httpService.get(`post/${postId}`)
+}
+
+function getByUserId(userId) {
+    return httpService.get(`post/user/${userId}`)
 }
 
 async function remove(postId) {
