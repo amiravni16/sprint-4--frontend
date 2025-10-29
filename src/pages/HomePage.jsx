@@ -518,7 +518,7 @@ export function HomePage() {
                         onOpenDetails={onOpenPostDetails}
                         user={user}
                     />
-                ) : (isLoading && !hasLoadedOnce) ? (
+                ) : (isLoading && posts.length === 0 && cachedHomePosts.length === 0) ? (
                     // Show skeleton while loading for first time
                     <div className="feed-loading">
                         {Array.from({ length: 5 }).map((_, i) => (
