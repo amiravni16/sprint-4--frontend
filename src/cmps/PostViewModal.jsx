@@ -194,15 +194,37 @@ export function PostViewModal({ isOpen, onClose, post, onLike, onDelete, onEdit,
         }
     }
 
-    const handleLike = () => {
+    const handleLike = async () => {
+        if (!user) return
+        
         // Animate when liking
         if (!isLiked) {
             setIsAnimating(true)
             setTimeout(() => setIsAnimating(false), 400)
         }
 
+        // Optimistic update - update local state immediately
+        const likedBy = currentPost.likedBy || []
+        const isCurrentlyLiked = likedBy.includes(user._id)
+        const newLikedBy = isCurrentlyLiked
+            ? likedBy.filter(id => id !== user._id)
+            : [...likedBy, user._id]
+        
+        const updatedPost = {
+            ...currentPost,
+            likedBy: newLikedBy
+        }
+        setLocalPost(updatedPost)
+
+        // Call parent handler to update backend and Redux store
         if (onLike) {
-            onLike(currentPost._id)
+            try {
+                await onLike(currentPost._id)
+            } catch (err) {
+                // Rollback on error
+                setLocalPost(currentPost)
+                console.error('Error liking post:', err)
+            }
         }
     }
 

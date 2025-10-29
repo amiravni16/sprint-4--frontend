@@ -218,20 +218,33 @@ export function UserDetails() {
       return
     }
 
-    // Optimistic update - update state immediately for better UX
+    // Store previous state for rollback
     const previousIsFollowing = isFollowing
-    setIsFollowing(!isFollowing)
-    
-    // Optimistically update followers count
     const previousFollowers = user.followers || []
-    const optimisticFollowers = previousIsFollowing
-      ? previousFollowers.filter(id => id !== loggedinUser._id) // Remove from followers
-      : [...previousFollowers, loggedinUser._id] // Add to followers
     
-    // Update watched user optimistically
+    // Normalize IDs for comparison
+    const normalizeId = (id) => {
+      if (id && typeof id === 'object' && id.toString) {
+        return id.toString()
+      }
+      return String(id)
+    }
+    
+    const loggedInUserIdStr = normalizeId(loggedinUser._id)
+    
+    // Calculate new state
+    const newIsFollowing = !previousIsFollowing
+    const newFollowers = newIsFollowing
+      ? [...previousFollowers, loggedinUser._id] // Add to followers
+      : previousFollowers.filter(id => normalizeId(id) !== loggedInUserIdStr) // Remove from followers
+    
+    // Update BOTH button state and follower count simultaneously
+    setIsFollowing(newIsFollowing)
+    
+    // Update watched user optimistically with new follower count
     const optimisticUser = {
       ...user,
-      followers: optimisticFollowers
+      followers: newFollowers
     }
     store.dispatch({ type: 'SET_WATCHED_USER', user: optimisticUser })
 
@@ -239,10 +252,11 @@ export function UserDetails() {
       const result = await userService.toggleFollow(user._id)
       
       // Verify the actual result matches our optimistic update
-      if (result.isFollowing !== !previousIsFollowing) {
+      if (result.isFollowing !== newIsFollowing) {
         // Rollback if there was an error
         setIsFollowing(previousIsFollowing)
         store.dispatch({ type: 'SET_WATCHED_USER', user })
+        return
       }
       
       // Reload both users from storage to get the actual updated data
@@ -253,11 +267,15 @@ export function UserDetails() {
       store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
       store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
       
+      // Ensure button state matches the fresh data
+      setIsFollowing((freshLoggedinUser.following || []).some(id => normalizeId(id) === normalizeId(user._id)))
+      
     } catch (err) {
       console.error('Error toggling follow:', err)
       // Rollback on error
       setIsFollowing(previousIsFollowing)
       store.dispatch({ type: 'SET_WATCHED_USER', user })
+      const { showErrorMsg } = await import('../services/event-bus.service')
       showErrorMsg('Failed to update follow status')
     }
   }
