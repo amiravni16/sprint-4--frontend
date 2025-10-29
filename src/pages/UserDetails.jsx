@@ -280,6 +280,100 @@ export function UserDetails() {
     }
   }
 
+  async function handleLikePost(postId) {
+    if (!loggedinUser) {
+      const { showErrorMsg } = await import('../services/event-bus.service')
+      showErrorMsg('Please login to like posts')
+      return
+    }
+
+    try {
+      // Find the post from userPosts or savedPosts
+      const post = [...userPosts, ...savedPosts].find(p => p._id === postId)
+      if (!post) {
+        // Try to get from Redux store
+        const state = store.getState()
+        const postFromStore = state.postModule.posts.find(p => p._id === postId)
+        if (!postFromStore) {
+          const { showErrorMsg } = await import('../services/event-bus.service')
+          showErrorMsg('Post not found')
+          return
+        }
+        return handleLikeWithPost(postFromStore)
+      }
+      
+      return handleLikeWithPost(post)
+    } catch (err) {
+      console.error('Error toggling like:', err)
+      const { showErrorMsg } = await import('../services/event-bus.service')
+      showErrorMsg('Failed to like post')
+    }
+  }
+
+  async function handleLikeWithPost(post) {
+    // Initialize likedBy array if it doesn't exist
+    const likedBy = post.likedBy || []
+    const isCurrentlyLiked = likedBy.includes(loggedinUser._id)
+
+    let updatedLikedBy
+    if (isCurrentlyLiked) {
+      // Unlike: remove user from likedBy array
+      updatedLikedBy = likedBy.filter(id => id !== loggedinUser._id)
+    } else {
+      // Like: add user to likedBy array
+      updatedLikedBy = [...likedBy, loggedinUser._id]
+    }
+
+    // Update the post with new like status
+    const updatedPost = {
+      ...post,
+      likedBy: updatedLikedBy
+    }
+
+    // Update backend and Redux
+    await updatePost(updatedPost)
+    
+    // Update local state
+    setUserPosts(prevPosts => 
+      prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p)
+    )
+    setSavedPosts(prevPosts => 
+      prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p)
+    )
+    
+    // Update viewingPost if it's the one being liked
+    if (viewingPost && viewingPost._id === updatedPost._id) {
+      setViewingPost(updatedPost)
+    }
+  }
+
+  async function handleDeletePost(postId) {
+    if (!loggedinUser || !viewingPost || viewingPost._id !== postId) {
+      return
+    }
+    
+    try {
+      const { postService } = await import('../services/post')
+      await postService.remove(postId)
+      
+      // Remove from local state
+      setUserPosts(prevPosts => prevPosts.filter(p => p._id !== postId))
+      setSavedPosts(prevPosts => prevPosts.filter(p => p._id !== postId))
+      
+      // Close modal
+      setViewingPost(null)
+    } catch (err) {
+      console.error('Error deleting post:', err)
+      const { showErrorMsg } = await import('../services/event-bus.service')
+      showErrorMsg('Failed to delete post')
+    }
+  }
+
+  function handleEditPost(post) {
+    // For now, just close the modal - edit functionality can be added later
+    setViewingPost(null)
+  }
+
   async function handleRefreshUser() {
     try {
       const updatedUser = await userService.getById(user._id)
@@ -585,9 +679,9 @@ export function UserDetails() {
           isOpen={!!viewingPost}
           onClose={onClosePostView}
           post={viewingPost}
-          onLike={() => {}} // You can implement like functionality here if needed
-          onDelete={() => {}} // You can implement delete functionality here if needed
-          onEdit={() => {}} // You can implement edit functionality here if needed
+          onLike={handleLikePost}
+          onDelete={handleDeletePost}
+          onEdit={handleEditPost}
           onUpdate={updatePost}
           onPostUnsaved={onPostUnsaved}
         />

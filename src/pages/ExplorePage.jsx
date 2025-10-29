@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { store } from '../store/store'
 import { showErrorMsg } from '../services/event-bus.service'
 import { shuffleArray } from '../services/util.service'
+import { updatePost } from '../store/actions/post.actions'
 import { PostViewModal } from '../cmps/PostViewModal'
 import '../assets/styles/cmps/ExplorePage.css'
 
@@ -93,6 +94,60 @@ export function ExplorePage() {
         setSelectedPost(null)
     }
 
+    async function handleLike(postId) {
+        if (!user) {
+            showErrorMsg('Please login to like posts')
+            return
+        }
+
+        try {
+            // Find the post in the current posts array
+            const post = explorePosts.find(p => p._id === postId) || selectedPost
+            if (!post || post._id !== postId) {
+                // Try to get from Redux store
+                const state = store.getState()
+                const postFromStore = state.postModule.posts.find(p => p._id === postId)
+                if (!postFromStore) {
+                    showErrorMsg('Post not found')
+                    return
+                }
+                return handleLikeWithPost(postFromStore)
+            }
+            
+            return handleLikeWithPost(post)
+        } catch (err) {
+            console.error('Error toggling like:', err)
+            showErrorMsg('Failed to like post')
+        }
+    }
+
+    async function handleLikeWithPost(post) {
+        // Initialize likedBy array if it doesn't exist
+        const likedBy = post.likedBy || []
+        const isCurrentlyLiked = likedBy.includes(user._id)
+
+        let updatedLikedBy
+        if (isCurrentlyLiked) {
+            // Unlike: remove user from likedBy array
+            updatedLikedBy = likedBy.filter(id => id !== user._id)
+        } else {
+            // Like: add user to likedBy array
+            updatedLikedBy = [...likedBy, user._id]
+        }
+
+        // Update the post with new like status
+        const updatedPost = {
+            ...post,
+            likedBy: updatedLikedBy
+        }
+
+        // Update backend and Redux
+        await updatePost(updatedPost)
+        
+        // Update local state
+        handleUpdatePost(updatedPost)
+    }
+
     async function handleUpdatePost(updatedPost) {
         try {
             // Update the post in explorePosts
@@ -181,6 +236,7 @@ export function ExplorePage() {
                     post={selectedPost} 
                     isOpen={!!selectedPost} 
                     onClose={handleCloseModal}
+                    onLike={handleLike}
                     onUpdate={handleUpdatePost}
                 />
             )}
