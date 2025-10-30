@@ -1,9 +1,9 @@
 /* Suggested Users Sidebar */
 .suggested-users {
     width: 400px;
-    padding: 0px 70px;
+    padding: 0px 85px;
     position: sticky;
-    top: 84px;
+    top: 50px;
     height: fit-content;
 }
 
@@ -19,10 +19,15 @@
     margin-bottom: 12px;
 }
 
-.suggested-user-info {
+.suggested-header .suggested-user-info {
     display: flex;
+    flex-direction: row; /* avatar then text to its right */
     align-items: center;
     cursor: pointer;
+    direction: ltr; /* Ensure avatar appears first and text to its right */
+    gap: -3px;
+    flex: 1;            /* allow text block to fill space between avatar and button */
+    min-width: 0;       /* enable text ellipsis */
 }
 
 .suggested-current-user-avatar {
@@ -30,13 +35,44 @@
     height: 56px;
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0; /* keep size, prevent shrinking */
     cursor: pointer;
     margin-right: 12px;
+    margin-left: -10px; /* nudge 2px left as requested */
 }
 
 .suggested-current-user-details {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 2px;
+}
+
+/* Logged-in user (top row) – dedicated rules to control username/fullname placement */
+.suggested-header .suggested-current-user-details {
+    display: flex;            /* keep stacked layout */
+    flex-direction: column;   /* username on top, fullname below */
+    justify-content: center;  /* vertical center against avatar */
+    min-width: 0;             /* allow text to ellipsis */
+}
+
+.suggested-header .suggested-current-username {
+    margin-bottom: 0;
+    line-height: 1.1;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggested-header .suggested-current-fullname {
+    font-size: 12px;
+    line-height: 1.2;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .suggested-current-username {
@@ -44,7 +80,12 @@
     color: #262626;
     font-size: 14px;
     cursor: pointer;
-    margin-bottom: 2px;
+    margin-bottom: 0;
+    line-height: 1.1;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .suggested-current-username:hover {
@@ -53,17 +94,23 @@
 
 .suggested-current-fullname {
     color: #8e8e8e;
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 1.2;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .switch-btn {
     background: none;
     border: none;
     color: #0095f6;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    text-transform: uppercase;
+    padding: -2px;
+    margin: 10px;
 }
 
 .switch-btn:hover {
@@ -112,6 +159,7 @@
 .suggested-user-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 8px 0;
     gap: 12px;
 }
@@ -128,8 +176,11 @@
 .suggested-user-info {
     display: flex;
     flex-direction: column;
+    align-items: flex-start; /* Left-align like Instagram */
+    text-align: left;
     flex: 1;
     min-width: 0;
+    max-width: calc(100% - 120px); /* leave room for Follow button */
 }
 
 .suggested-username {
@@ -139,6 +190,10 @@
     cursor: pointer;
     line-height: 1.2;
     margin-bottom: 2px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .suggested-username:hover {
@@ -153,25 +208,28 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 100%;
 }
 
 .follow-btn {
-    background: none !important;
+    appearance: none;
+    background: #0095f6 !important; /* Instagram blue */
     border: none !important;
-    color: #0095f6 !important;
+    color: #ffffff !important;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
-    padding: 0;
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 8px;
     outline: none !important;
     box-shadow: none !important;
-    transition: color 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .follow-btn:hover {
-    color: #00376b !important;
-    background: none !important;
+    background: #1877f2 !important;
 }
 
 .follow-btn:focus {
