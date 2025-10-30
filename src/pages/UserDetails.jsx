@@ -35,6 +35,10 @@ export function UserDetails() {
     if (params.id !== currentUserId) {
       setIsTransitioning(true)
       setCurrentUserId(params.id)
+      // Clear previous user's lists immediately to prevent flash of stale posts
+      setUserPosts([])
+      setSavedPosts([])
+      setIsLoadingPosts(true)
     }
 
     async function ensureUser() {
