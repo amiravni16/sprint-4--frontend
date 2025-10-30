@@ -27,4 +27,5 @@ root.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register()
+// Disable SW for now to avoid 404s in production/incognito
+serviceWorkerRegistration.unregister()

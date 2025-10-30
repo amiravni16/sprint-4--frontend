@@ -41,19 +41,24 @@ async function update(userToUpdate) {
 }
 
 async function login(userCred) {
-	const user = await httpService.post('auth/login', userCred)
-	if (user) return saveLoggedinUser(user)
+    const res = await httpService.post('auth/login', userCred)
+    const user = res?.user || res
+    if (res?.token) sessionStorage.setItem('loginToken', res.token)
+    if (user) return saveLoggedinUser(user)
 }
 
 async function signup(userCred) {
 	if (!userCred.imgUrl) userCred.imgUrl = 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png'
 
-    const user = await httpService.post('auth/signup', userCred)
-	return saveLoggedinUser(user)
+    const res = await httpService.post('auth/signup', userCred)
+    const user = res?.user || res
+    if (res?.token) sessionStorage.setItem('loginToken', res.token)
+    return saveLoggedinUser(user)
 }
 
 async function logout() {
 	localStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+    sessionStorage.removeItem('loginToken')
 	return await httpService.post('auth/logout')
 }
 
