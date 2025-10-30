@@ -60,6 +60,11 @@ function init() {
     
     console.log('✅ Storage initialization complete!')
 
+    // When running with local demo data we may need to repair localStorage.
+    // In remote (backend) mode, DO NOT touch loggedinUser or posts/users mapping.
+    const isLocalMode = (import.meta?.env?.VITE_LOCAL === 'true')
+
+    if (isLocalMode) {
     // Ensure loggedinUser points to an existing user; fallback to admin if present
     try {
         const loggedStr = localStorage.getItem('loggedinUser')
@@ -111,7 +116,7 @@ function init() {
             }
         }
     } catch (err) {
-        console.warn('⚠️ Could not validate loggedinUser session:', err)
+        console.warn('⚠️ Could not validate loggedinUser session (local mode):', err)
     }
 
     // Migrate posts/comments to reference valid user IDs
@@ -154,7 +159,8 @@ function init() {
             console.log('🛠️ Migrated posts/comments to valid user IDs')
         }
     } catch (err) {
-        console.warn('⚠️ Could not migrate posts for stable user IDs:', err)
+        console.warn('⚠️ Could not migrate posts for stable user IDs (local mode):', err)
+    }
     }
 }
 
