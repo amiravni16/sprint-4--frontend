@@ -72,3 +72,42 @@ export function shuffleArray(array) {
     }
     return shuffled
 }
+
+// Build a responsive srcSet for common image CDNs (Unsplash, Picsum, Cloudinary)
+// Falls back gracefully if the URL doesn't support width params
+export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
+    if (!imgUrl) return undefined
+    try {
+        const url = new URL(imgUrl, window.location.origin)
+        const host = url.hostname
+        const widths = [baseWidth, baseWidth * 1.5 | 0, baseWidth * 2]
+
+        const makeUrl = (w) => {
+            const u = new URL(url.href)
+            if (host.includes('unsplash.com')) {
+                u.searchParams.set('w', String(w))
+                u.searchParams.set('q', '80')
+            } else if (host.includes('pexels.com')) {
+                // Pexels supports dpr and width/height; prefer width for responsive clarity
+                u.searchParams.set('auto', 'compress')
+                u.searchParams.set('cs', 'tinysrgb')
+                u.searchParams.set('w', String(w))
+                u.searchParams.set('dpr', String(Math.min(2, Math.max(1, Math.round(w / baseWidth)))))
+                // Remove small fixed height if present
+                u.searchParams.delete('h')
+            } else if (host.includes('picsum.photos')) {
+                // picsum already encodes size in path; leave as-is
+                return u.href
+            } else if (host.includes('cloudinary.com')) {
+                // naive Cloudinary width transform injection
+                u.pathname = u.pathname.replace('/upload/', `/upload/w_${w}/`)
+            }
+            return u.href
+        }
+
+        const entries = widths.map(w => `${makeUrl(w)} ${Math.round(w / baseWidth)}x`)
+        return entries.join(', ')
+    } catch {
+        return undefined
+    }
+}

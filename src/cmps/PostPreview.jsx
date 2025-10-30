@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useRef, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { userService } from '../services/user'
+import { buildResponsiveSrcSet } from '../services/util.service'
 import { useCurrentUser } from '../customHooks/useCurrentUser'
 
 export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, onOpenDetails }) {
@@ -146,7 +147,11 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
             {/* Post Image */}
             {post.imgUrl && !imageError && (
                 <img 
-                    src={post.imgUrl} 
+                    src={post.imgUrl}
+                    srcSet={buildResponsiveSrcSet(post.imgUrl, 800)}
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    decoding="async"
+                    loading="lazy"
                     alt="Post" 
                     className="post-image"
                     onError={() => setImageError(true)}
