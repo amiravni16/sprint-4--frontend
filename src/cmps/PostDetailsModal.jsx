@@ -18,6 +18,7 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
     const [characterCount, setCharacterCount] = useState((caption || '').length)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [createImageAspectRatio, setCreateImageAspectRatio] = useState('square')
+    const [imageError, setImageError] = useState(false)
     const navigate = useNavigate()
     const user = useSelector(storeState => storeState.userModule.user)
     
@@ -38,9 +39,14 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
         }
     }, [isOpen])
 
+    // Reset image error when post changes
+    useEffect(() => {
+        setImageError(false)
+    }, [post?._id])
+
     // Detect image aspect ratio
     useEffect(() => {
-        if (post?.imgUrl) {
+        if (post?.imgUrl && !imageError) {
             const img = new Image()
             img.onload = () => {
                 const aspectRatio = img.width / img.height
@@ -372,25 +378,55 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
 
                 {/* Image section */}
                 <div className={`post-details-image ${imageAspectRatio}`}>
-                    <img 
-                        key={`post-img-${post._id}-modal`}
-                        src={getHighResImageUrl(post.imgUrl, 5000)}
-                        srcSet={buildResponsiveSrcSet(post.imgUrl, 5000)}
-                        sizes="(max-width: 768px) 100vw, 2400px"
-                        alt="Post" 
-                        decoding="async"
-                        fetchpriority="high"
-                        loading="eager"
-                        style={{ 
-                            maxWidth: 'none', 
-                            minWidth: '100%',
-                            minHeight: '100%',
-                            imageRendering: 'auto',
-                            width: '100%', 
-                            height: '100%',
-                            objectFit: 'cover'
-                        }}
-                    />
+                    {!imageError ? (
+                        <img 
+                            key={`post-img-${post._id}-modal`}
+                            src={getHighResImageUrl(post.imgUrl, 5000)}
+                            srcSet={buildResponsiveSrcSet(post.imgUrl, 5000)}
+                            sizes="(max-width: 768px) 100vw, 2400px"
+                            alt="Post" 
+                            decoding="async"
+                            fetchpriority="high"
+                            loading="eager"
+                            onError={(e) => {
+                                console.warn('Modal image failed to load:', post.imgUrl)
+                                // Try fallback: use original URL without transformation for Pexels
+                                if (post.imgUrl && post.imgUrl.includes('pexels.com')) {
+                                    try {
+                                        const url = new URL(post.imgUrl)
+                                        const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`
+                                        const transformedUrl = getHighResImageUrl(post.imgUrl, 5000)
+                                        if (baseUrl !== transformedUrl && e.target.src !== baseUrl) {
+                                            e.target.src = baseUrl
+                                            return // Try fallback first
+                                        }
+                                    } catch {}
+                                }
+                                // If still fails, try original URL as last resort
+                                if (e.target.src !== post.imgUrl) {
+                                    e.target.src = post.imgUrl
+                                    return
+                                }
+                                setImageError(true)
+                            }}
+                            style={{ 
+                                maxWidth: 'none', 
+                                minWidth: '100%',
+                                minHeight: '100%',
+                                imageRendering: 'auto',
+                                width: '100%', 
+                                height: '100%',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    ) : (
+                        <div className="post-image-error" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            </svg>
+                            <p>Image not available</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Details section */}

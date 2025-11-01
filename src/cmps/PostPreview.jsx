@@ -154,7 +154,21 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
                     loading="lazy"
                     alt="Post" 
                     className="post-image"
-                    onError={() => setImageError(true)}
+                    onError={(e) => {
+                        console.warn('Image failed to load:', post.imgUrl)
+                        // Try fallback: remove any query params for Pexels
+                        if (post.imgUrl.includes('pexels.com')) {
+                            try {
+                                const url = new URL(post.imgUrl)
+                                const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`
+                                if (baseUrl !== post.imgUrl && e.target.src !== baseUrl) {
+                                    e.target.src = baseUrl
+                                    return // Don't set error state yet, try fallback
+                                }
+                            } catch {}
+                        }
+                        setImageError(true)
+                    }}
                     onClick={() => onOpenDetails && onOpenDetails(post)}
                     style={{ cursor: 'pointer' }}
                 />

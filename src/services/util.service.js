@@ -99,8 +99,17 @@ export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
                 }
                 
                 // URL has constraints - remove them to get original
-                // Just use the base URL without query params
-                return `${u.protocol}//${u.hostname}${u.pathname}`
+                // Ensure pathname is valid
+                let cleanPath = u.pathname
+                if (!cleanPath.match(/\.(jpg|jpeg|png|webp)$/i)) {
+                    const pathMatch = cleanPath.match(/\/photos\/(\d+)/)
+                    if (pathMatch) {
+                        const photoId = pathMatch[1]
+                        cleanPath = `/photos/${photoId}/pexels-photo-${photoId}.jpeg`
+                    }
+                }
+                
+                return `${u.protocol}//${u.hostname}${cleanPath}`
             } else if (host.includes('picsum.photos')) {
                 // picsum already encodes size in path; leave as-is
                 return u.href
@@ -138,8 +147,8 @@ export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
             url.searchParams.set('w', String(targetWidth))
             url.searchParams.set('q', '90')
         } else if (host.includes('pexels.com')) {
-            // Pexels: If URL is already original (no size constraints), return as-is
-            // Pexels original URLs from API are already perfect - don't transform them
+            // Pexels: Ensure we have a valid URL
+            // Pexels original URLs from API are already perfect - use them as-is
             const hasSizeConstraints = url.searchParams.has('h') || url.searchParams.has('w')
             
             if (!hasSizeConstraints) {
@@ -148,9 +157,19 @@ export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
             }
             
             // URL has constraints - remove them to get original
-            // Keep the original pathname, just remove query params
-            const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`
-            return baseUrl
+            // Ensure pathname is valid (should end with file extension)
+            let cleanPath = url.pathname
+            // Make sure pathname ends with an image extension
+            if (!cleanPath.match(/\.(jpg|jpeg|png|webp)$/i)) {
+                // If no extension, try to extract photo ID and build proper URL
+                const pathMatch = cleanPath.match(/\/photos\/(\d+)/)
+                if (pathMatch) {
+                    const photoId = pathMatch[1]
+                    cleanPath = `/photos/${photoId}/pexels-photo-${photoId}.jpeg`
+                }
+            }
+            
+            return `${url.protocol}//${url.hostname}${cleanPath}`
         } else if (host.includes('cloudinary.com')) {
             url.pathname = url.pathname.replace('/upload/', `/upload/w_${targetWidth}/`)
             if (!url.searchParams.has('q')) {
