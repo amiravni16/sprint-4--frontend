@@ -89,17 +89,15 @@ export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
                 u.searchParams.set('w', String(w))
                 u.searchParams.set('q', '90') // Higher quality
             } else if (host.includes('pexels.com')) {
-                // Pexels: Remove all size constraints first, then set desired width
-                u.searchParams.delete('h')
-                u.searchParams.delete('w')
-                u.searchParams.delete('fit')
-                // Set high-resolution parameters
-                u.searchParams.set('auto', 'compress')
-                u.searchParams.set('cs', 'tinysrgb')
-                u.searchParams.set('w', String(w))
-                u.searchParams.set('dpr', '2') // Request 2x DPR for sharpness
-                // Remove any quality limits
-                u.searchParams.delete('q')
+                // Pexels: Build clean URL with only high-res parameters
+                const baseUrl = `${u.protocol}//${u.hostname}${u.pathname}`
+                const cleanUrl = new URL(baseUrl)
+                // Set high-resolution parameters for this width
+                cleanUrl.searchParams.set('auto', 'compress')
+                cleanUrl.searchParams.set('cs', 'tinysrgb')
+                cleanUrl.searchParams.set('w', String(w))
+                // For retina displays, multiply width by 2 in srcSet densities instead of using dpr
+                return cleanUrl.href
             } else if (host.includes('picsum.photos')) {
                 // picsum already encodes size in path; leave as-is
                 return u.href
@@ -137,17 +135,17 @@ export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
             url.searchParams.set('w', String(targetWidth))
             url.searchParams.set('q', '90')
         } else if (host.includes('pexels.com')) {
-            // Pexels: Remove all size constraints first, then set desired width
-            url.searchParams.delete('h')
-            url.searchParams.delete('w')
-            url.searchParams.delete('fit')
-            // Set high-resolution parameters
-            url.searchParams.set('auto', 'compress')
-            url.searchParams.set('cs', 'tinysrgb')
-            url.searchParams.set('w', String(targetWidth))
-            url.searchParams.set('dpr', '2')
-            // Remove any quality limits
-            url.searchParams.delete('q')
+            // Pexels: Build clean URL with only high-res parameters
+            // Remove ALL existing params that might limit resolution
+            const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`
+            const newUrl = new URL(baseUrl)
+            // Set high-resolution parameters (don't use dpr, just large width)
+            newUrl.searchParams.set('auto', 'compress')
+            newUrl.searchParams.set('cs', 'tinysrgb')
+            newUrl.searchParams.set('w', String(targetWidth))
+            // For very high res, Pexels might need explicit large width
+            // Don't set dpr as it may not work as expected - just use large width
+            return newUrl.href
         } else if (host.includes('cloudinary.com')) {
             url.pathname = url.pathname.replace('/upload/', `/upload/w_${targetWidth}/`)
             if (!url.searchParams.has('q')) {

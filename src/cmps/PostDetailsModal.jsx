@@ -373,8 +373,9 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                 {/* Image section */}
                 <div className={`post-details-image ${imageAspectRatio}`}>
                     <img 
-                        src={getHighResImageUrl(post.imgUrl, 3000)} 
-                        srcSet={buildResponsiveSrcSet(post.imgUrl, 3000)}
+                        key={`post-img-${post._id}-modal`}
+                        src={getHighResImageUrl(post.imgUrl, 4000)}
+                        srcSet={buildResponsiveSrcSet(post.imgUrl, 4000)}
                         sizes="(max-width: 768px) 100vw, 1200px"
                         alt="Post" 
                         decoding="async"
