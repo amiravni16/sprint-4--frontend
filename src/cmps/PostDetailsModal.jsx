@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { addPostMsg } from '../store/actions/post.actions'
 import { useCurrentUser } from '../customHooks/useCurrentUser'
 import { CommentItem } from './CommentItem'
-import { formatTimeAgo, buildResponsiveSrcSet } from '../services/util.service'
+import { formatTimeAgo, buildResponsiveSrcSet, getHighResImageUrl } from '../services/util.service'
 
 export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEdit, onUpdate, croppedImage, caption, onBack, onPost, aspectRatio = '1:1', isEditMode = false }) {
     const [commentText, setCommentText] = useState('')
@@ -373,8 +373,8 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                 {/* Image section */}
                 <div className={`post-details-image ${imageAspectRatio}`}>
                     <img 
-                        src={post.imgUrl} 
-                        srcSet={buildResponsiveSrcSet(post.imgUrl, 1600)}
+                        src={getHighResImageUrl(post.imgUrl, 2000)} 
+                        srcSet={buildResponsiveSrcSet(post.imgUrl, 2000)}
                         sizes="(max-width: 1200px) 100vw, 1200px"
                         alt="Post" 
                         decoding="async"

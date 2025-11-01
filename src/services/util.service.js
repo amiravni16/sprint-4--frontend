@@ -80,34 +80,75 @@ export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
     try {
         const url = new URL(imgUrl, window.location.origin)
         const host = url.hostname
-        const widths = [baseWidth, baseWidth * 1.5 | 0, baseWidth * 2]
+        // Generate wider range of sizes for high-DPI displays (up to 4x for ultra-retina)
+        const widths = [baseWidth, Math.round(baseWidth * 1.5), baseWidth * 2, baseWidth * 3, baseWidth * 4]
 
         const makeUrl = (w) => {
             const u = new URL(url.href)
             if (host.includes('unsplash.com')) {
                 u.searchParams.set('w', String(w))
-                u.searchParams.set('q', '80')
+                u.searchParams.set('q', '90') // Higher quality
             } else if (host.includes('pexels.com')) {
                 // Pexels supports dpr and width/height; prefer width for responsive clarity
                 u.searchParams.set('auto', 'compress')
                 u.searchParams.set('cs', 'tinysrgb')
                 u.searchParams.set('w', String(w))
-                u.searchParams.set('dpr', String(Math.min(2, Math.max(1, Math.round(w / baseWidth)))))
+                u.searchParams.set('dpr', '2') // Request 2x DPR for sharpness
                 // Remove small fixed height if present
                 u.searchParams.delete('h')
+                // Remove any quality limits
+                u.searchParams.delete('q')
             } else if (host.includes('picsum.photos')) {
                 // picsum already encodes size in path; leave as-is
                 return u.href
             } else if (host.includes('cloudinary.com')) {
                 // naive Cloudinary width transform injection
                 u.pathname = u.pathname.replace('/upload/', `/upload/w_${w}/`)
+                // Add quality parameter for Cloudinary
+                if (!u.searchParams.has('q')) {
+                    u.searchParams.set('q', 'auto:good')
+                }
             }
             return u.href
         }
 
-        const entries = widths.map(w => `${makeUrl(w)} ${Math.round(w / baseWidth)}x`)
+        // Calculate proper density descriptors based on actual width ratios
+        const entries = widths.map(w => {
+            const density = Math.round((w / baseWidth) * 10) / 10 // Round to 1 decimal
+            return `${makeUrl(w)} ${density}x`
+        })
         return entries.join(', ')
     } catch {
         return undefined
+    }
+}
+
+// Generate a high-resolution version of an image URL for the base src attribute
+// This ensures even browsers that don't support srcSet get a sharp image
+export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
+    if (!imgUrl) return imgUrl
+    try {
+        const url = new URL(imgUrl, window.location.origin)
+        const host = url.hostname
+
+        if (host.includes('unsplash.com')) {
+            url.searchParams.set('w', String(targetWidth))
+            url.searchParams.set('q', '90')
+        } else if (host.includes('pexels.com')) {
+            url.searchParams.set('auto', 'compress')
+            url.searchParams.set('cs', 'tinysrgb')
+            url.searchParams.set('w', String(targetWidth))
+            url.searchParams.set('dpr', '2')
+            url.searchParams.delete('h')
+            url.searchParams.delete('q')
+        } else if (host.includes('cloudinary.com')) {
+            url.pathname = url.pathname.replace('/upload/', `/upload/w_${targetWidth}/`)
+            if (!url.searchParams.has('q')) {
+                url.searchParams.set('q', 'auto:good')
+            }
+        }
+        return url.href
+    } catch {
+        return imgUrl
     }
 }
