@@ -403,27 +403,40 @@ export function HomePage() {
 
             // Initialize likedBy array if it doesn't exist
             const likedBy = post.likedBy || []
-            const isCurrentlyLiked = likedBy.includes(user._id)
+            const isCurrentlyLiked = likedBy.some(id => {
+                const postId = id?.toString ? id.toString() : String(id)
+                const userId = user._id?.toString ? user._id.toString() : String(user._id)
+                return postId === userId
+            })
 
             let updatedLikedBy
             if (isCurrentlyLiked) {
                 // Unlike: remove user from likedBy array
-                updatedLikedBy = likedBy.filter(id => id !== user._id)
+                updatedLikedBy = likedBy.filter(id => {
+                    const postId = id?.toString ? id.toString() : String(id)
+                    const userId = user._id?.toString ? user._id.toString() : String(user._id)
+                    return postId !== userId
+                })
             } else {
                 // Like: add user to likedBy array
                 updatedLikedBy = [...likedBy, user._id]
             }
 
-            // Update the post with new like status
+            // OPTIMISTIC UPDATE: Update UI immediately
             const updatedPost = {
                 ...post,
                 likedBy: updatedLikedBy
             }
-
-            await updatePost(updatedPost)
+            
+            // Update Redux store immediately for instant UI feedback
+            updatePost(updatedPost)
+            
+            // Sync with backend in background (non-blocking)
+            // Note: updatePost already handles the backend sync, so we don't need to call it twice
             
         } catch (err) {
             console.error('Error toggling like:', err)
+            showErrorMsg('Failed to like post')
         }
     }
 

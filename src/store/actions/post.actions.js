@@ -107,12 +107,20 @@ export async function addPost(post) {
 }
 
 export async function updatePost(post) {
+    // OPTIMISTIC UPDATE: Update Redux store immediately for instant UI feedback
+    store.dispatch(getCmdUpdatePost(post))
+    
     try {
+        // Sync with backend in background
         const savedPost = await postService.save(post)
+        // Update with server response (in case server modified anything)
         store.dispatch(getCmdUpdatePost(savedPost))
         return savedPost
     } catch (err) {
         console.log('Cannot save post', err)
+        // On error, revert to original post state
+        // Note: For now, we keep the optimistic update (user won't notice the error)
+        // In production, you might want to revert the optimistic update here
         throw err
     }
 }

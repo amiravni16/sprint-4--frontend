@@ -50,12 +50,11 @@ export function UserDetails() {
       // If the loaded user id differs from the URL param, redirect to the correct stable id
       if (loaded && loaded._id && loaded._id !== params.id) {
         window.history.replaceState(null, '', `/user/${loaded._id}`)
+        return
       }
       
-      // Small delay to prevent flash, then show content
-      setTimeout(() => {
-        setIsTransitioning(false)
-      }, 200)
+      // Show content immediately when user loads (no artificial delay)
+      setIsTransitioning(false)
     }
     ensureUser()
 
@@ -76,20 +75,9 @@ export function UserDetails() {
     }
   }, [loggedinUser, user])
 
-  useEffect(() => {
-    // Refresh logged-in user data when navigating to a new profile
-    async function refreshLoggedInUser() {
-      if (loggedinUser) {
-        try {
-          const freshLoggedinUser = await userService.getById(loggedinUser._id)
-          store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
-        } catch (err) {
-          console.error('Error refreshing logged-in user:', err)
-        }
-      }
-    }
-    refreshLoggedInUser()
-  }, [params.id])
+  // REMOVED: Don't refresh logged-in user on every profile navigation
+  // This was causing following list to change incorrectly
+  // Only refresh when explicitly needed (e.g., after follow/unfollow action)
 
   useEffect(() => {
     // Load posts for this user - ONLY if user matches current URL param
@@ -305,16 +293,48 @@ export function UserDetails() {
         return
       }
       
-      // Reload both users from storage to get the actual updated data
-      const freshLoggedinUser = await userService.getById(loggedinUser._id)
-      const freshWatchedUser = await userService.getById(user._id)
+      // Optimistically update logged-in user's following list
+      // Check if already following (using normalized IDs for comparison)
+      const isAlreadyFollowing = (loggedinUser.following || []).some(id => 
+        normalizeId(id) === normalizeId(user._id)
+      )
       
-      // Update both users in the store
-      store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
-      store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+      let updatedFollowing
+      if (newIsFollowing) {
+        // Follow: Add user._id if not already in list
+        updatedFollowing = isAlreadyFollowing
+          ? loggedinUser.following || [] // Already following, keep as-is
+          : [...(loggedinUser.following || []), user._id] // Add to following
+      } else {
+        // Unfollow: Remove user._id from list
+        updatedFollowing = (loggedinUser.following || []).filter(id => 
+          normalizeId(id) !== normalizeId(user._id)
+        )
+      }
       
-      // Ensure button state matches the fresh data
-      setIsFollowing((freshLoggedinUser.following || []).some(id => normalizeId(id) === normalizeId(user._id)))
+      const optimisticLoggedinUser = {
+        ...loggedinUser,
+        following: updatedFollowing
+      }
+      
+      // Update logged-in user optimistically (instant UI update)
+      store.dispatch({ type: 'SET_USER', user: optimisticLoggedinUser })
+      
+      // Reload both users from backend to sync (in background)
+      try {
+        const freshLoggedinUser = await userService.getById(loggedinUser._id)
+        const freshWatchedUser = await userService.getById(user._id)
+        
+        // Update with fresh data from server
+        store.dispatch({ type: 'SET_USER', user: freshLoggedinUser })
+        store.dispatch({ type: 'SET_WATCHED_USER', user: freshWatchedUser })
+        
+        // Ensure button state matches the fresh data
+        setIsFollowing((freshLoggedinUser.following || []).some(id => normalizeId(id) === normalizeId(user._id)))
+      } catch (syncErr) {
+        console.warn('Error syncing follow status:', syncErr)
+        // Keep optimistic update if sync fails
+      }
       
     } catch (err) {
       console.error('Error toggling follow:', err)
