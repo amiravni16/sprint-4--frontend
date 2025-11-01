@@ -374,14 +374,22 @@ export function PostDetailsModal({ isOpen, onClose, post, onLike, onDelete, onEd
                 <div className={`post-details-image ${imageAspectRatio}`}>
                     <img 
                         key={`post-img-${post._id}-modal`}
-                        src={getHighResImageUrl(post.imgUrl, 4000)}
-                        srcSet={buildResponsiveSrcSet(post.imgUrl, 4000)}
-                        sizes="(max-width: 768px) 100vw, 1200px"
+                        src={getHighResImageUrl(post.imgUrl, 5000)}
+                        srcSet={buildResponsiveSrcSet(post.imgUrl, 5000)}
+                        sizes="(max-width: 768px) 100vw, 2400px"
                         alt="Post" 
                         decoding="async"
                         fetchpriority="high"
                         loading="eager"
-                        style={{ maxWidth: 'none', imageRendering: 'auto' }}
+                        style={{ 
+                            maxWidth: 'none', 
+                            minWidth: '100%',
+                            minHeight: '100%',
+                            imageRendering: 'auto',
+                            width: '100%', 
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
                     />
                 </div>
 
