@@ -89,27 +89,18 @@ export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
                 u.searchParams.set('w', String(w))
                 u.searchParams.set('q', '90') // Higher quality
             } else if (host.includes('pexels.com')) {
-                // Pexels: Extract photo ID and rebuild URL for original/high-res
-                const pathMatch = u.pathname.match(/\/photos\/(\d+)\//)
-                if (pathMatch) {
-                    const photoId = pathMatch[1]
-                    // For high resolutions, use original (no params)
-                    // For lower resolutions, add width parameter
-                    if (w >= 2000) {
-                        // Use original resolution - no parameters
-                        return `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg`
-                    } else {
-                        // For medium sizes, use width parameter
-                        const sizedUrl = new URL(`https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg`)
-                        sizedUrl.searchParams.set('w', String(w))
-                        return sizedUrl.href
-                    }
+                // Pexels: If URL is already original (no constraints), use as-is for all sizes
+                // Pexels original URLs work perfectly - don't try to rebuild them
+                const hasSizeConstraints = u.searchParams.has('h') || u.searchParams.has('w')
+                
+                if (!hasSizeConstraints) {
+                    // Already original - return as-is for all srcSet sizes
+                    return url.href
                 }
-                // Fallback: remove all params
-                const baseUrl = `${u.protocol}//${u.hostname}${u.pathname}`
-                const cleanUrl = new URL(baseUrl)
-                cleanUrl.search = ''
-                return cleanUrl.href
+                
+                // URL has constraints - remove them to get original
+                // Just use the base URL without query params
+                return `${u.protocol}//${u.hostname}${u.pathname}`
             } else if (host.includes('picsum.photos')) {
                 // picsum already encodes size in path; leave as-is
                 return u.href
@@ -147,23 +138,19 @@ export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
             url.searchParams.set('w', String(targetWidth))
             url.searchParams.set('q', '90')
         } else if (host.includes('pexels.com')) {
-            // Pexels: Extract photo ID and rebuild URL for original/high-res
-            // Pexels URLs like: images.pexels.com/photos/{id}/pexels-photo-{id}.jpeg?params
-            const pathMatch = url.pathname.match(/\/photos\/(\d+)\//)
-            if (pathMatch) {
-                const photoId = pathMatch[1]
-                // Build clean URL pointing to original - no size constraints
-                // Try original format: images.pexels.com/photos/{id}/pexels-photo-{id}.jpeg
-                const originalUrl = new URL(`https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg`)
-                // For very high res, request without any parameters (original)
-                // Pexels serves original resolution when accessed without size params
-                return originalUrl.href
+            // Pexels: If URL is already original (no size constraints), return as-is
+            // Pexels original URLs from API are already perfect - don't transform them
+            const hasSizeConstraints = url.searchParams.has('h') || url.searchParams.has('w')
+            
+            if (!hasSizeConstraints) {
+                // Already original resolution - perfect, use as-is
+                return url.href
             }
-            // Fallback: remove all params from existing URL
+            
+            // URL has constraints - remove them to get original
+            // Keep the original pathname, just remove query params
             const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`
-            const newUrl = new URL(baseUrl)
-            newUrl.search = '' // Clear all query params
-            return newUrl.href
+            return baseUrl
         } else if (host.includes('cloudinary.com')) {
             url.pathname = url.pathname.replace('/upload/', `/upload/w_${targetWidth}/`)
             if (!url.searchParams.has('q')) {
