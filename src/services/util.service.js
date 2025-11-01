@@ -89,13 +89,15 @@ export function buildResponsiveSrcSet(imgUrl, baseWidth = 800) {
                 u.searchParams.set('w', String(w))
                 u.searchParams.set('q', '90') // Higher quality
             } else if (host.includes('pexels.com')) {
-                // Pexels supports dpr and width/height; prefer width for responsive clarity
+                // Pexels: Remove all size constraints first, then set desired width
+                u.searchParams.delete('h')
+                u.searchParams.delete('w')
+                u.searchParams.delete('fit')
+                // Set high-resolution parameters
                 u.searchParams.set('auto', 'compress')
                 u.searchParams.set('cs', 'tinysrgb')
                 u.searchParams.set('w', String(w))
                 u.searchParams.set('dpr', '2') // Request 2x DPR for sharpness
-                // Remove small fixed height if present
-                u.searchParams.delete('h')
                 // Remove any quality limits
                 u.searchParams.delete('q')
             } else if (host.includes('picsum.photos')) {
@@ -135,11 +137,16 @@ export function getHighResImageUrl(imgUrl, targetWidth = 1200) {
             url.searchParams.set('w', String(targetWidth))
             url.searchParams.set('q', '90')
         } else if (host.includes('pexels.com')) {
+            // Pexels: Remove all size constraints first, then set desired width
+            url.searchParams.delete('h')
+            url.searchParams.delete('w')
+            url.searchParams.delete('fit')
+            // Set high-resolution parameters
             url.searchParams.set('auto', 'compress')
             url.searchParams.set('cs', 'tinysrgb')
             url.searchParams.set('w', String(targetWidth))
             url.searchParams.set('dpr', '2')
-            url.searchParams.delete('h')
+            // Remove any quality limits
             url.searchParams.delete('q')
         } else if (host.includes('cloudinary.com')) {
             url.pathname = url.pathname.replace('/upload/', `/upload/w_${targetWidth}/`)

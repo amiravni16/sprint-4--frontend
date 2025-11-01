@@ -60,21 +60,31 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Use smooth scaling for photos - browser will maintain quality if source is high-res */
+    image-rendering: auto;
+    /* Ensure browser requests full resolution, not scaled down */
+    max-width: none;
+    /* Prevent any CSS downscaling */
+    min-width: 0;
 }
 
 /* Horizontal images - use contain to show full image with black borders */
 .post-details-image.horizontal img {
     object-fit: contain;
+    /* For contain, we want smooth scaling to preserve aspect ratio */
+    image-rendering: auto;
 }
 
 /* Vertical images - use cover to fill height without borders */
 .post-details-image.vertical img {
     object-fit: cover;
+    image-rendering: auto;
 }
 
 /* Square images - use cover for consistency */
 .post-details-image.square img {
     object-fit: cover;
+    image-rendering: auto;
 }
 
 .post-details-content {
