@@ -92,83 +92,124 @@ export function UserDetails() {
   }, [params.id])
 
   useEffect(() => {
-    // Load posts for this user - show cached immediately if available
+    // Load posts for this user - ONLY if user matches current URL param
     async function loadUserPosts() {
-      if (user && user._id) {
-        // Check if we have cached posts for this user in Redux store
-        const state = store.getState()
-        const cachedPosts = state.postModule.posts.filter(post => post.by?._id === user._id)
+      // CRITICAL: Only load posts if user matches the current URL param
+      // This prevents showing previous user's posts when navigating
+      if (!user || !user._id || user._id !== params.id) {
+        // User doesn't match URL - don't load posts yet
+        setUserPosts([])
+        setIsLoadingPosts(false)
+        return
+      }
+      
+      // User matches URL - safe to load posts
+      // Check if we have cached posts for this user in Redux store
+      const state = store.getState()
+      const cachedPosts = state.postModule.posts.filter(post => {
+        const postUserId = post.by?._id?.toString ? post.by._id.toString() : String(post.by?._id)
+        const currentUserId = user._id.toString ? user._id.toString() : String(user._id)
+        return postUserId === currentUserId
+      })
+      
+      if (cachedPosts.length > 0) {
+        // Show cached posts immediately (only if they match current user)
+        setUserPosts(cachedPosts)
+      }
+      
+      // Fetch fresh data in background
+      setIsLoadingPosts(true)
+      try {
+        // Use the optimized endpoint to get posts by user ID
+        const postsByUser = await postService.getByUserId(user._id)
         
-        if (cachedPosts.length > 0) {
-          // Show cached posts immediately
-          setUserPosts(cachedPosts)
-        }
-        
-        // Fetch fresh data in background
-        setIsLoadingPosts(true)
-        try {
-          // Use the optimized endpoint to get posts by user ID
-          const postsByUser = await postService.getByUserId(user._id)
+        // Double-check: user still matches URL param before setting posts
+        if (user._id === params.id) {
           // Sort by createdAt descending (newest first)
           postsByUser.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           setUserPosts(postsByUser)
-        } catch (err) {
-          console.error('Error loading user posts:', err)
-          // If fetch fails but we have cache, keep showing cache
-          if (cachedPosts.length === 0) {
-            setUserPosts([])
-          }
-        } finally {
+        } else {
+          // User changed during fetch - don't set posts
+          setUserPosts([])
+        }
+      } catch (err) {
+        console.error('Error loading user posts:', err)
+        // If fetch fails and user still matches, keep cache or clear
+        if (user._id === params.id && cachedPosts.length === 0) {
+          setUserPosts([])
+        } else if (user._id !== params.id) {
+          setUserPosts([])
+        }
+      } finally {
+        // Only stop loading if user still matches
+        if (user._id === params.id) {
           setIsLoadingPosts(false)
         }
       }
     }
     loadUserPosts()
-  }, [user])
+  }, [user, params.id])
 
   useEffect(() => {
-    // Load saved posts - show cached immediately if available
+    // Load saved posts - ONLY if user matches current URL param AND is own profile
     async function loadSavedPosts() {
-      if (user && loggedinUser && user._id === loggedinUser._id) {
-        const savedPostIds = loggedinUser.savedPosts || []
+      // CRITICAL: Verify user matches URL param before loading saved posts
+      if (!user || !loggedinUser || user._id !== loggedinUser._id || user._id !== params.id) {
+        // Not own profile or user doesn't match URL - clear saved posts
+        setSavedPosts([])
+        return
+      }
+      
+      const savedPostIds = loggedinUser.savedPosts || []
+      
+      if (savedPostIds.length === 0) {
+        setSavedPosts([])
+        return
+      }
+      
+      // Try to get cached posts from Redux store immediately
+      const state = store.getState()
+      const cachedPosts = state.postModule.posts || []
+      
+      if (cachedPosts.length > 0) {
+        // Filter cached posts immediately for instant display
+        const cachedSavedPosts = cachedPosts.filter(post => savedPostIds.includes(post._id))
+        cachedSavedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        setSavedPosts(cachedSavedPosts)
+      }
+      
+      // Fetch fresh data in background
+      setIsLoadingPosts(true)
+      try {
+        const posts = await postService.query()
+        const savedPostsData = posts.filter(post => savedPostIds.includes(post._id))
         
-        if (savedPostIds.length === 0) {
-          setSavedPosts([])
-          return
-        }
-        
-        // Try to get cached posts from Redux store immediately
-        const state = store.getState()
-        const cachedPosts = state.postModule.posts || []
-        
-        if (cachedPosts.length > 0) {
-          // Filter cached posts immediately for instant display
-          const cachedSavedPosts = cachedPosts.filter(post => savedPostIds.includes(post._id))
-          cachedSavedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          setSavedPosts(cachedSavedPosts)
-        }
-        
-        // Fetch fresh data in background
-        setIsLoadingPosts(true)
-        try {
-          const posts = await postService.query()
-          const savedPostsData = posts.filter(post => savedPostIds.includes(post._id))
+        // Double-check: user still matches URL param before setting posts
+        if (user._id === params.id && user._id === loggedinUser._id) {
           // Sort by createdAt descending (newest first)
           savedPostsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           setSavedPosts(savedPostsData)
-        } catch (err) {
-          console.error('Error loading saved posts:', err)
-          // If fetch fails but we have cache, keep showing cache
-          if (cachedPosts.length === 0) {
-            setSavedPosts([])
-          }
-        } finally {
+        } else {
+          // User changed during fetch - don't set posts
+          setSavedPosts([])
+        }
+      } catch (err) {
+        console.error('Error loading saved posts:', err)
+        // If fetch fails and user still matches, keep cache or clear
+        if (user._id === params.id && user._id === loggedinUser._id && cachedPosts.length === 0) {
+          setSavedPosts([])
+        } else if (user._id !== params.id) {
+          setSavedPosts([])
+        }
+      } finally {
+        // Only stop loading if user still matches
+        if (user._id === params.id && user._id === loggedinUser._id) {
           setIsLoadingPosts(false)
         }
       }
     }
     loadSavedPosts()
-  }, [user, loggedinUser])
+  }, [user, loggedinUser, params.id])
 
   // Keep a canonical copy from storage for debugging to avoid stale values
   useEffect(() => {
