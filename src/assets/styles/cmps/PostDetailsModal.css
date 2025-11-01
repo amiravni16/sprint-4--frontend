@@ -64,8 +64,11 @@
     image-rendering: auto;
     /* Ensure browser requests full resolution, not scaled down */
     max-width: none;
-    /* Prevent any CSS downscaling */
     min-width: 0;
+    /* Force browser to treat this as a high-DPI display area */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: auto;
 }
 
 /* Horizontal images - use contain to show full image with black borders */
