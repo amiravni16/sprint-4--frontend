@@ -197,7 +197,7 @@ export function UserDetails() {
       }
     }
     loadSavedPosts()
-  }, [user, loggedinUser, params.id])
+  }, [user, loggedinUser, params.id, loggedinUser?.savedPosts?.length]) // React to savedPosts changes immediately
 
   // Keep a canonical copy from storage for debugging to avoid stale values
   useEffect(() => {

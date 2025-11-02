@@ -78,19 +78,68 @@ export function PostPreview({ post, onLike, onComment, user, onDelete, onEdit, o
     const handleSave = async () => {
         if (!loggedInUser) return
         
+        // OPTIMISTIC UPDATE: Update UI immediately
+        const newSavedState = !isSaved
+        setIsSaved(newSavedState)
+        
+        // Update Redux store immediately for instant feedback
+        const { store } = await import('../store/store')
+        const currentUser = store.getState().userModule.user
+        if (currentUser) {
+            const savedPosts = currentUser.savedPosts || []
+            let updatedSavedPosts
+            if (newSavedState) {
+                // Save: add post ID if not already there
+                updatedSavedPosts = savedPosts.includes(post._id) 
+                    ? savedPosts 
+                    : [...savedPosts, post._id]
+            } else {
+                // Unsave: remove post ID
+                updatedSavedPosts = savedPosts.filter(id => id !== post._id)
+            }
+            
+            const updatedUser = {
+                ...currentUser,
+                savedPosts: updatedSavedPosts
+            }
+            store.dispatch({ type: 'SET_USER', user: updatedUser })
+        }
+        
         try {
+            // Sync with backend (non-blocking)
             if (isSaved) {
                 await userService.unsavePost(post._id)
             } else {
                 await userService.savePost(post._id)
             }
-            setIsSaved(!isSaved)
             
-            // Refresh user data to update saved posts
-            const updatedUser = await userService.getById(loggedInUser._id)
-            // You might want to dispatch an action to update the Redux store here
+            // Refresh user data from backend to confirm
+            const freshUser = await userService.getById(loggedInUser._id)
+            store.dispatch({ type: 'SET_USER', user: freshUser })
         } catch (error) {
             console.error('Error saving/unsaving post:', error)
+            // Revert optimistic update on error
+            setIsSaved(isSaved)
+            const { store } = await import('../store/store')
+            const currentUser = store.getState().userModule.user
+            if (currentUser) {
+                const savedPosts = currentUser.savedPosts || []
+                let revertedSavedPosts
+                if (newSavedState) {
+                    // Revert: remove if we added
+                    revertedSavedPosts = savedPosts.filter(id => id !== post._id)
+                } else {
+                    // Revert: add back if we removed
+                    revertedSavedPosts = savedPosts.includes(post._id)
+                        ? savedPosts
+                        : [...savedPosts, post._id]
+                }
+                const revertedUser = {
+                    ...currentUser,
+                    savedPosts: revertedSavedPosts
+                }
+                store.dispatch({ type: 'SET_USER', user: revertedUser })
+            }
         }
     }
 
