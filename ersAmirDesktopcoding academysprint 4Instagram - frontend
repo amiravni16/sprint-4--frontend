@@ -1,0 +1,50 @@
+[33mb102a0c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Enhance SuggestedUsers and HomePage components
+[33m0946182[m Refactor FollowersModal to always fetch fresh follower data from backend when opened, ensuring up-to-date information and improving data consistency. Simplified loading logic and enhanced logging for better debugging.
+[33ma5757b9[m Refactor user data handling: remove auto-refresh in SuggestedUsers to prevent stale following counts, and ensure unique user IDs in user service and reducer for data consistency.
+[33m5113bdf[m Normalize user IDs in UserDetails component to ensure accurate following status checks and improve data consistency.
+[33m9320da6[m Normalize follower IDs in FollowersModal to improve data consistency and enhance logging for loading followers.
+[33mebe9cc6[m Enhance user service and reducer:
+[33m9d64c60[m Fix SuggestedUsers component: refresh logged-in user data from backend to resolve stale following list issue and improve suggestion accuracy.
+[33md5ad26b[m Enhance SuggestedUsers component: add detailed logging for user suggestion process
+[33m79daff6[m Enhance SuggestedUsers component: improve user suggestion logic by ensuring a maximum of 5 users are suggested based on availability, and add console warnings for better feedback when no users are available for suggestions.
+[33m6d96b28[m Refactor SuggestedUsers component to improve user suggestion logic: update comments for clarity, simplify user filtering, and enhance randomization method for selecting suggested users. Ensure user data is cached in Redux for future use.
+[33m2dab9ba[m Refactor SuggestedUsers component to always fetch fresh user data instead of relying on cached users. Implement improved randomization for user suggestions and enhance user feedback when no suggestions are available.
+[33mc5a72d9[m Refactor HomePage and UserDetails components for improved user experience
+[33m8e4decf[m Refactor UserDetails component to ensure posts are only loaded when the user matches the current URL parameter. Implement checks to prevent displaying posts from previous users during navigation and enhance saved posts loading logic for better user experience.
+[33m60fbb6e[m Enhance image error handling in PostDetailsModal and PostPreview: implement fallback logic for image loading failures, improving user experience by displaying an error message when images are unavailable.
+[33m7c42158[m Refactor Pexels URL handling in util.service.js: streamline logic to return original URLs without size constraints, improving image quality and reducing unnecessary transformations.
+[33mf1f424d[m Implement anther possible solution to blurry images in post view
+[33m2bec3a1[m Implement possible solution to blurry images in post view
+[33m893158e[m Update image handling in PostDetailsModal and util.service.js: increase high-resolution image URL parameters for better quality, streamline Pexels URL construction, and enhance responsive image handling.
+[33m82350b9[m Refactor image handling in PostDetailsModal
+[33mbde54f3[m Enhance image handling in PostDetailsModal: integrate getHighResImageUrl for improved image quality, update srcSet to support higher resolutions, and adjust quality settings for better performance across various image hosts.
+[33m7e95a40[m Update PostDetailsModal image handling: increase srcSet resolution to 1600px, adjust sizes for better responsiveness, and set loading attribute to eager for improved performance.
+[33m968a941[m Add responsive image handling: implement buildResponsiveSrcSet function for optimized image loading in PostDetailsModal and PostPreview components.
+[33m2dc89fa[m Update SuggestedUsers styles:
+[33m3df205c[m Clear previous user's posts on UserDetails change to prevent stale data display; add blank line to _redirects for improved readability.
+[33mddb96e9[m Enhance PostDetailsModal styles: add min-height properties for better flexbox behavior on mobile and adjust emoji picker positioning for improved visibility.
+[33mf04ca0d[m Update service worker registration to unregister for production; enhance HTTP service with authorization token handling and session management for user login/logout.
+[33m3e0421f[m Enhance storage initialization: add local mode handling to repair localStorage and improve error logging for user session validation and post migration.
+[33m1b71062[m Refactor service worker registration: simplify URL handling to ensure proper registration from site root, avoiding issues with nested routes.
+[33m2df2fcd[m Add blank line to _redirects file for improved readability
+[33m96dbcf5[m Fix user profile: show skeleton loader until posts load, never show 0 posts state
+[33m254d4b0[m Fix explore filter: remove fallback that showed followed users posts
+[33m7f274b6[m Fix explore page: normalize IDs to properly filter out followed users
+[33m6b62e2c[m Fix explore grid: position vertical rectangles in correct columns (3rd in right, 6th in left)
+[33ma8b5703[m Enhance InstagramSidebar styles: remove text decoration from sidebar links to prevent underlines across all states
+[33m7cfb0a6[m Fix hasLoadedOnce reference error in HomePage skeleton loader
+[33m0e48a5b[m Fix follow button sync: remove startTransition, React auto-batches state updates
+[33maac8501[m Optimize loading: cache HomePage/UserDetails posts, cache SuggestedUsers in Redux, fix follow button sync timing
+[33me3f6133[m Add _redirects file for client-side routing on Render static hosting
+[33m65b30e7[m Complete fix: Explore page persists content across navigation with module-level cache
+[33md060828[m Update cached explore posts when posts are updated
+[33m7fe091f[m Persist Explore page content across navigation using module-level cache
+[33m09bcf25[m Fix hasLoadedOnce logic in ExplorePage
+[33m7934930[m Prevent Explore page from reloading on every visit - keep cached content
+[33m0c329d3[m Update Suggested Users sidebar styles
+[33mfda8349[m Implement like functionality in PostViewModal for ExplorePage and UserDetails
+[33m4089113[m Fix like button in PostViewModal and synchronize follow button with follower count update
+[33mef4e070[m Optimize Explore page and Saved posts: instant cached content with skeleton loaders
+[33m486a577[m Navigate to home feed after post upload with success message
+[33m6a12d27[m Optimize post creation: instant optimistic update, no full feed reload
+[33mad578a4[m Optimize loading: show cached Redux data immediately, fetch fresh in background
