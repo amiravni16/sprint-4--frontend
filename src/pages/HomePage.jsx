@@ -204,6 +204,12 @@ export function HomePage() {
     useEffect(() => {
         const userId = user?._id
         
+        // Don't load posts if no user is logged in yet
+        if (!user) {
+            console.log('⏳ Waiting for user to login before loading posts...')
+            return
+        }
+        
         // On first mount, use cached posts if available
         if (!hasMountedRef.current) {
             hasMountedRef.current = true
@@ -257,11 +263,17 @@ export function HomePage() {
         }
     }
 
-    // Auto-login on mount
+    // Auto-login on mount - MUST happen before posts load
     useEffect(() => {
-        if (!user) {
-            autoLoginForTesting()
+        async function ensureLoggedIn() {
+            if (!user) {
+                console.log('👤 No user logged in, attempting auto-login...')
+                await autoLoginForTesting()
+                // Wait a moment for user state to update
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
         }
+        ensureLoggedIn()
     }, [])
     
     async function autoFixFollowing() {
