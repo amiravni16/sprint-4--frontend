@@ -144,15 +144,21 @@ export function UploadModal({ isOpen, onClose }) {
                 }
             }
             
-            // Save the post
-            await addPost(post)
-            
-            // Close modals and reset state
+            // Close modals and reset state FIRST (before async operation)
+            // This ensures the modal closes immediately
             setShowPostCreate(false)
             setShowCrop(false)
             setCroppedImage(null)
             setSelectedFile(null)
             onClose()
+            
+            // Save the post (non-blocking)
+            addPost(post).catch((err) => {
+                console.error('Error creating post:', err)
+                import('../services/event-bus.service').then(({ showErrorMsg }) => {
+                    showErrorMsg('Cannot create post')
+                })
+            })
             
             // Show success message
             const { showSuccessMsg } = await import('../services/event-bus.service')
@@ -169,8 +175,8 @@ export function UploadModal({ isOpen, onClose }) {
 
     if (!isOpen) return null
 
-    // Show PostDetails modal after crop
-    if (showPostCreate && croppedImage) {
+    // Show PostDetails modal after crop (only if modal is still open)
+    if (isOpen && showPostCreate && croppedImage) {
         console.log('Rendering PostDetailsModal with croppedImage')
         return (
             <>
@@ -201,8 +207,8 @@ export function UploadModal({ isOpen, onClose }) {
         )
     }
 
-    // Show crop modal if file is selected
-    if (showCrop && selectedFile) {
+    // Show crop modal if file is selected (only if modal is still open)
+    if (isOpen && showCrop && selectedFile) {
         return (
             <>
                     <CropModal

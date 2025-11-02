@@ -124,9 +124,15 @@ export function ExplorePage() {
     async function fetchFreshData(followingIds, userId) {
         try {
             const { postService } = await import('../services/post')
-            const posts = await postService.query() || []
+            // Fetch all posts (backend doesn't support limit yet)
+            // But we'll limit processing to first 200 for better performance
+            const allPosts = await postService.query() || []
             
-            const freshExplorePosts = filterExplorePosts(posts, followingIds, userId)
+            // Limit to first 200 posts for faster processing
+            // Explore page only needs posts from users you don't follow
+            const limitedPosts = allPosts.slice(0, 200)
+            
+            const freshExplorePosts = filterExplorePosts(limitedPosts, followingIds, userId)
             setExplorePosts(freshExplorePosts)
             // Cache the results for next visit
             cachedExplorePosts = freshExplorePosts
